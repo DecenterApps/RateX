@@ -8,7 +8,7 @@ type ArbitrumQueries = {
 
 const SushiV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`
   {
-    pairs {
+    pairs (first: 500, orderBy: volumeUSD, orderDirection: desc){
       id
       token0 {
         symbol
@@ -24,6 +24,7 @@ const SushiV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = pa
       reserve0
       reserve1
       reserveETH
+      volumeUSD
     }
   }
 `);

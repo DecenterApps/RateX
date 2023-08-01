@@ -12,10 +12,10 @@ let pools: any[] = []
 function SushiswapV2List(token0: string, token1: string, dexName: string, jsonList: any){
 
     let result: any = []
+    // console.log(jsonList.pairs[0])
     for(let i = 0; i < jsonList.pairs.length; i++){
-        // console.log(jsonList.pairs[i].token0.id == token0, jsonList.pairs[i].token0.symbol, jsonList.pairs[i].token1.symbol)
-        if(jsonList.pairs[i].token0.id == token0 && jsonList.pairs[i].token1.id == token1 ||
-            jsonList.pairs[i].token0.id == token1 && jsonList.pairs[i].token1.id == token0)
+        if((jsonList.pairs[i].token0.id == token0 && jsonList.pairs[i].token1.id == token1) ||
+            (jsonList.pairs[i].token0.id == token1 && jsonList.pairs[i].token1.id == token0))
             result.push(jsonList.pairs[i])
     }
     return result
@@ -24,6 +24,7 @@ function SushiswapV2List(token0: string, token1: string, dexName: string, jsonLi
 function UniswapV3List(token0: string, token1: string, dexName: string, jsonList: any){
     // TODO
     let result: any = []
+    console.log(jsonList.pools.length)
     for(let i = 0; i < jsonList.pools.length; i++){
         // console.log(jsonList.pools[i].token0.id, token1)
         if((jsonList.pools[i].token0.id == token0 && jsonList.pools[i].token1.id == token1) ||
