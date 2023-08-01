@@ -29,17 +29,29 @@ const SushiV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = pa
 `);
 
 const UniV3ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`
-  {
-    pools {
+{
+  pools {
+    id
+    token0 {
       id
-      token0 {
-        symbol
-      }
-      token1 {
-        symbol
-      }
+      decimals
+      name
+      symbol
     }
+    token1 {
+      id
+      decimals
+      name
+      symbol
+    }
+    token0Price
+    token1Price
+    totalValueLockedToken0
+    totalValueLockedToken1
+    volumeToken0
+    volumeToken1
   }
+}
 `);
 
 export const arbitrumQueries: ArbitrumQueries = {
