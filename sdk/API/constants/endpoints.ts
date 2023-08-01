@@ -1,5 +1,5 @@
 const SushiV2ArbitrumEndpoint: string = "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange"
-const UniV3ArbitrumEndpoint: string = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3"
+const UniV3ArbitrumEndpoint: string = "https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum"
 const TraderJoeV2ArbitrumEndpoint: string = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arbitrum"
 
 type ArbitrumEndpoints = {

@@ -31,28 +31,20 @@ const SushiV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = pa
 
 const UniV3ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`
 {
-  pools {
-    id
-    token0 {
-      id
-      decimals
+    liquidityPools(orderDirection: desc, orderBy: cumulativeVolumeUSD) {
       name
-      symbol
-    }
-    token1 {
+      activeLiquidityUSD
+      totalLiquidityUSD
       id
-      decimals
-      name
-      symbol
+      totalLiquidity
+      cumulativeVolumeUSD
+      activeLiquidity
+      inputTokens {
+        name
+        id
+      }
     }
-    token0Price
-    token1Price
-    totalValueLockedToken0
-    totalValueLockedToken1
-    volumeToken0
-    volumeToken1
   }
-}
 `);
 
 const TraderJoeV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`

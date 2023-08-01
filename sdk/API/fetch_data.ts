@@ -12,7 +12,7 @@ let pools: any[] = []
 function SushiswapV2List(token0: string, token1: string, dexName: string, jsonList: any){
 
     let result: any = []
-    // console.log(jsonList.pairs[0])
+    console.log(jsonList.pairs[0])
     for(let i = 0; i < jsonList.pairs.length; i++){
         if((jsonList.pairs[i].token0.id == token0 && jsonList.pairs[i].token1.id == token1) ||
             (jsonList.pairs[i].token0.id == token1 && jsonList.pairs[i].token1.id == token0))
@@ -24,12 +24,12 @@ function SushiswapV2List(token0: string, token1: string, dexName: string, jsonLi
 function UniswapV3List(token0: string, token1: string, dexName: string, jsonList: any){
     // TODO
     let result: any = []
-    console.log(jsonList.pools.length)
-    for(let i = 0; i < jsonList.pools.length; i++){
+    // console.log(jsonList.pools.length)
+    for(let i = 0; i < jsonList.liquidityPools.length; i++){
         // console.log(jsonList.pools[i].token0.id, token1)
-        if((jsonList.pools[i].token0.id == token0 && jsonList.pools[i].token1.id == token1) ||
-            (jsonList.pools[i].token0.id == token1 && jsonList.pools[i].token1.id == token0))
-            result.push(jsonList.pools[i])
+        if((jsonList.liquidityPools[i].inputTokens[0].id == token0 && jsonList.liquidityPools[i].inputTokens[1].id == token1) ||
+            (jsonList.liquidityPools[i].inputTokens[0].id == token1 && jsonList.liquidityPools[i].inputTokens[1].id == token0))
+            result.push(jsonList.liquidityPools[i])
     }
     return result
 }
@@ -77,7 +77,7 @@ async function main() {
         await sleep(1000)
     }
 
-    console.log(SushiswapV2List(wETH_address, USDC_address, dexNames[0], pools[0]))
+    console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
 }
   
 main()
