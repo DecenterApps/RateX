@@ -54,7 +54,28 @@ const UniV3ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = pars
 }
 `);
 
+const TraderJoeV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`
+{
+  lbpairs {
+    id
+    tokenX {
+      id
+      name
+      decimals
+      symbol
+    }
+    tokenY {
+      id
+      name
+      symbol
+      decimals
+    }
+  }
+}
+`);
+
 export const arbitrumQueries: ArbitrumQueries = {
   'SushiswapV2': SushiV2ArbitrumQuery,
   'UniswapV3': UniV3ArbitrumQuery,
+  'TraderJoeV2': TraderJoeV2ArbitrumQuery
 };
