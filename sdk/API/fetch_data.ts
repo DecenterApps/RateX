@@ -1,8 +1,37 @@
 import { request } from 'graphql-request'
 import { arbitrumQueries } from './constants/queries'
 import { arbitrumEndpoins } from './constants/endpoints'
+import { wETH_address, USDC_address } from './constants/tokens'
+
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 const dexNames = ['SushiswapV2', 'UniswapV3'];
+
+let pools: any[] = []
+
+function SushiswapV2List(token0: string, token1: string, dexName: string, jsonList: any){
+
+    let result: any = []
+    for(let i = 0; i < jsonList.pairs.length; i++){
+        // console.log(jsonList.pairs[i].token0.id == token0, jsonList.pairs[i].token0.symbol, jsonList.pairs[i].token1.symbol)
+        if(jsonList.pairs[i].token0.id == token0 && jsonList.pairs[i].token1.id == token1 ||
+            jsonList.pairs[i].token0.id == token1 && jsonList.pairs[i].token1.id == token0)
+            result.push(jsonList.pairs[i])
+    }
+    return result
+}
+
+function UniswapV3List(token0: string, token1: string, dexName: string, jsonList: any){
+    // TODO
+    let result: any = []
+    for(let i = 0; i < jsonList.pools.length; i++){
+        // console.log(jsonList.pools[i].token0.id, token1)
+        if((jsonList.pools[i].token0.id == token0 && jsonList.pools[i].token1.id == token1) ||
+            (jsonList.pools[i].token0.id == token1 && jsonList.pools[i].token1.id == token0))
+            result.push(jsonList.pools[i])
+    }
+    return result
+}
 
 async function fetch_pools(dex_name: string) {
     const query = arbitrumQueries[dex_name]
@@ -24,52 +53,30 @@ async function fetchAllPools() {
     return results;
 }
 
-function pairsList(token1: string, token2: string, dexName: string, jsonList: any){
+async function updatePools(refreshTime: number = 0) {
+    let lastDate = new Date()
 
-    let result: any = []
-    for(let i = 0; i < jsonList.pairs.length; i++){
-        if(jsonList.pairs[i].token0.id == token1 && jsonList.pairs[i].token1.id == token2 ||
-            jsonList.pairs[i].token0.id == token2 && jsonList.pairs[i].token1.id == token1)
-            result.push(jsonList.pairs[i])
+    // Update pools every refreshTime ms
+    while (true) {
+        const res = await fetchAllPools() // fetch new pools
+        pools = res // update pools
+        
+        // Sleep if we are faster than the refresh time
+        let newDate = new Date()    // get current time
+        const timeDifference = (newDate.getTime() - lastDate.getTime()) // time difference in ms
+        if (refreshTime > timeDifference) {
+            await sleep(refreshTime - timeDifference) // sleep for the difference
+        }
     }
-    return result
-}
-
-function poolsList(token1: string, token2: string, dexName: string, jsonList: any){
-
-    let result: any = []
-    for(let i = 0; i < jsonList.pools.length; i++){
-        if(jsonList.pools[i].token0.id == token1 && jsonList.pools[i].token1.id == token2 ||
-            jsonList.pools[i].token0.id == token2 && jsonList.pools[i].token1.id == token1)
-            result.push(jsonList.pools[i])
-    }
-    return result
 }
 
 async function main() {
-
-    const weth_address = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'.toLowerCase()
-    const arbi_address = '0x4f04084721d3008676ad60484cc9269cbdc7d23a'.toLowerCase()
-    const usdc_addres = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'.toLowerCase()
-
-    const res = await fetchAllPools()
-    // Sushiswap: console.log(res[0].pairs[0])
-    // Uniswap: console.log(res[0].pools[0])
-
-    type FilterFunction = {
-        [key: string]: (token1: string, token2: string, dexName: string, jsonList: any) => void
+    updatePools(0)
+    while (pools.length == 0) {
+        await sleep(1000)
     }
 
-    const filterFunction: FilterFunction = {
-        'SushiswapV2': pairsList,
-        'UniswapV3': poolsList
-    }
-
-    let result: any = []
-    for(let i = 0; i < 2; i++){
-        result.push(filterFunction[dexNames[i]](weth_address, usdc_addres, dexNames[i], res[i]))
-    }
-    console.log(result)
+    console.log(SushiswapV2List(wETH_address, USDC_address, dexNames[0], pools[0]))
 }
   
 main()
