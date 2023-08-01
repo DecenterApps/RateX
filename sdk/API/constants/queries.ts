@@ -31,7 +31,7 @@ const SushiV2ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = pa
 
 const UniV3ArbitrumQuery: TypedDocumentNode<any, Record<string, unknown>> = parse(gql`
 {
-    liquidityPools(orderDirection: desc, orderBy: cumulativeVolumeUSD) {
+    liquidityPools(first:100, orderDirection: desc, orderBy: cumulativeVolumeUSD) {
       name
       activeLiquidityUSD
       totalLiquidityUSD

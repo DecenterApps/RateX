@@ -44,8 +44,8 @@ async function fetch_pools(dex_name: string) {
 async function fetchAllPools() {
 
     const promises: Promise<any>[] = []; 
-    for (let i = 0; i < 2; i++) {
-      promises.push(fetch_pools(dexNames[i]));
+    for (let i = 0; i < 100; i++) {
+      promises.push(fetch_pools(dexNames[1]));
     }
   
     // Use Promise.all to await all promises concurrently
@@ -65,6 +65,7 @@ async function updatePools(refreshTime: number = 0) {
         // Sleep if we are faster than the refresh time
         let newDate = new Date()    // get current time
         const timeDifference = (newDate.getTime() - lastDate.getTime()) // time difference in ms
+        // console.log("Wait In seconds: ", timeDifference / 1000)
         if (refreshTime > timeDifference) {
             await sleep(refreshTime - timeDifference) // sleep for the difference
         }
@@ -77,7 +78,8 @@ async function main() {
         await sleep(1000)
     }
 
-    console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
+    const poolList = UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1])
+    console.log("retrieved pool list: ", poolList.length)
 }
   
 main()
