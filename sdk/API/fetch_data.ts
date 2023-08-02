@@ -89,7 +89,7 @@ async function main() {
 
 
     const traderJoeV2 = new TraderJoeV2()
-    const res2 = await traderJoeV2.allPools()
+    const res2 = await traderJoeV2.topPools()
     console.log(res2)
 }
   

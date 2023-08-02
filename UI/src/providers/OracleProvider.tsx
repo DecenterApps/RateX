@@ -1,20 +1,9 @@
 import Web3 from 'web3';
 import Decimal from 'decimal.js';
+import { OracleData } from '../constants/Interfaces';
 import oracleToUSDList from '../constants/oracleToUSDList.json';
 
 const web3 = new Web3(window.ethereum);
-
-interface Oracle {
-    ticker: string;
-    address: {
-      [key: string]: string;
-    };
-    ABI: any; 
-}
-
-interface OracleData {
-  oracles: Oracle[];
-}
 
 const oracleToUSDListData: OracleData = oracleToUSDList;
 

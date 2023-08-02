@@ -1,45 +1,47 @@
-export { allPoolsFunction, matchBothTokensFunction, matchOneTokenFunction }
-
 import { parse } from 'graphql';
 import { gql, request } from 'graphql-request'
 import { DEXFunctionality } from '../DEXFunctionalityIF';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { Pool } from '../Pool'
  
 export class SushiSwapV2 implements DEXFunctionality {
 
   endpoint = "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange";
 
-  async allPools(): Promise<Pool[]> {
-    const skip = 0
-    const pools: Pool[] = []
+  async topPools(): Promise<string[]> {
+    const poolIds: string[] = []
+    const result = await request(this.endpoint, topPoolsFunction(100));
+    result.pairs.forEach((pair: any) => {
+      poolIds.push(pair.id)
+    })
 
-    for(let i = 0; i <= 5; i++){
-        let result = await request(this.endpoint, allPoolsFunction(1000, skip*i));
-        pools.push(...this.parseToPool(result))
-    }
-    return pools
+    return poolIds
   }
 
-  async matchBothTokens(token1: string, token2:string): Promise<Pool[]> {
+  async matchBothTokens(token1: string, token2:string): Promise<string[]>  {
+    const poolIds: string[] = []
     const result = await request(this.endpoint, matchBothTokensFunction(token1, token2));
-    return this.parseToPool(result)
+    result.pairs.forEach((pair: any) => {
+      poolIds.push(pair.id)
+    })
+
+    return poolIds
   }
 
-  async matchOneToken(token: string): Promise<Pool[]> {
+  async matchOneToken(token: string): Promise<string[]>  {
+    const poolIds: string[] = []
     const result = await request(this.endpoint, matchOneTokenFunction(token));
-    return this.parseToPool(result)
-  }
+    result.pairs.forEach((pair: any) => {
+      poolIds.push(pair.id)
+    })
 
-  parseToPool(response: any): Pool[] {
-    return parseToPoolFunction(response)
+    return poolIds
   }
 }
 
-function allPoolsFunction(first: number, skip: number): TypedDocumentNode<any, Record<string, unknown>> {
+function topPoolsFunction(first: number): TypedDocumentNode<any, Record<string, unknown>> {
 
   return parse(gql`{
-    pairs (first: 100, skip: 0, orderBy: volumeUSD, orderDirection: desc){
+    pairs (first: ${100}, orderBy: volumeUSD, orderDirection: desc){
       id
       token0 {
         symbol
@@ -132,37 +134,4 @@ function matchOneTokenFunction(token: string): TypedDocumentNode<any, Record<str
           }
       }
   }`); 
-}
-
-function parseToPoolFunction(response: any): Pool[] {
-
-  const pools: Pool[] = []
-
-  response.pairs.forEach((pair: any) => {
-    const pool: Pool = {
-      id: pair.id,
-      name: pair.name,
-      dexName: "SushiSwapV2",
-      chainId: "42161",
-      assets: [
-        {
-          address: pair.token0.id,
-          symbol: pair.token0.symbol,
-          name: pair.token0.name,
-          supply: pair.reserve0,
-          decimals: pair.token0.decimals
-        },
-        {
-          address: pair.token1.id,
-          symbol: pair.token1.symbol,
-          name: pair.token1.name,
-          supply: pair.reserve1,
-          decimals: pair.token1.decimals
-        }
-      ]
-    }
-    pools.push(pool)
-  })
-
-  return pools
 }
