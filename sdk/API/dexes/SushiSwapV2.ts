@@ -10,9 +10,15 @@ export class SushiSwapV2 implements DEXFunctionality {
 
   endpoint = "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange";
 
-  async allPools(first: number, skip: number): Promise<Pool[]> {
-    const result = await request(this.endpoint, allPoolsFunction(first, skip));
-    return this.parseToPool(result)
+  async allPools(): Promise<Pool[]> {
+    const skip = 0
+    const pools: Pool[] = []
+
+    for(let i = 0; i <= 5; i++){
+        let result = await request(this.endpoint, allPoolsFunction(1000, skip*i));
+        pools.push(...this.parseToPool(result))
+    }
+    return pools
   }
 
   async matchBothTokens(token1: string, token2:string): Promise<Pool[]> {
@@ -38,18 +44,19 @@ function allPoolsFunction(first: number, skip: number): TypedDocumentNode<any, R
       token0 {
         symbol
         id
+        name
+        decimals
       }
       token1 {
         symbol
         id
+        name
+        decimals
       }
-      reserveUSD
-      totalSupply
       name
       reserve0
       reserve1
       reserveETH
-      volumeUSD
     }
   }
 `);
@@ -77,18 +84,20 @@ function matchBothTokensFunction(token1: string, token2:string): TypedDocumentNo
           }) {
           id
           token0 {
-              id
-              symbol
+            id
+            symbol
+            name
+            decimals
           }
           token1 {
-              id
-              symbol
+            id
+            symbol
+            name
+            decimals
           }
           reserve0
           reserve1
           reserveETH
-          reserveUSD
-          totalSupply
           }
       }
   }`);
@@ -108,21 +117,53 @@ function matchOneTokenFunction(token: string): TypedDocumentNode<any, Record<str
             token0 {
               id
               symbol
+              name
+              decimals
             }
             token1 {
               id
               symbol
+              name
+              decimals
             }
             reserve0
             reserve1
             reserveETH
-            reserveUSD
-            totalSupply
           }
       }
   }`); 
 }
 
 function parseToPoolFunction(response: any): Pool[] {
-  return []
+
+  const pools: Pool[] = []
+
+  response.pairs.forEach((pair: any) => {
+    const pool: Pool = {
+      id: pair.id,
+      name: pair.name,
+      dexName: "SushiSwapV2",
+      chainId: "42161",
+      assets: [
+        {
+          address: pair.token0.id,
+          symbol: pair.token0.symbol,
+          name: pair.token0.name,
+          supply: pair.reserve0,
+          decimals: pair.token0.decimals
+        },
+        {
+          address: pair.token1.id,
+          symbol: pair.token1.symbol,
+          name: pair.token1.name,
+          supply: pair.reserve1,
+          decimals: pair.token1.decimals
+        }
+      ],
+      reserveETH: pair.reserveETH
+    }
+    pools.push(pool)
+  })
+
+  return pools
 }

@@ -10,9 +10,15 @@ export class DEXName implements DEXFunctionality {
 
     endpoint = ""
 
-    async allPools(first: number, skip: number): Promise<Pool[]> {
-        const result = await request(this.endpoint, allPoolsFunction(first, skip));
-        return this.parseToPool(result)
+    async allPools(): Promise<Pool[]> {
+        const skip = 0
+        const pools: Pool[] = []
+
+        for(let i = 0; i <= 5; i++){
+            let result = await request(this.endpoint, allPoolsFunction(1000, skip*i));
+            pools.push(...this.parseToPool(result))
+        }
+        return pools
     }
 
     async matchBothTokens(token1: string, token2:string): Promise<Pool[]> {
