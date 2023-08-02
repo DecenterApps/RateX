@@ -1,4 +1,3 @@
-import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Pool } from './Pool'
 
 export interface DEXFunctionality {

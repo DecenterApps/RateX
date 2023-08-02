@@ -1,15 +1,13 @@
 import { request } from 'graphql-request'
-import { arbitrumQueries } from './constants/queries'
-import { arbitrumEndpoins } from './dex/endpoints'
-import { wETH_address, USDC_address } from './constants/tokens'
-
-import { SushiswapQueries } from './dex/Sushiswap'
-import { UniswapQueries } from './dex/Uniswap'
-
-
+import { SushiSwapV2 } from './dexes/SushiswapV2'
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
+// TESTING FILE
+
 const dexNames = ['SushiswapV2', 'UniswapV3'];
+
+export const wETH_address = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'.toLowerCase()
+export const USDC_address = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'.toLowerCase()
 
 let pools: any[] = []
 
@@ -39,10 +37,10 @@ function UniswapV3List(token0: string, token1: string, dexName: string, jsonList
 }
 
 async function fetch_pools(dex_name: string) {
-    const query = arbitrumQueries[dex_name]
-    const endpoint = arbitrumEndpoins[dex_name]
+    // const query = arbitrumQueries[dex_name]
+    // const endpoint = arbitrumEndpoins[dex_name]
 
-    return await request(endpoint, query)
+//     return await request(endpoint, query)
 }
 
 async function fetchAllPools() {
@@ -82,16 +80,15 @@ async function main() {
     //     await sleep(1000)
     // }
 
-    // console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
-
-    const sushiswapQueries = new UniswapQueries();
-
     // Call the allPools method on the instance
-    const sushiswapPools = await sushiswapQueries.allPools(10, 1);
-    const sushiswapBothTokens = await sushiswapQueries.matchBothTokens(wETH_address, USDC_address);
-    const sushiswapOneToken = await sushiswapQueries.matchOneToken(wETH_address);
-    
+    // const sushiswapPools = await sushiswapQueries.allPools(10, 1);
+    // const sushiswapBothTokens = await sushiswapQueries.matchBothTokens(wETH_address, USDC_address);
+    // const sushiswapOneToken = await sushiswapQueries.matchOneToken(wETH_address);
 
+
+    const sushiSwapV2 = new SushiSwapV2()
+    const res = await sushiSwapV2.allPools(10, 0)
+    console.log(res)
 }
   
 main()
