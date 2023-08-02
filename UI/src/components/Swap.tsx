@@ -1,8 +1,10 @@
 import { useState } from "react"
-import { Input, Popover, Radio, Modal, message } from "antd"
+import { Input, Popover, Radio, Modal } from "antd"
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons"
 import tokenList from "../constants/tokenList.json"
-import { Token, TokenData } from "../constants/Interfaces"
+import { Token } from "../constants/Interfaces"
+
+import { startSwap } from "../sdk/API/front_communication"
 
 interface SwapProps {
     chainIdState: [number, React.Dispatch<React.SetStateAction<number>>];
@@ -12,7 +14,6 @@ interface SwapProps {
 function Swap ({chainIdState, walletState}: SwapProps) {
 
     const [chainId, setChainId] = chainIdState;
-    const [wallet, setWallet] = walletState;
 
     const [slippage, setSlippage] = useState(0.5)
     const [tokenOneAmount, setTokenOneAmount] = useState(0)
@@ -50,7 +51,7 @@ function Swap ({chainIdState, walletState}: SwapProps) {
     }
 
     function commitSwap () {
-        //startSwap(tokenOne.address[chainId], tokenTwo.address[chainId], tokenOneAmount, slippage)
+        startSwap(tokenOne.address[chainId], tokenTwo.address[chainId], tokenOneAmount, slippage)
     }
     
     const settings = (
