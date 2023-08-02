@@ -1,7 +1,9 @@
 import { request } from 'graphql-request'
 import { arbitrumQueries } from './constants/queries'
-import { arbitrumEndpoins } from './constants/endpoints'
+import { arbitrumEndpoins } from './dex/endpoints'
 import { wETH_address, USDC_address } from './constants/tokens'
+
+import { SushiswapQueries } from './dex/Sushiswap'
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -72,12 +74,18 @@ async function updatePools(refreshTime: number = 0) {
 }
 
 async function main() {
-    updatePools(0)
-    while (pools.length == 0) {
-        await sleep(1000)
-    }
+    // updatePools(0)
+    // while (pools.length == 0) {
+    //     await sleep(1000)
+    // }
 
-    console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
+    // console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
+
+    const sushiswapQueries = new SushiswapQueries();
+
+    // Call the allPools method on the instance
+    const result = await sushiswapQueries.allPools(100, 0);
+    console.log(result)
 }
   
 main()
