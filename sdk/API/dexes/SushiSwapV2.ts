@@ -159,8 +159,7 @@ function parseToPoolFunction(response: any): Pool[] {
           supply: pair.reserve1,
           decimals: pair.token1.decimals
         }
-      ],
-      reserveETH: pair.reserveETH
+      ]
     }
     pools.push(pool)
   })

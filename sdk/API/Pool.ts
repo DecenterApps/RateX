@@ -12,5 +12,4 @@ export class Pool {
     dexName: string
     chainId: string
     assets: Asset[]
-    reserveETH: number
 }

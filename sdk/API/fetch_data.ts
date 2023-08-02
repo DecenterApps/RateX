@@ -1,5 +1,7 @@
 import { request } from 'graphql-request'
 import { SushiSwapV2 } from './dexes/SushiSwapV2'
+import { TraderJoeV2 } from './dexes/TraderJoeV2'
+
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 // TESTING FILE
@@ -86,9 +88,9 @@ async function main() {
     // const sushiswapOneToken = await sushiswapQueries.matchOneToken(wETH_address);
 
 
-    const sushiSwapV2 = new SushiSwapV2()
-    const res = await sushiSwapV2.allPools()
-    console.log(res[0])
+    const traderJoeV2 = new TraderJoeV2()
+    const res2 = await traderJoeV2.allPools()
+    console.log(res2)
 }
   
 main()
