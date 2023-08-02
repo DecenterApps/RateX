@@ -1,2 +1,2 @@
-export const wETH_address = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'.toLowerCase()
-export const USDC_address = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'.toLowerCase()
+export const wETH_address = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'.toLowerCase()
+export const USDC_address = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'.toLowerCase()

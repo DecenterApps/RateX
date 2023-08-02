@@ -4,6 +4,8 @@ import { arbitrumEndpoins } from './dex/endpoints'
 import { wETH_address, USDC_address } from './constants/tokens'
 
 import { SushiswapQueries } from './dex/Sushiswap'
+import { UniswapQueries } from './dex/Uniswap'
+
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -82,11 +84,14 @@ async function main() {
 
     // console.log(UniswapV3List(wETH_address, USDC_address, dexNames[1], pools[1]))
 
-    const sushiswapQueries = new SushiswapQueries();
+    const sushiswapQueries = new UniswapQueries();
 
     // Call the allPools method on the instance
-    const result = await sushiswapQueries.allPools(100, 0);
-    console.log(result)
+    const sushiswapPools = await sushiswapQueries.allPools(10, 1);
+    const sushiswapBothTokens = await sushiswapQueries.matchBothTokens(wETH_address, USDC_address);
+    const sushiswapOneToken = await sushiswapQueries.matchOneToken(wETH_address);
+    
+
 }
   
 main()

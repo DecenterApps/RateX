@@ -6,24 +6,27 @@ import { arbitrumEndpoins } from './endpoints';
 export class SushiswapQueries implements Queries {
 
     endpoint = arbitrumEndpoins['SushiswapV2'];
+    _first = 100;
+    _skip = 0;
 
-    async allPools(first: number, skip: number){
+    async allPools(first: number = this._first, skip: number = this._skip){
       return await request(this.endpoint, allPoolsFunction(first, skip));
     }
 
-    async matchBothTokens(token1: string, token2:string){
-        return await request(this.endpoint, matchBothTokensFunction(token1, token2))
+    async matchBothTokens(token0: string, token1:string, first: number = this._first){
+      return await request(this.endpoint, matchBothTokensFunction(token0, token1, first))
     }
 
-    async matchOneToken(token: string){
-        return await request(this.endpoint, matchOneTokenFunction(token))
+    async matchOneToken(token: string, first: number = this._first){
+      return await request(this.endpoint, matchOneTokenFunction(token, first))
     }
 }
 
 function allPoolsFunction(first: number, skip: number){
 
-    return parse(gql`{
-      pairs (first: 100, skip: 0, orderBy: volumeUSD, orderDirection: desc){
+    return parse(gql`
+    {
+      pairs (first: ${first}, skip: ${skip}, orderBy: volumeUSD, orderDirection: desc){
         id
         token0 {
           symbol
@@ -45,69 +48,72 @@ function allPoolsFunction(first: number, skip: number){
   `);
 }
 
-function matchBothTokensFunction(token1: string, token2:string){
+function matchBothTokensFunction(token0: string, token1:string, first: number){
 
-    return parse(gql`{
-        query {
-            pairs(first: 1000, orderBy: volumeUSD, where: {
-              or: [
-                {and: [
-                  { token0: "${token1.toLowerCase()}" },
-                  { token1: "${token2.toLowerCase()}" }
-                  ]},
-                {
-                  and: [
-                  { token0: "${token2.toLowerCase()}" },
-                  { token1: "${token1.toLowerCase()}" }
-                  ]
-                }
+    return parse(gql`
+      {
+        pairs(first: ${first}, orderBy: volumeUSD, where: {
+          or: [
+            {and: [
+              { token0: "${token0.toLowerCase()}" },
+              { token1: "${token1.toLowerCase()}" }
+              ]},
+            {
+              and: [
+              { token0: "${token1.toLowerCase()}" },
+              { token1: "${token0.toLowerCase()}" }
               ]
-              
-            }) {
+            }
+          ]
+          
+        }) {
+        id
+        name
+        token0 {
             id
-            token0 {
-                id
-                symbol
-            }
-            token1 {
-                id
-                symbol
-            }
-            reserve0
-            reserve1
-            reserveETH
-            reserveUSD
-            totalSupply
-            }
+            symbol
         }
-    }`);
+        token1 {
+            id
+            symbol
+        }
+        reserve0
+        reserve1
+        reserveETH
+        reserveUSD
+        totalSupply
+        }
+      }
+    `);
 }
 
-function matchOneTokenFunction(token: string){
+function matchOneTokenFunction(token: string, first: number){
 
-    return parse(gql`{
-        query {
-            pairs(first: 1000, orderBy: volumeUSD, where: {
-              or: [
-                { token0: "${token}" },
-                { token1: "${token}" }
-              ]
-            }) {
-              id
-              token0 {
-                id
-                symbol
-              }
-              token1 {
-                id
-                symbol
-              }
-              reserve0
-              reserve1
-              reserveETH
-              reserveUSD
-              totalSupply
-            }
+    return parse(gql`
+      {
+        pairs(first: ${first}, orderBy: volumeUSD, where: {
+          or: [
+            { token0: "${token}" },
+            { token1: "${token}" }
+          ]
         }
-    }`); 
+        ) {
+          id
+          name
+          token0 {
+            id
+            symbol
+          }
+          token1 {
+            id
+            symbol
+          }
+          reserve0
+          reserve1
+          reserveETH
+          reserveUSD
+          totalSupply
+        }
+      }
+    `); 
 }
