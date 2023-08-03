@@ -69,16 +69,21 @@ function Swap ({chainIdState, walletState}: SwapProps) {
     async function modifyToken (index: number) {
         if (changeToken === 1){
             setTokenOne(tokenList[index])
-            const tokenOnePrice = await getTokenPrice(tokenList[index].ticker, chainId)
-            tokenOnePrice === -1 ? setTokenOnePrice(0) : setTokenOnePrice(tokenOnePrice)
+            const _tokenOnePrice = await getTokenPrice(tokenList[index].ticker, chainId)
+            console.log("Fetched price", _tokenOnePrice, "for", tokenList[index].ticker)
+            setTokenOnePrice(_tokenOnePrice === -1 ? 0 : _tokenOnePrice)
 
-            const tokenTwoAmount = tokenOneAmount * tokenOnePrice / tokenTwoPrice
+            const tokenTwoAmount = tokenOneAmount * _tokenOnePrice / tokenTwoPrice
             setTokenTwoAmount(tokenTwoAmount)
         }
         else{
             setTokenTwo(tokenList[index])
-            const tokenTwoPrice = await getTokenPrice(tokenList[index].ticker, chainId)
-            tokenTwoPrice === -1 ? setTokenOnePrice(0) : setTokenOnePrice(tokenTwoPrice)
+            const _tokenTwoPrice = await getTokenPrice(tokenList[index].ticker, chainId)
+            console.log("Fetched price", _tokenTwoPrice, "for", tokenList[index].ticker)
+            setTokenTwoPrice(_tokenTwoPrice === -1 ? 0 : _tokenTwoPrice)
+
+            const tokenTwoAmount = tokenOneAmount * tokenOnePrice / _tokenTwoPrice
+            setTokenTwoAmount(tokenTwoAmount)
         }
        
         setIsOpen(false)
