@@ -12,8 +12,18 @@ describe("Tests for swaping with sushiswap", async function () {
     async function deploySushiSwapFixture() {
         const [addr1, addr2, addr3] = await hre.ethers.getSigners();
 
-        const SushiSwap = await hre.ethers.getContractFactory("SushiSwapDex", addr1);
-        const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter);
+        const Lib = await hre.ethers.getContractFactory("SushiSwapV2Library");
+        const lib = await Lib.deploy();
+        await lib.waitForDeployment();
+        const libAddr = await lib.getAddress();
+
+        const SushiSwap = await hre.ethers.getContractFactory("SushiSwapDex", {
+            signer: addr1,
+            libraries: {
+                SushiSwapV2Library: libAddr
+            }
+        });
+        const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter, addresses.sushiFactory);
         await sushiSwap.waitForDeployment();
 
         return {sushiSwap, addr1, addr2, addr3};
@@ -33,6 +43,12 @@ describe("Tests for swaping with sushiswap", async function () {
         const daiBalanceBefore = await daiContract.balanceOf(addr1);
         console.log(`Dai balance before: ${daiBalanceBefore}`);
 
+        const sushiSwapFactory = await hre.ethers.getContractAt("ISushiSwapV2Factory", addresses.sushiFactory);
+        const weiDaiAddress = await sushiSwapFactory.getPair(addresses.daiToken, addresses.wethToken);
+        console.log("Wei dai address: ", weiDaiAddress);
+
+        const expectedAmountOut = await sushiSwap.quote(addresses.wethToken, addresses.daiToken, hre.ethers.parseEther("100"));
+
         await sushiSwap.connect(addr1).swap(
             addresses.wethToken,
             addresses.daiToken,
@@ -45,6 +61,9 @@ describe("Tests for swaping with sushiswap", async function () {
         console.log(`Balance in weth after: ${wethBalanceAfter}`);
         const daiBalanceAfter = await daiContract.balanceOf(addr1);
         console.log(`Dai balance after: ${daiBalanceAfter}`);
+        console.log("Expected amount: " + expectedAmountOut);
+
+        expect(daiBalanceAfter).to.equal(expectedAmountOut);
     });
 
     it("Should swap usdc to wei", async function () {
@@ -61,6 +80,9 @@ describe("Tests for swaping with sushiswap", async function () {
         const usdcBalanceBefore = await usdcContract.balanceOf(addr1);
         console.log(`USDC balance before: ${usdcBalanceBefore}`);
 
+
+        const expectedAmountOut = await sushiSwap.quote(addresses.usdcToken, addresses.wethToken, "1000000000");
+
         await sushiSwap.connect(addr1).swap(
             addresses.usdcToken,
             addresses.wethToken,
@@ -73,5 +95,7 @@ describe("Tests for swaping with sushiswap", async function () {
         console.log(`Balance in weth after: ${wethBalanceAfter}`);
         const usdcBalanceAfter = await usdcContract.balanceOf(addr1);
         console.log(`Usdc balance after: ${usdcBalanceAfter}`);
+
+        expect(wethBalanceAfter).to.equal(expectedAmountOut);
     });
 });

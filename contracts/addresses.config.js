@@ -6,6 +6,7 @@ const config = {
         usdtToken: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
         usdcToken: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
         sushiRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+        sushiFactory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
         curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353" // USDC USDT pool
     }
 }
