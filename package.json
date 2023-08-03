@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "postinstall": "(cd UI && npm install); (cd UI/src/sdk && npm install)",
+    "start": "npm run --prefix ./UI start"
+  }
+}
