@@ -57,8 +57,8 @@ function Swap ({chainIdState, walletState}: SwapProps) {
         setTokenTwoPrice(tempPrice)
 
         // doing it the opposite direction because the state values have not been updated until the next render
-        const newTokenTwoAmount = tokenTwoAmount * tokenTwoPrice / tokenOnePrice
-        setTokenTwoAmount(newTokenTwoAmount)
+        const tokenTwoAmount = tokenOneAmount * tokenTwoPrice / tokenOnePrice
+        setTokenTwoAmount(tokenTwoAmount)
     }
 
     function openModal (token: number) {
