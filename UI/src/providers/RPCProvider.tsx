@@ -10,7 +10,7 @@ const alchemyMainnetEndpoint = `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_K
 // Optimism Endpoints
 const optimismEndpoint = 'https://mainnet.optimism.io'
 
-function initAlchemyProvider(): Web3 {
+function initArbitrumProvider(): Web3 {
 
     try {
         return new Web3(new Web3.providers.HttpProvider(abritrumOneEndpoint))
@@ -29,9 +29,9 @@ function initRPCProvider(chainId: number): Web3 | undefined {
     if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) 
         return new Web3(window.ethereum);
     else if (chainId === 42161) 
-        initAlchemyProvider()
+        return initArbitrumProvider()
     else
-        initOptimismProvider()
+        return initOptimismProvider()
 }
 
 export default initRPCProvider
