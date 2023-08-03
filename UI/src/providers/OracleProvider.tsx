@@ -21,7 +21,6 @@ function contractFactory(tokenTicker: string, chainId: number) {
 async function getTokenPrice(tokenTicker: string, chainId: number): Promise<number> {
   try {
     const oracleContract = contractFactory(tokenTicker, chainId)
-    console.log(oracleContract)
     let value = await oracleContract.methods.latestAnswer().call()
     // @ts-ignore
     let convertedValue = new Decimal(value.toString()).div(10 ** 8)

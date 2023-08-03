@@ -43,7 +43,7 @@ function Swap ({chainIdState, walletState}: SwapProps) {
     function changeAmount (e: any) {
         setTokenOneAmount(e.target.value)
         // constant conversion between token1 and token2 amounts
-        const tokenTwoAmount = tokenOneAmount * tokenOnePrice / tokenTwoPrice
+        const tokenTwoAmount = e.target.value * tokenOnePrice / tokenTwoPrice
         setTokenTwoAmount(tokenTwoAmount)
     }
 
