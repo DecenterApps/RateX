@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# private keys for RPC providers
+src/providers/keys.tsx
