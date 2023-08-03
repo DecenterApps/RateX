@@ -175,8 +175,8 @@ function routeSwap(amountA: number, tokenAddressA: string, tokenAddressB: string
 */
 
 //
-//  directSwap(0.01, '', '')
+//  // directSwap(0.01, '', '')
 //
-//  // routeSwap(0.01, 'a', 'c')
+//  routeSwap(0.01, 'a', 'c')
 
 export {}
