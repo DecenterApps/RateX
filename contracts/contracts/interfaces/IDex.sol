@@ -9,5 +9,7 @@ interface IDex {
         uint _amountIn,
         uint _amountOutMin,
         address _to
-    ) external;
+    ) external returns(uint amountOut);
+
+    function quote(address _tokenIn, address _tokenOut, uint _amountIn) external view returns(uint amountOut);
 }
