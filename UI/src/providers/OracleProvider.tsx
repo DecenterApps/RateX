@@ -1,48 +1,48 @@
-import Web3 from 'web3';
 import Decimal from 'decimal.js';
 import { OracleData } from '../constants/Interfaces';
 import oracleToUSDList from '../constants/oracleToUSDList.json';
-
-const web3 = new Web3(window.ethereum);
+import initRPCProvider from './RPCProvider';
 
 const oracleToUSDListData: OracleData = oracleToUSDList;
+const ABI = [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
 
-function contractFactory(tokenName: string, chainId: number) {
-  const tokenData = oracleToUSDListData.oracles.find((token) => token.ticker === tokenName);
-  if (!tokenData) {
-    throw new Error(`Token "${tokenName}" not found in the JSON data.`);
+function contractFactory(tokenTicker: string, chainId: number) {
+  const oracleData = oracleToUSDListData.oracles.find((token) => token.ticker === tokenTicker);
+  if (!oracleData) {
+    throw new Error(`Token "${tokenTicker}" not found in the JSON data.`);
   }
 
-  const abi = tokenData.ABI;
-  const contractAddress = tokenData.address[chainId];
-  return new web3.eth.Contract(abi, contractAddress);
+  const contractAddress = oracleData.address[chainId];
+  const web3 = initRPCProvider(chainId);
+  // @ts-ignore
+  return new web3.eth.Contract(ABI, contractAddress);
 }
 
-async function getTokenPrice(tokenName: string, chainId: number) {
+async function getTokenPrice(tokenTicker: string, chainId: number): Promise<number> {
   try {
-    const oracleContract = contractFactory(tokenName, chainId)
+    const oracleContract = contractFactory(tokenTicker, chainId)
     let value = await oracleContract.methods.latestAnswer().call()
+    // @ts-ignore
+    let convertedValue = new Decimal(value.toString()).div(10 ** 8)
+    return convertedValue.toNumber()
 
-    if(value !== null && typeof value === 'string') {
-        // @ts-ignore
-        let convertedValue = new Decimal(value.toString()).div(10 ** 8)
-        return convertedValue.toNumber()
-    } 
-  } catch {
+  } catch (error) {
     console.error("Error fetching token price")
     return -1
   }
+
 }
 
-async function convertTokenAmountToUSD(amount: number, tokenName: string, chainId: number) {
+// not using this but we might need this in the future
+async function convertTokenAmountToUSD(amount: number, tokenTicker: string, chainId: number) {
   try {
-    let USDValue = await getTokenPrice(tokenName, chainId)
+    let USDValue = await getTokenPrice(tokenTicker, chainId)
     // @ts-ignore
-    return USDValue !== null ? USDValue * amount : -1   
+    return USDValue !== -1 ? USDValue * amount : -1   
   } catch {
     console.error("Error fetching the amount in USD")
     return -1
   }
 }
 
-export default convertTokenAmountToUSD;
+export { getTokenPrice };

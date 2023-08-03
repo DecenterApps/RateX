@@ -169,7 +169,7 @@
               "42161": "0x6ce185860a4963106506C203335A2910413708e9",
               "10": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "BUSD",
@@ -241,7 +241,7 @@
               "42161": "0xaebDA2c976cfd1eE1977Eac079B4382acb849325",
               "10": "0xbD92C6c284271c227a1e0bF1786F468b539f51D9"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "CSPR",
@@ -286,7 +286,7 @@
               "42161": "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB",
               "10": "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "DODO",
@@ -295,7 +295,7 @@
               "42161": "0xA33a06c119EC08F92735F9ccA37e07Af08C4f281",
               "10": ""
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "DOGE",
@@ -367,7 +367,7 @@
               "42161": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
               "10": "0x13e3Ee699D1909E989722E753853AE30b17e08c5"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "EUR",
@@ -610,7 +610,7 @@
               "42161": "0x86E53CF1B870786351Da77A57575e79CB55812CB",
               "10": "0xCc232dcFAAE6354cE191Bd574108c1aD03f86450"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "LTC",
@@ -646,7 +646,7 @@
               "42161": "0x52099D4523531f678Dfc568a7B1e5038aadcE1d6",
               "10": "0x0ded608AFc23724f614B76955bbd9dFe7dDdc828"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "MIM",
@@ -664,7 +664,7 @@
               "42161": "0xdE9f0894670c4EFcacF370426F10C3AD2Cdf147e",
               "10": "0x607b417DF51e0E1ed3A12fDb7FC0e8307ED250F3"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "MSFT",
@@ -925,7 +925,7 @@
               "42161": "0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720",
               "10": "0x11429eE838cC01071402f21C219870cbAc0a59A0"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "USDC",
@@ -934,7 +934,7 @@
               "42161": "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3",
               "10": "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "USDD",
@@ -961,7 +961,7 @@
               "42161": "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7",
               "10": "0xECef79E109e997bCA29c1c0897ec9d7b03647F5E"
           },
-          "ABI": []
+          "ABI": [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
       },
       {
           "ticker": "WING",

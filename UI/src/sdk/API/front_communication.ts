@@ -23,15 +23,16 @@ function getAdditionalPools(): void {
 
 }
 
-async function startSwap(token1: string, token2: string, tokenOneAmount: number, slippage: number): Promise<void> {
+async function initGetQuote(token1: string, token2: string, tokenOneAmount: number, slippage: number): Promise<void> {
 
     // TO-DO: get additional pools from each dex in initialisedDexes list
 
-    // for now: just get a pools for inputed tokens
+    // for now: send addresses of 2 tokens to our contract
+    // returns: reserve1, reserve2, expectedAmountOut
     initialisedDexes.forEach(async (dex) => {
         const poolIds = await dex.matchBothTokens(token1, token2)
         console.log(poolIds)
     })
 }
 
-export { getTopPools, startSwap }
+export { getTopPools, initGetQuote }
