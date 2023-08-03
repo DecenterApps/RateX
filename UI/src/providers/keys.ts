@@ -1,0 +1,1 @@
+export const ALCHEMY_KEY = "YOUR_PRIVATE_ALCHEMY_KEY"
