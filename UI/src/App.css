@@ -145,8 +145,19 @@ header {
   cursor: pointer;
 }
 
+.tokenOneAmountUSD {
+  color: #888; 
+  font-size: 14px; 
+  margin-top: 2px;
+  padding-left: 4px;
+  align-self: flex-start;
+}
+
 .inputs {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .assetOne {
