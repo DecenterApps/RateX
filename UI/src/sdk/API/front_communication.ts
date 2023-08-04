@@ -1,5 +1,9 @@
 import { DEXFunctionality } from "./DEXFunctionalityIF"
 import { SushiSwapV2 } from "./dexes/SushiSwapV2"
+import {RateXContract} from "../../contracts/RateX";
+import Web3 from "web3";
+import initRPCProvider from "../../providers/RPCProvider";
+const web3: Web3 = initRPCProvider(42161);
 
 const initialisedDexes: DEXFunctionality[] = []
 const topPoolsIds: string[] = []
@@ -23,16 +27,13 @@ function getAdditionalPools(): void {
 
 }
 
-async function initGetQuote(token1: string, token2: string, tokenOneAmount: number, slippage: number): Promise<void> {
-
-    // TO-DO: get additional pools from each dex in initialisedDexes list
-
-    // for now: send addresses of 2 tokens to our contract
-    // returns: reserve1, reserve2, expectedAmountOut
-    initialisedDexes.forEach(async (dex) => {
-        const poolIds = await dex.matchBothTokens(token1, token2)
-        console.log(poolIds)
-    })
+async function initGetQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<void> {
+    // @ts-ignore
+    const res = await RateXContract.methods.quote("SUSHI_V2", token1, token2, tokenOneAmount)
+        .call({}).catch((error) => {
+            console.log(error);
+        });
+    console.log(res);
 }
 
 export { getTopPools, initGetQuote }

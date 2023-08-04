@@ -23,7 +23,7 @@ function initOptimismProvider(): Web3 {
     return new Web3(new Web3.providers.HttpProvider(optimismEndpoint))
 }
 
-function initRPCProvider(chainId: number): Web3 | undefined {
+function initRPCProvider(chainId: number): Web3 {
 
     // check if metamask is connected
     if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) 

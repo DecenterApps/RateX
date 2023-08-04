@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react"
-import { Input, Popover, Radio, Modal } from "antd"
-import { ArrowDownOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons"
+import {useEffect, useState} from "react"
+import {Input, Popover, Radio, Modal} from "antd"
+import {ArrowDownOutlined, DownOutlined, SettingOutlined} from "@ant-design/icons"
 import tokenList from "../constants/tokenList.json"
-import { Token } from "../constants/Interfaces"
-import { getTokenPrice } from "../providers/OracleProvider"
-
-import { initGetQuote } from "../sdk/API/front_communication"
+import {Token} from "../constants/Interfaces"
+import {getTokenPrice} from "../providers/OracleProvider"
+import {initGetQuote} from "../sdk/API/front_communication"
+import Web3 from "web3";
+import initRPCProvider from "../providers/RPCProvider";
+const web3: Web3 = initRPCProvider(42161);
 
 interface SwapProps {
     chainIdState: [number, React.Dispatch<React.SetStateAction<number>>];
     walletState: [string, React.Dispatch<React.SetStateAction<string>>];
 }
 
-function Swap ({chainIdState, walletState}: SwapProps) {
+function Swap({chainIdState, walletState}: SwapProps) {
 
     const [chainId, setChainId] = chainIdState;
 
@@ -27,28 +29,29 @@ function Swap ({chainIdState, walletState}: SwapProps) {
     const [changeToken, setChangeToken] = useState(1)
 
     useEffect(() => {
-        async function getPrices () {
+        async function getPrices() {
             const tokenOnePrice = await getTokenPrice(tokenOne.ticker, chainId)
             tokenOnePrice === -1 ? setTokenOnePrice(0) : setTokenOnePrice(tokenOnePrice)
             const tokenTwoPrice = await getTokenPrice(tokenTwo.ticker, chainId)
             tokenTwoPrice === -1 ? setTokenOnePrice(0) : setTokenTwoPrice(tokenTwoPrice)
         }
+
         getPrices()
     }, [])
 
-    function handleSlippage (e: any) {
+    function handleSlippage(e: any) {
         setSlippage(e.target.value)
     }
 
-    function changeAmount (e: any) {
+    function changeAmount(e: any) {
         setTokenOneAmount(e.target.value)
         // constant conversion between token1 and token2 amounts
         const tokenTwoAmount = e.target.value * tokenOnePrice / tokenTwoPrice
         setTokenTwoAmount(tokenTwoAmount)
     }
 
-    function switchTokens () {
-        const tempToken = tokenOne   
+    function switchTokens() {
+        const tempToken = tokenOne
         setTokenOne(tokenTwo)
         setTokenTwo(tempToken)
 
@@ -61,13 +64,13 @@ function Swap ({chainIdState, walletState}: SwapProps) {
         setTokenTwoAmount(tokenTwoAmount)
     }
 
-    function openModal (token: number) {
+    function openModal(token: number) {
         setChangeToken(token)
         setIsOpen(true)
     }
 
-    async function modifyToken (index: number) {
-        if (changeToken === 1){
+    async function modifyToken(index: number) {
+        if (changeToken === 1) {
             setTokenOne(tokenList[index])
             const _tokenOnePrice = await getTokenPrice(tokenList[index].ticker, chainId)
             console.log("Fetched price", _tokenOnePrice, "for", tokenList[index].ticker)
@@ -75,8 +78,7 @@ function Swap ({chainIdState, walletState}: SwapProps) {
 
             const tokenTwoAmount = tokenOneAmount * _tokenOnePrice / tokenTwoPrice
             setTokenTwoAmount(tokenTwoAmount)
-        }
-        else{
+        } else {
             setTokenTwo(tokenList[index])
             const _tokenTwoPrice = await getTokenPrice(tokenList[index].ticker, chainId)
             console.log("Fetched price", _tokenTwoPrice, "for", tokenList[index].ticker)
@@ -85,27 +87,28 @@ function Swap ({chainIdState, walletState}: SwapProps) {
             const tokenTwoAmount = tokenOneAmount * tokenOnePrice / _tokenTwoPrice
             setTokenTwoAmount(tokenTwoAmount)
         }
-       
+
         setIsOpen(false)
     }
 
     function getQuote() {
-        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], tokenOneAmount, slippage)
+        const amount = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
+        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount);
     }
 
-    function commitSwap () {
+    function commitSwap() {
     }
-    
+
     const settings = (
         <>
-        <div> Slippage Tolerance </div>
-        <div>
-            <Radio.Group value={slippage} onChange={handleSlippage}>
-                <Radio.Button value={0.1}> 0.1 </Radio.Button>
-                <Radio.Button value={0.5}> 0.5% </Radio.Button>
-                <Radio.Button value={1}> 1% </Radio.Button>
-            </Radio.Group>
-        </div>
+            <div> Slippage Tolerance</div>
+            <div>
+                <Radio.Group value={slippage} onChange={handleSlippage}>
+                    <Radio.Button value={0.1}> 0.1 </Radio.Button>
+                    <Radio.Button value={0.5}> 0.5% </Radio.Button>
+                    <Radio.Button value={1}> 1% </Radio.Button>
+                </Radio.Group>
+            </div>
         </>
     )
 
