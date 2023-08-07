@@ -55,12 +55,12 @@ header {
 
 .chooseChain,
 .connectButton {
-  background-color: #243056; 
+  /*background-color: #243056; */
   padding: 10px;
   padding-right: 20px;
   padding-left: 20px;
-  border-radius: 100px;
-  color: #5981F3;
+  border-radius: 10px;
+  /*color: #5981F3;*/
   font-weight: bold;
   transition: 0.3s;
 }
@@ -70,6 +70,13 @@ header {
   cursor: pointer;
   color: #3b4874
 }
+
+.chainLogo {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
 
 .mainWindow {
   margin-top: 40px;
