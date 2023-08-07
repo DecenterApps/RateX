@@ -19,12 +19,12 @@ function Swap({chainIdState, walletState}: SwapProps) {
     const [chainId, setChainId] = chainIdState;
 
     const [slippage, setSlippage] = useState(0.5)
-    const [tokenOneAmount, setTokenOneAmount] = useState(0)
+    const [tokenOneAmount, setTokenOneAmount] = useState<number>(0)
     const [tokenOnePrice, setTokenOnePrice] = useState(0)
     const [tokenTwoAmount, setTokenTwoAmount] = useState(0)
     const [tokenTwoPrice, setTokenTwoPrice] = useState(0)
-    const [tokenOne, setTokenOne] = useState<Token>(tokenList[0])
-    const [tokenTwo, setTokenTwo] = useState<Token>(tokenList[1])
+    const [tokenOne, setTokenOne] = useState<Token>(tokenList[3])
+    const [tokenTwo, setTokenTwo] = useState<Token>(tokenList[4])
     const [isOpen, setIsOpen] = useState(false)
     const [changeToken, setChangeToken] = useState(1)
 
@@ -35,7 +35,6 @@ function Swap({chainIdState, walletState}: SwapProps) {
             const tokenTwoPrice = await getTokenPrice(tokenTwo.ticker, chainId)
             tokenTwoPrice === -1 ? setTokenOnePrice(0) : setTokenTwoPrice(tokenTwoPrice)
         }
-
         getPrices()
     }, [])
 
@@ -99,6 +98,23 @@ function Swap({chainIdState, walletState}: SwapProps) {
         setIsOpen(false)
     }
 
+    function calculatePriceImpact(): number {
+        let tokenOneMarketPrice = tokenOneAmount * tokenOnePrice
+        let tokenTwoMarketPrice = tokenTwoAmount * tokenTwoPrice
+        let percentage = 100.0 * tokenTwoMarketPrice / tokenOneMarketPrice
+        if(isNaN(percentage)) return 0
+        return percentage - 100
+    }
+
+    function priceImpactColor(): string {
+        const impact = calculatePriceImpact()
+        if(impact > -1) return "#339900"
+        if(impact > -3) return "#99cc33"
+        if(impact > -5) return "#ffcc00"
+        if(impact > -15) return "#ff9966"
+        return "#cc3300"
+    }
+
     function getQuote() {
         if (tokenOneAmount <= 0 || isNaN(tokenOneAmount)) {
             setTokenTwoAmount(0)
@@ -124,7 +140,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
                 <Radio.Group value={slippage} onChange={handleSlippage}>
                     <Radio.Button value={0.1}> 0.1% </Radio.Button>
                     <Radio.Button value={0.5}> 0.5% </Radio.Button>
-                    <Radio.Button value={1.0}> 1.0%  </Radio.Button>
+                    <Radio.Button value={1.0}> 1.0% </Radio.Button>
                 </Radio.Group>
             </div>
         </>
@@ -162,7 +178,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
                 </div>
                 <Input placeholder="0" value={tokenTwoAmount.toFixed(4)} disabled={true} />
                 <div className="tokenTwoAmountUSD">
-                    {`$${(tokenTwoAmount * tokenTwoPrice).toFixed(4)} (${'price impact %'})`} 
+                    {`$${(tokenTwoAmount * tokenTwoPrice).toFixed(4)}`} (<span style={{color:priceImpactColor()}}>{calculatePriceImpact().toFixed(2)}%</span>)
                 </div>
                 <div className="assetOne" onClick={() => openModal(1)}>
                     <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo"/>
