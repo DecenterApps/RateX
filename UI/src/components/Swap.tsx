@@ -4,7 +4,7 @@ import {ArrowDownOutlined, DownOutlined, SettingOutlined} from "@ant-design/icon
 import tokenList from "../constants/tokenList.json"
 import {Token} from "../constants/Interfaces"
 import {getTokenPrice} from "../providers/OracleProvider"
-import {initGetQuote} from "../sdk/API/front_communication"
+import {initGetQuote} from "../sdk/quoter/front_communication"
 import Web3 from "web3";
 import initRPCProvider from "../providers/RPCProvider";
 const web3: Web3 = initRPCProvider(42161);
@@ -121,11 +121,11 @@ function Swap({chainIdState, walletState}: SwapProps) {
             return
         }
         const amount = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
-        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount)
-            .then((value) => {
+        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount, chainId)
+            .then((value: bigint) => {
                 setTokenTwoAmount(Number(value) / (10 ** tokenTwo.decimals))
             })
-            .catch((error) => {
+            .catch((error: string) => {
                 console.log(error)
             })
     }
