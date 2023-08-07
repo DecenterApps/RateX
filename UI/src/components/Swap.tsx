@@ -39,15 +39,23 @@ function Swap({chainIdState, walletState}: SwapProps) {
         getPrices()
     }, [])
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+          getQuote()
+        }, 5000)
+        return () => clearInterval(interval)
+      }, [tokenOneAmount, tokenOne, tokenTwo])
+
+    useEffect(() => {
+        getQuote()
+    }, [tokenOneAmount, tokenOne, tokenTwo])
+
     function handleSlippage(e: any) {
         setSlippage(e.target.value)
     }
 
     function changeAmount(e: any) {
         setTokenOneAmount(e.target.value)
-        // constant conversion between token1 and token2 amounts
-        const tokenTwoAmount = e.target.value * tokenOnePrice / tokenTwoPrice
-        setTokenTwoAmount(tokenTwoAmount)
     }
 
     function switchTokens() {
@@ -92,8 +100,18 @@ function Swap({chainIdState, walletState}: SwapProps) {
     }
 
     function getQuote() {
+        if (tokenOneAmount <= 0 || isNaN(tokenOneAmount)) {
+            setTokenTwoAmount(0)
+            return
+        }
         const amount = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
-        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount);
+        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount)
+            .then((value) => {
+                setTokenTwoAmount(Number(value) / (10 ** tokenTwo.decimals))
+            })
+            .catch((error) => {
+                console.log(error)
+            })
     }
 
     function commitSwap() {
@@ -104,9 +122,9 @@ function Swap({chainIdState, walletState}: SwapProps) {
             <div> Slippage Tolerance</div>
             <div>
                 <Radio.Group value={slippage} onChange={handleSlippage}>
-                    <Radio.Button value={0.1}> 0.1 </Radio.Button>
+                    <Radio.Button value={0.1}> 0.1% </Radio.Button>
                     <Radio.Button value={0.5}> 0.5% </Radio.Button>
-                    <Radio.Button value={1}> 1% </Radio.Button>
+                    <Radio.Button value={1.0}> 1.0%  </Radio.Button>
                 </Radio.Group>
             </div>
         </>
@@ -143,6 +161,9 @@ function Swap({chainIdState, walletState}: SwapProps) {
                     {`$${(tokenOneAmount * tokenOnePrice).toFixed(4)}`} 
                 </div>
                 <Input placeholder="0" value={tokenTwoAmount.toFixed(4)} disabled={true} />
+                <div className="tokenTwoAmountUSD">
+                    {`$${(tokenTwoAmount * tokenTwoPrice).toFixed(4)} (${'price impact %'})`} 
+                </div>
                 <div className="assetOne" onClick={() => openModal(1)}>
                     <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo"/>
                     {tokenOne.ticker}
@@ -156,7 +177,6 @@ function Swap({chainIdState, walletState}: SwapProps) {
                     {tokenTwo.ticker}
                     <DownOutlined />
                 </div>
-                <button className="swapButton" onClick={getQuote} disabled={!tokenOneAmount}> Get Quote </button>
                 <button className="swapButton" onClick={commitSwap} disabled={true}>Swap</button>
             </div>
         </div>

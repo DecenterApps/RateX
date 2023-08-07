@@ -152,7 +152,7 @@ header {
   cursor: pointer;
 }
 
-.tokenOneAmountUSD {
+.tokenOneAmountUSD, .tokenTwoAmountUSD {
   color: #888; 
   font-size: 14px; 
   margin-top: 2px;

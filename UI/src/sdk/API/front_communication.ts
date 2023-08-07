@@ -27,13 +27,13 @@ function getAdditionalPools(): void {
 
 }
 
-async function initGetQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<void> {
+async function initGetQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<bigint> {
     // @ts-ignore
     const res = await RateXContract.methods.quote("SUSHI_V2", token1, token2, tokenOneAmount)
         .call({}).catch((error) => {
             console.log(error);
-        });
-    console.log(res);
+        })
+    return web3.utils.toBigInt(res)
 }
 
 export { getTopPools, initGetQuote }
