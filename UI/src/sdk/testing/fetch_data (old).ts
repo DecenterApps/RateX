@@ -1,6 +1,7 @@
+/* 
 import { request } from 'graphql-request'
-import { SushiSwapV2 } from "../dexes_graph/SushiSwapV2"
-import { TraderJoeV2 } from '../dexes_graph/TraderJoeV2'
+import SushiSwapV2 from "../dexes_graph/SushiSwapV2"
+import TraderJoeV2 from '../dexes_graph/TraderJoeV2'
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -94,3 +95,6 @@ async function main() {
 }
   
 main()
+
+*/
+export {}

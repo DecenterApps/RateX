@@ -3,39 +3,69 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
-export class TraderJoeV2 implements DEXGraphFunctionality {
+export default class TraderJoeV2 implements DEXGraphFunctionality {
 
   endpoint: string = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arbitrum"
 
-  initialise(): DEXGraphFunctionality {
+  static initialise(): DEXGraphFunctionality {
     return new TraderJoeV2()
   }
 
-  async topPools(): Promise<string[]> {
-    const poolIds: string[] = []
-    const result = await request(this.endpoint, topPoolsFunction(100));
+  async topPools(numPools: number): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]> {
+    const poolIds: {
+      poolId: string;
+      dexId: string;
+      token0: string;
+      token1: string;
+    }[] = []
+    const result = await request(this.endpoint, topPoolsFunction(numPools));
     result.pairs.forEach((pair: any) => {
-      poolIds.push(pair.id)
+      poolIds.push({
+        poolId: pair.id,
+        dexId: 'TraderJoeV2',
+        token0: pair.tokenX.id,
+        token1: pair.tokenY.id
+      })
     })
 
     return poolIds
   }
 
-  async matchBothTokens(token1: string, token2: string, first: number): Promise<{ [dex: string]: string[] }> {
-    const poolIds: string[] = [];
+  async matchBothTokens(token1: string, token2: string, first: number): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]> {
+    const poolIds: {
+      poolId: string;
+      dexId: string;
+      token0: string;
+      token1: string;
+    }[] = []
     const result = await request(this.endpoint, matchBothTokensFunction(token1, token2, first));
     result.pairs.forEach((pair: any) => {
-        poolIds.push(pair.id);
-    });
+      poolIds.push({
+        poolId: pair.id,
+        dexId: 'TraderJoeV2',
+        token0: pair.tokenX.id,
+        token1: pair.tokenY.id
+      })
+    })
 
-    return {'TraderJoeV2': poolIds }
+    return poolIds
   }
 
-  async matchOneToken(token: string): Promise<string[]>  {
-    const poolIds: string[] = []
-    const result = await request(this.endpoint, matchOneTokenFunction(token));
+  async matchOneToken(token: string, first: number): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]>  {
+    const poolIds: {
+      poolId: string;
+      dexId: string;
+      token0: string;
+      token1: string;
+    }[] = []
+    const result = await request(this.endpoint, matchOneTokenFunction(token, first));
     result.pairs.forEach((pair: any) => {
-      poolIds.push(pair.id)
+      poolIds.push({
+        poolId: pair.id,
+        dexId: 'TraderJoeV2',
+        token0: pair.tokenX.id,
+        token1: pair.tokenY.id
+      })
     })
 
     return poolIds
@@ -109,10 +139,10 @@ function matchBothTokensFunction(token1: string, token2:string, first:number): T
     }`);
 }
 
-function matchOneTokenFunction(token: string): TypedDocumentNode<any, Record<string, unknown>> {
+function matchOneTokenFunction(token: string, first: number): TypedDocumentNode<any, Record<string, unknown>> {
     
     return parse(gql`{
-      lbpairs(orderBy: volumeUSD, orderDirection: desc, where: {
+      lbpairs(first: ${first}, orderBy: volumeUSD, orderDirection: desc, where: {
         or: [
           { tokenX_: "${token.toLowerCase()}" },
           { tokenY_: "${token.toLowerCase()}" }
