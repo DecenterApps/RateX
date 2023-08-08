@@ -31,13 +31,18 @@ async function initializeDexes(): Promise<void> {
 *   UniswapV3: [poolId1, poolId2, ...],
 *   SushiSwapV2: [poolId1, poolId2, ...]
 */
-async function getPoolIdsForTokenPairs(token1: string, token2: string): Promise<DexPool[]> {
+async function getPoolIdsForTokenPairs(token1: string, token2: string, numPools: number = 3, amountIn: number = -1): Promise<DexPool[]> {
 
     const dexPools: DexPool[] = []
     
+    if (initializedDexes.length === 0) {
+        await initializeDexes()
+    }
+
     for (const dex of initializedDexes) {
-        const poolInfo = await dex.matchBothTokens(token1, token2, 3);
+        const poolInfo = await dex.matchBothTokens(token1, token2, numPools);
         dexPools.push(...poolInfo.map((pool: any): DexPool => {
+            console.log(pool)
             return {
                 poolId: pool.poolId,
                 dexId: pool.dexId,
@@ -48,10 +53,14 @@ async function getPoolIdsForTokenPairs(token1: string, token2: string): Promise<
         }));
     }
 
+    dexPools.forEach((pool) => {
+        pool.amountIn = amountIn;
+    })
+
     return dexPools;
 }
 
-async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<DexPool[]> {
+async function getPoolIdsForToken(token: string, numPools: number = 5, amountIn: number = -1): Promise<DexPool[]> {
     const dexPools: DexPool[] = []
 
     for (const dex of initializedDexes) {
@@ -67,10 +76,14 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
         }));
     }
 
+    dexPools.forEach((pool) => {
+        pool.amountIn = amountIn;
+    })
+
     return dexPools;
 }
 
-async function getTopPools(numPools: number = 5): Promise<DexPool[]> {
+async function getTopPools(numPools: number = 5, amountIn: number = -1): Promise<DexPool[]> {
     /* 
     // Get top pools from each dex in initializedDexes list
     initializedDexes.forEach(async (dex) => {
@@ -94,6 +107,10 @@ async function getTopPools(numPools: number = 5): Promise<DexPool[]> {
         }));
     }
 
+    dexPools.forEach((pool) => {
+        pool.amountIn = amountIn;
+    })
+
     return dexPools;
 }
 
@@ -105,11 +122,6 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, amountIn: numb
     dexPools.push(...await getPoolIdsForToken(tokenFrom, numPools))
     dexPools.push(...await getPoolIdsForToken(tokenTo, numPools))
     dexPools.push(...await getTopPools(numPools));
-
-    // define amountIn for every dexPool
-    dexPools.forEach((pool) => {
-        pool.amountIn = amountIn;
-    })
 
     return dexPools;
 }
@@ -124,4 +136,4 @@ async function initGetQuote(token1: string, token2: string, tokenOneAmount: bigi
     return web3.utils.toBigInt(0)
 }
 
-export { getTopPools, initGetQuote, fetchPoolsData }
+export { getTopPools, initGetQuote, fetchPoolsData, getPoolIdsForTokenPairs }

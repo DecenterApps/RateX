@@ -93,7 +93,7 @@ function topPoolsFunction(first: number): TypedDocumentNode<any, Record<string, 
 function matchBothTokensFunction(token1: string, token2:string, first:number): TypedDocumentNode<any, Record<string, unknown>>{
 
     return parse(gql`{
-        first: ${first}, liquidityPools(orderDirection: desc, orderBy: cumulativeVolumeUSD, where: {
+        liquidityPools(first: ${first}, orderDirection: desc, orderBy: cumulativeVolumeUSD, where: {
           and: [
             {inputTokens_: {id: "${token1.toLowerCase()}"}},
             {inputTokens_: {id: "${token2.toLowerCase()}"}}
