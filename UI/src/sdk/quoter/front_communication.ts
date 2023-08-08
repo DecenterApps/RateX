@@ -1,8 +1,7 @@
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality';
 import initRPCProvider from "../../providers/RPCProvider";
 
-const initializedDexes: DEXGraphFunctionality[] = []
-const topPoolsIds: string[] = []
+let initializedDexes: DEXGraphFunctionality[] = []
 type DexPool = {
     poolId: string;
     dexId: string;
@@ -13,13 +12,15 @@ type DexPool = {
 
 async function initializeDexes(): Promise<void> {
     try {
+
+        initializedDexes = []
         // IMPORTANT: for later -> go through folder and init every dex 
         // const files = await fs.promises.readdir('../sdk/dexes_graph')
         const files = ['SushiSwapV2.ts', 'UniswapV3.ts']
         for (const file of files) {
             if (file.endsWith('.ts')) {
                 const module = await import(`../dexes_graph/${file}`)
-                initializedDexes.push(module.default.initialise())
+                initializedDexes.push(module.default.initialize())
             }
         }
     } catch (err) {
@@ -42,7 +43,6 @@ async function getPoolIdsForTokenPairs(token1: string, token2: string, numPools:
     for (const dex of initializedDexes) {
         const poolInfo = await dex.matchBothTokens(token1, token2, numPools);
         dexPools.push(...poolInfo.map((pool: any): DexPool => {
-            console.log(pool)
             return {
                 poolId: pool.poolId,
                 dexId: pool.dexId,
