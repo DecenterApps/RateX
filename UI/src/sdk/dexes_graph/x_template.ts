@@ -1,59 +1,47 @@
 import { parse } from 'graphql';
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality';
+import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 
-export class DEXName implements DEXGraphFunctionality {
+export default class DEXName implements DEXGraphFunctionality {
 
     endpoint = ""
 
-    static initialise(): DEXGraphFunctionality {
+    static initialize(): DEXGraphFunctionality {
         return new DEXName()
     }
 
-    async topPools(): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]> {
-        const poolIds: {
-          poolId: string;
-          dexId: string;
-          token0: string;
-          token1: string;
-        }[] = []
+    async topPools(): Promise<PoolInfo[]> {
+        
+        const poolsInfo: PoolInfo[] = []
         const result = await request(this.endpoint, topPoolsFunction(100));
         result.pairs.forEach((pair: any) => {
-          poolIds.push(pair.id)
+            poolsInfo.push(pair.id)
         })
     
-        return poolIds
+        return poolsInfo
     }
     
-    async matchBothTokens(token1: string, token2: string, first: number): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]> {
-        const poolIds: {
-          poolId: string;
-          dexId: string;
-          token0: string;
-          token1: string;
-        }[] = []
+    async matchBothTokens(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
+        
+        const poolsInfo: PoolInfo[] = []
         const result = await request(this.endpoint, matchBothTokensFunction(token1, token2, first));
         result.pairs.forEach((pair: any) => {
-            poolIds.push(pair.id);
+            poolsInfo.push(pair.id);
         });
     
-        return poolIds
+        return poolsInfo
     }
     
-    async matchOneToken(token: string): Promise<{poolId: string; dexId: string; token0: string; token1: string;}[]> {
-        const poolIds: {
-          poolId: string;
-          dexId: string;
-          token0: string;
-          token1: string;
-        }[] = []
+    async matchOneToken(token: string): Promise<PoolInfo[]> {
+        
+        const poolsInfo: PoolInfo[] = []
         const result = await request(this.endpoint, matchOneTokenFunction(token));
         result.pairs.forEach((pair: any) => {
-          poolIds.push(pair.id)
+            poolsInfo.push(pair.id)
         })
     
-        return poolIds
+        return poolsInfo
     }
 }
 
