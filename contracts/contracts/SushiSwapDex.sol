@@ -52,4 +52,10 @@ contract SushiSwapDex is IDex {
         amountOut = SushiSwapV2Library.quote(pairAddress, _tokenIn, _tokenOut, _amountIn);
     }
 
+    function quoteV2(address _poolAddress, address _tokenIn, address _tokenOut, uint _amountIn)
+        external
+        returns(uint reserveIn, uint reserveOut, uint amountOut)
+    {
+        return SushiSwapV2Library.quoteV2(_poolAddress, _tokenIn, _tokenOut, _amountIn);
+    }
 }

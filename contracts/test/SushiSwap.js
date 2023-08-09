@@ -2,31 +2,15 @@ hre = require("hardhat");
 const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
-const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils");
+const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
+const {deploySushiDex} = require("../scripts/utils/deployment");
 
 describe("Tests for swaping with sushiswap", async function () {
 
-    console.log("Chainid:", hre.network.config.chainId);
     const addresses = config[hre.network.config.chainId];
 
     async function deploySushiSwapFixture() {
-        const [addr1, addr2, addr3] = await hre.ethers.getSigners();
-
-        const Lib = await hre.ethers.getContractFactory("SushiSwapV2Library");
-        const lib = await Lib.deploy();
-        await lib.waitForDeployment();
-        const libAddr = await lib.getAddress();
-
-        const SushiSwap = await hre.ethers.getContractFactory("SushiSwapDex", {
-            signer: addr1,
-            libraries: {
-                SushiSwapV2Library: libAddr
-            }
-        });
-        const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter, addresses.sushiFactory);
-        await sushiSwap.waitForDeployment();
-
-        return {sushiSwap, addr1, addr2, addr3};
+        return (await deploySushiDex());
     }
 
     it("Should swap wei to dai tokens", async function () {

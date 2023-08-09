@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const {config} = require("../addresses.config");
+const {config} = require("../../addresses.config");
 
 async function sendWethTokensToUser(toAddress, amount) {
     const iWeth = await hre.ethers.getContractAt(
