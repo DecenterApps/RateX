@@ -1,9 +1,9 @@
-import { fetchPoolsData, getPoolIdsForTokenPairs } from "../quoter/front_communication";
+import { fetchPoolsData, getPoolIdsForTokenPairs } from "../quoter/graph_communication";
 import { USDT_ADDRESS, WETH_ADDRESS } from "./tokens";
 
 
 export async function checkFetchPoolsData() {
-    const res = await fetchPoolsData(USDT_ADDRESS, WETH_ADDRESS, 500);
+    const res = await fetchPoolsData(USDT_ADDRESS, WETH_ADDRESS);
     console.log("result: ", res);
 }
 

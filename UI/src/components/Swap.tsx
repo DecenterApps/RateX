@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react"
 import {Input, Popover, Radio, Modal} from "antd"
 import {ArrowDownOutlined, DownOutlined, SettingOutlined} from "@ant-design/icons"
+import RoutingDiagram from "../components/RoutingDiagram"
 import tokenList from "../constants/tokenList.json"
 import {Token} from "../constants/Interfaces"
 import {getTokenPrice} from "../providers/OracleProvider"
@@ -43,7 +44,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
           getQuote()
         }, 5000)
         return () => clearInterval(interval)
-      }, [tokenOneAmount, tokenOne, tokenTwo])
+    }, [tokenOneAmount, tokenOne, tokenTwo])
 
     useEffect(() => {
         getQuote()
@@ -193,6 +194,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
                     {tokenTwo.ticker}
                     <DownOutlined />
                 </div>
+                <RoutingDiagram></RoutingDiagram>
                 <button className="swapButton" onClick={commitSwap} disabled={true}>Swap</button>
             </div>
         </div>

@@ -1,6 +1,6 @@
-import React, {useState} from 'react'; 
+import { useState } from 'react'; 
 import { Routes, Route } from 'react-router-dom';
-import Swap from './components/Swap';
+import Swap   from './components/Swap';
 import Header from './components/Header'
 import Tokens from './components/Tokens'
 import './App.css';
