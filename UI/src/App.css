@@ -124,15 +124,15 @@ header {
 
 .switchButton {
   background-color: #3a4157;
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   align-items: center;
   justify-content: center;
   display: flex;
   border-radius: 8px;
   position: absolute;
-  top: 86px;
-  left: 180px;
+  top: 88px;
+  left: calc(50%-14px);
   color: #5F6783;
   border: 3px solid #0E111B;
   font-size: 12px;
@@ -156,6 +156,7 @@ header {
   color: #888; 
   font-size: 14px; 
   margin-top: 2px;
+  margin-bottom: 6px;
   padding-left: 4px;
   align-self: flex-start;
 }
@@ -170,9 +171,9 @@ header {
 .assetOne {
   position: absolute;
   min-width: 50px;
-  height: 30px;
+  height: 32px;
   background-color: #3a4157;
-  top: 36px;
+  top: 32px;
   right: 20px;
   border-radius: 100px;
   display: flex;
@@ -187,9 +188,9 @@ header {
 .assetTwo {
   position: absolute;
   min-width: 50px;
-  height: 30px;
+  height: 32px;
   background-color: #3a4157;
-  top: 135px;
+  top: 156px;
   right: 20px;
   border-radius: 100px;
   display: flex;
@@ -287,4 +288,53 @@ header {
   font-size: 13px;
   font-weight: 300;
   color: #51596f;
+}
+
+.routingDiagam {
+  background-color: #21273a;
+  border-radius: 12px;
+  width: 100%;
+  margin: 10px;
+  margin-top: 5px;
+  position: relative;
+}
+
+.routingDiagam h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.routingDiagramPath {
+  background-color: #3a4157;
+  border-radius: 12px;
+  margin: 10px;
+  padding: 10px;
+  /* padding-left: 10px; */
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  /* padding: 5px; */
+  /* width: 100%; */
+}
+
+.routingDiagramPool {
+  align-items: center;
+}
+
+.routingDiagramPool img {
+  width: 26px;
+  margin: -3px;
+  margin-top: -1px;
+}
+
+.routingDiagramPoolArrow {
+  margin: 3px;
+  flex: 1 1 auto;
+}
+
+.routingDiagramExpandIcon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
 }
