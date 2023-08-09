@@ -117,12 +117,7 @@ function directSwap(amountA: number, tokenAddressA: string, tokenAddressB: strin
     return [bestPath]
 }
 
-// Finding best route
-function multiHopSwap(amountA: number, tokenAddressA: string, tokenAddressB: string) {
-    const pools = getPoolsInfo()
-
-    const [tokenToNumber, numberToToken]: any = createTokenToNumberMap(pools)
-
+function createGraph() {
     const graph = new Map<number, Array<[string, number, number, number, number]>>()
     for (let i = 0; i < pools.length; i++) {
         const idPool = pools[i].id
@@ -144,9 +139,19 @@ function multiHopSwap(amountA: number, tokenAddressA: string, tokenAddressB: str
     }
 }
 
+// Finding best route
+function multiHopSwap(amountA: number, tokenAddressA: string, tokenAddressB: string) {
+    const pools = getPoolsInfo()
+
+    const [tokenToNumber, numberToToken]: any = createTokenToNumberMap(pools)
+    const graph = createGraph()
+
+    
+}
+
 //
 directSwap(0.01, 'a', 'c')
 //
 //  routeSwap(0.01, 'a', 'c')
 
-export {}
+export {pools, createPoolMap, createTokenToNumberMap, getSwapPrice, directSwap, multiHopSwap}
