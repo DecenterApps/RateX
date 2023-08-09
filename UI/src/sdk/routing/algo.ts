@@ -117,7 +117,7 @@ function directSwap(amountA: number, tokenAddressA: string, tokenAddressB: strin
     return [bestPath]
 }
 
-function createGraph() {
+function createGraph(tokenToNumber: Map<string, number>, pools: any) {
     const graph = new Map<number, Array<[string, number, number, number, number]>>()
     for (let i = 0; i < pools.length; i++) {
         const idPool = pools[i].id
@@ -137,21 +137,81 @@ function createGraph() {
         graph.get(idTokenA)?.push([idPool, idTokenB, reserveA, reserveB, fee])
         graph.get(idTokenB)?.push([idPool, idTokenA, reserveB, reserveA, fee])
     }
+
+    return graph
+}
+
+type dpInfo = {
+    amountOut: number,
+    path: Array<number>
 }
 
 // Finding best route
-function multiHopSwap(amountA: number, tokenAddressA: string, tokenAddressB: string) {
+function multiHopSwap(amountA: number, tokenAddressA: string, tokenAddressB: string, max_hops: number = 4) {
+
     const pools = getPoolsInfo()
-
     const [tokenToNumber, numberToToken]: any = createTokenToNumberMap(pools)
-    const graph = createGraph()
+    const graph = createGraph(tokenToNumber, pools)
 
-    
+    const tokenA: number = tokenToNumber.get(tokenAddressA)
+    const tokenB = tokenToNumber.get(tokenAddressB)
+
+    const dp: Map<number, Map<number, dpInfo>> = new Map<number, Map<number, dpInfo>>()
+
+    // dp[hop][token]
+    dp.set(0, new Map<number, dpInfo>())
+    dp.get(0)?.set(tokenA, {amountOut: amountA, path: [tokenA]})
+
+    const res: dpInfo = {amountOut: -1, path: []}
+    for (let hop = 0; hop < max_hops-1; hop++) {
+        dp.get(hop)?.forEach((tokenPathInfo, tokenIn) => {
+            // console.log(tokenPathInfo, tokenIn)
+
+            graph.get(tokenIn)?.forEach((poolInfo) => {
+                // Retrieve info from each pool
+                const [poolId, tokenOut, reserveIn, reserveOut, fee] = poolInfo
+
+                // Check if we already have tokenOut in the path
+                if (tokenPathInfo.path.includes(tokenOut)) {
+                    return
+                }
+
+                // Calculate amountOut and find path
+                const amountOut = getSwapPrice(tokenPathInfo.amountOut, reserveIn, reserveOut, fee)
+                const path: Array<number> = [...tokenPathInfo.path, tokenOut]
+
+                
+                if (!dp.has(hop + 1)) {
+                    // create dp[hop+1]
+                    dp.set(hop + 1, new Map<number, dpInfo>())
+                }
+
+                if (!dp.get(hop + 1)?.has(tokenOut)) {
+                    // create dp[hop+1][tokenOut]
+                    dp.get(hop + 1)?.set(tokenOut, {amountOut: amountOut, path: path})
+                }
+                else if (dp.get(hop + 1)?.get(tokenOut)?.amountOut || 0 < amountOut) { 
+                    // dp[hop+1][tokenOut].amountOut < amountOut
+                    dp.get(hop + 1)?.set(tokenOut, {amountOut: amountOut, path: path})
+                }
+            })
+        })
+        
+        // Remember best result
+        if (dp.get(hop + 1)?.has(tokenB) && (dp.get(hop+1)?.get(tokenB)?.amountOut || -1) > res.amountOut) {
+            res.amountOut = dp.get(hop+1)?.get(tokenB)?.amountOut || 0
+            res.path = dp.get(hop+1)?.get(tokenB)?.path || []
+        }
+    }
+
+
+    console.log("Result: ", res)
 }
 
 //
-directSwap(0.01, 'a', 'c')
+// directSwap(0.01, 'a', 'c')
 //
+multiHopSwap(0.01, 'a', 'c', 5)
 //  routeSwap(0.01, 'a', 'c')
 
 export {pools, createPoolMap, createTokenToNumberMap, getSwapPrice, directSwap, multiHopSwap}
