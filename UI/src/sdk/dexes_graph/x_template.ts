@@ -1,58 +1,59 @@
-import { parse } from 'graphql';
+import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality';
-import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
+import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 
-export default class DEXName implements DEXGraphFunctionality {
+export default class NewDex implements DEXGraphFunctionality {
+  endpoint = ''
+  dexId = ''
 
-    endpoint = ""
+  static initialize(): DEXGraphFunctionality {
+    return new NewDex()
+  }
 
-    static initialize(): DEXGraphFunctionality {
-        return new DEXName()
-    }
+  async getTopPools(numPools: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryTopPools(numPools))
+    queryResult.pairs.forEach((pair: any) => {
+      poolsInfo.push(pair.id)
+    })
 
-    async topPools(): Promise<PoolInfo[]> {
-        
-        const poolsInfo: PoolInfo[] = []
-        const result = await request(this.endpoint, topPoolsFunction(100));
-        result.pairs.forEach((pair: any) => {
-            poolsInfo.push(pair.id)
-        })
-    
-        return poolsInfo
-    }
-    
-    async matchBothTokens(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
-        
-        const poolsInfo: PoolInfo[] = []
-        const result = await request(this.endpoint, matchBothTokensFunction(token1, token2, first));
-        result.pairs.forEach((pair: any) => {
-            poolsInfo.push(pair.id);
-        });
-    
-        return poolsInfo
-    }
-    
-    async matchOneToken(token: string): Promise<PoolInfo[]> {
-        
-        const poolsInfo: PoolInfo[] = []
-        const result = await request(this.endpoint, matchOneTokenFunction(token));
-        result.pairs.forEach((pair: any) => {
-            poolsInfo.push(pair.id)
-        })
-    
-        return poolsInfo
-    }
+    return poolsInfo
+  }
+
+  async getPoolsWithTokenPair(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(token1, token2, first))
+    queryResult.pairs.forEach((pair: any) => {
+      poolsInfo.push(pair.id)
+    })
+
+    return poolsInfo
+  }
+
+  async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
+    queryResult.pairs.forEach((pair: any) => {
+      poolsInfo.push(pair.id)
+    })
+
+    return poolsInfo
+  }
 }
 
-function topPoolsFunction(first: number): TypedDocumentNode<any, Record<string, unknown>> {
-    return parse(gql``);
+function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
+  return parse(gql``)
 }
 
-function matchBothTokensFunction(token1: string, token2: string, first: number): TypedDocumentNode<any, Record<string, unknown>>{
-    return parse(gql``);
+function queryPoolsWithTokenPair(
+  tokenA: string,
+  tokenB: string,
+  numPools: number
+): TypedDocumentNode<any, Record<string, unknown>> {
+  return parse(gql``)
 }
 
-function matchOneTokenFunction(token: string): TypedDocumentNode<any, Record<string, unknown>> {
-    return parse(gql``);
+function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
+  return parse(gql``)
 }
