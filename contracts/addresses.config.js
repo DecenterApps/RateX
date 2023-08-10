@@ -16,9 +16,13 @@ const config = {
         curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDC USDT pool,
 
         uniQuoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
+        uniRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         univ3_wbtc_eth_pool_0_05: "0x2f5e87C9312fa29aed5c179E456625D79015299c", // 0.05 fee
         univ3_wbtc_eth_pool_0_3: "0x149e36E72726e0BceA5c59d40df2c43F60f5A22D", // 0.3 fee
         sushi_wbtc_eth_pool: "0x515e252b2b5c22b4b2b6Df66c2eBeeA871AA4d69", // 0.3 fee always
+
+        impersonate_weth: "0x0df5dfd95966753f01cb80e76dc20ea958238c46",
+        impersonate_dai: "0xd85e038593d7a098614721eae955ec2022b9b91b"
     }
 }
 

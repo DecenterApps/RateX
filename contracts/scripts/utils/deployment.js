@@ -27,7 +27,7 @@ async function deploySushiDex() {
 async function deployUniswapDex() {
     const [addr1, addr2, addr3] = await hre.ethers.getSigners();
     const UniswapV3 = await hre.ethers.getContractFactory("UniswapV3Dex");
-    const uniswap = await UniswapV3.deploy(addresses.uniQuoter);
+    const uniswap = await UniswapV3.deploy(addresses.uniQuoter, addresses.uniRouter);
     await uniswap.waitForDeployment();
     return {uniswap, addr1, addr2, addr3};
 }

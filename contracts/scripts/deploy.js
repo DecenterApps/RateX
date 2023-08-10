@@ -2,10 +2,15 @@ hre = require("hardhat");
 const {resolve, join} = require("path");
 const fs = require("fs");
 const {deployRateX} = require("./utils/deployment");
+const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
+const {config} = require("../addresses.config");
 
+const addresses = config[hre.network.config.chainId];
 
 async function main() {
-    const {rateX} = await deployRateX();
+    const {rateX, addr1} = await deployRateX();
+
+    await sendWethTokensToUser(addr1, hre.ethers.parseEther("1000"));
 
     const address = await rateX.getAddress();
     console.log("RateX address:" + address);

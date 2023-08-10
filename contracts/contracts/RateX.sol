@@ -30,6 +30,7 @@ contract RateX is Ownable {
 
     // without route, only through one dex for now
     function swap(
+        address _poolAddress,
         address _tokenIn,
         address _tokenOut,
         uint _amountIn,
@@ -46,6 +47,7 @@ contract RateX is Ownable {
         IERC20(_tokenIn).approve(dexes[_dexId], _amountIn);
 
         uint amountOut = IDex(dexes[_dexId]).swap(
+            _poolAddress,
             _tokenIn,
             _tokenOut,
             _amountIn,

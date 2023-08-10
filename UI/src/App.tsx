@@ -4,6 +4,7 @@ import Swap   from './components/Swap';
 import Header from './components/Header'
 import Tokens from './components/Tokens'
 import './App.css';
+import 'notyf/notyf.min.css';
 
 function App() {
 

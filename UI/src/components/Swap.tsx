@@ -5,9 +5,11 @@ import RoutingDiagram from "../components/RoutingDiagram"
 import tokenList from "../constants/tokenList.json"
 import {Token} from "../constants/Interfaces"
 import {getTokenPrice} from "../providers/OracleProvider"
-import {initGetQuote} from "../sdk/quoter/front_communication"
+import {initGetQuote, swap} from "../sdk/quoter/front_communication"
 import Web3 from "web3";
 import initRPCProvider from "../providers/RPCProvider";
+import {QuoteResultEntry} from "../sdk/types";
+import {notification} from "./notifications";
 const web3: Web3 = initRPCProvider(42161);
 
 interface SwapProps {
@@ -18,7 +20,7 @@ interface SwapProps {
 function Swap({chainIdState, walletState}: SwapProps) {
 
     const [chainId, setChainId] = chainIdState;
-
+    const [wallet, setWallet] = walletState;
     const [slippage, setSlippage] = useState(0.5)
     const [tokenOneAmount, setTokenOneAmount] = useState<number>(0)
     const [tokenOnePrice, setTokenOnePrice] = useState(0)
@@ -28,6 +30,9 @@ function Swap({chainIdState, walletState}: SwapProps) {
     const [tokenTwo, setTokenTwo] = useState<Token>(tokenList[4])
     const [isOpen, setIsOpen] = useState(false)
     const [changeToken, setChangeToken] = useState(1)
+    const [loadingQuote, setLoadingQuote] = useState(false);
+    const [loadingSwap, setLoadingSwap] = useState(false);
+    const [quote, setQuote] = useState<QuoteResultEntry>();
 
     useEffect(() => {
         async function getPrices() {
@@ -39,12 +44,13 @@ function Swap({chainIdState, walletState}: SwapProps) {
         getPrices()
     }, [])
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-          getQuote()
-        }, 5000)
-        return () => clearInterval(interval)
-    }, [tokenOneAmount, tokenOne, tokenTwo])
+    // for now commented, to reduce quote contracts calls
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //       getQuote()
+    //     }, 5000)
+    //     return () => clearInterval(interval)
+    // }, [tokenOneAmount, tokenOne, tokenTwo])
 
     useEffect(() => {
         getQuote()
@@ -122,16 +128,37 @@ function Swap({chainIdState, walletState}: SwapProps) {
             return
         }
         const amount = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
-        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount, chainId)
-            .then((value: bigint) => {
-                setTokenTwoAmount(Number(value) / (10 ** tokenTwo.decimals))
+
+        setLoadingQuote(true)
+        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount)
+            .then((q: QuoteResultEntry) => {
+                setTokenTwoAmount(Number(q.amountOut) / (10 ** tokenTwo.decimals))
+                setLoadingQuote(false)
+                setQuote(q);
             })
             .catch((error: string) => {
+                setLoadingQuote(false)
                 console.log(error)
             })
     }
 
     function commitSwap() {
+        if (quote === undefined) return
+
+        setLoadingSwap(true);
+
+        const amountIn = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
+
+        swap(tokenOne.address[chainId], tokenTwo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+            .then((res) => {
+                setLoadingSwap(false);
+                res.isSuccess ? notification.success({message: `Tx hash: ${res.txHash}`}) :
+                                notification.error({message: res.errorMessage})
+            })
+            .catch((error: string) => {
+                setLoadingSwap(false)
+                notification.open({message: error})
+            });
     }
 
     const settings = (
@@ -177,10 +204,17 @@ function Swap({chainIdState, walletState}: SwapProps) {
                 <div className="tokenOneAmountUSD">
                     {`$${(tokenOneAmount * tokenOnePrice).toFixed(4)}`} 
                 </div>
-                <Input placeholder="0" value={tokenTwoAmount.toFixed(4)} disabled={true} />
-                <div className="tokenTwoAmountUSD">
-                    {`$${(tokenTwoAmount * tokenTwoPrice).toFixed(4)}`} (<span style={{color:priceImpactColor()}}>{calculatePriceImpact().toFixed(2)}%</span>)
-                </div>
+                {
+                    loadingQuote ?
+                    <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div> :
+                    <div className="inputs">
+                        <Input placeholder="0" value={tokenTwoAmount.toFixed(4)} disabled={true} />
+                        <div className="tokenTwoAmountUSD">
+                            {`$${(tokenOneAmount * tokenOnePrice).toFixed(4)}`}
+                            (<span style={{color:priceImpactColor()}}>{calculatePriceImpact().toFixed(2)}%</span>)
+                        </div>
+                    </div>
+                }
                 <div className="assetOne" onClick={() => openModal(1)}>
                     <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo"/>
                     {tokenOne.ticker}
@@ -195,7 +229,11 @@ function Swap({chainIdState, walletState}: SwapProps) {
                     <DownOutlined />
                 </div>
                 <RoutingDiagram></RoutingDiagram>
-                <button className="swapButton" onClick={commitSwap} disabled={true}>Swap</button>
+                {
+                    loadingSwap ?
+                        <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div> :
+                        <button className="swapButton" onClick={commitSwap} disabled={tokenTwoAmount == 0}>Swap</button>
+                }
             </div>
         </div>
         </>

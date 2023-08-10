@@ -27,3 +27,9 @@ export class QuoteResultEntry {
         this.amountOut = amountOut;
     }
 }
+
+export interface ResponseType {
+    isSuccess: boolean;
+    txHash: string;
+    errorMessage: string;
+}

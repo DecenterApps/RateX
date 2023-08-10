@@ -34,6 +34,7 @@ describe("Tests for swaping with sushiswap", async function () {
         const expectedAmountOut = await sushiSwap.quote(addresses.wethToken, addresses.daiToken, hre.ethers.parseEther("100"));
 
         await sushiSwap.connect(addr1).swap(
+            addresses.usdcToken, // not needed, will be changed later
             addresses.wethToken,
             addresses.daiToken,
             hre.ethers.parseEther("100"),
@@ -68,6 +69,7 @@ describe("Tests for swaping with sushiswap", async function () {
         const expectedAmountOut = await sushiSwap.quote(addresses.usdcToken, addresses.wethToken, "1000000000");
 
         await sushiSwap.connect(addr1).swap(
+            addresses.usdcToken, // not needed, will be changed later
             addresses.usdcToken,
             addresses.wethToken,
             1000000000, // 1000 USDC

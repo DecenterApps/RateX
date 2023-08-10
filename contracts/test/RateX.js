@@ -31,6 +31,7 @@ describe("Tests for swaping with sushiswap", async function () {
         console.log(expectedAmountOut);
 
         await rateX.connect(addr1).swap(
+            addresses.sushi_wbtc_eth_pool, // ignored anyway for sushi
             addresses.wethToken,
             addresses.daiToken,
             hre.ethers.parseEther("100"),
@@ -99,5 +100,34 @@ describe("Tests for swaping with sushiswap", async function () {
 
         console.log(result);
 
+    });
+
+    it("Should swap eth for wbtc on uni", async function () {
+
+        const {rateX, addr1, addr2} = await loadFixture(deployRateXFixture);
+
+        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
+        const WETH = await hre.ethers.getContractAt("IWeth", addresses.wethToken);
+
+        await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
+        await approveToContract(addr1, await rateX.getAddress(), addresses.wethToken, hre.ethers.parseEther("10000"));
+
+        const wethBalanceBefore = await WETH.balanceOf(addr1);
+        const wbtcBalanceBefore = await WBTC.balanceOf(addr1);
+
+        const amountIn = hre.ethers.parseEther("1");
+
+        await rateX.swap(
+            addresses.univ3_wbtc_eth_pool_0_05,
+            addresses.wethToken,
+            addresses.wbtcToken,
+            amountIn,
+            1,
+            addr1,
+            'UNI_V3'
+        );
+
+        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        expect(wethBalanceAfter).to.be.equal(wethBalanceBefore - amountIn);
     });
 });
