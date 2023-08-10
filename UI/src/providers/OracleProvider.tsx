@@ -1,21 +1,29 @@
-import Decimal from 'decimal.js';
-import { OracleData } from '../constants/Interfaces';
-import oracleToUSDList from '../constants/oracleToUSDList.json';
-import initRPCProvider from './RPCProvider';
+import Decimal from 'decimal.js'
+import { OracleData } from '../constants/Interfaces'
+import oracleToUSDList from '../constants/oracleToUSDList.json'
+import initRPCProvider from './RPCProvider'
 
-const oracleToUSDListData: OracleData = oracleToUSDList;
-const ABI = [{"inputs":[],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"","type":"int256"}],"stateMutability":"view","type":"function"}]
+const oracleToUSDListData: OracleData = oracleToUSDList
+const ABI = [
+  {
+    inputs: [],
+    name: 'latestAnswer',
+    outputs: [{ internalType: 'int256', name: '', type: 'int256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+]
 
 function contractFactory(tokenTicker: string, chainId: number) {
-  const oracleData = oracleToUSDListData.oracles.find((token) => token.ticker === tokenTicker);
+  const oracleData = oracleToUSDListData.oracles.find((token) => token.ticker === tokenTicker)
   if (!oracleData) {
-    throw new Error(`Token "${tokenTicker}" not found in the JSON data.`);
+    throw new Error(`Token "${tokenTicker}" not found in the JSON data.`)
   }
 
-  const contractAddress = oracleData.address[chainId];
-  const web3 = initRPCProvider(chainId);
+  const contractAddress = oracleData.address[chainId]
+  const web3 = initRPCProvider(chainId)
   // @ts-ignore
-  return new web3.eth.Contract(ABI, contractAddress);
+  return new web3.eth.Contract(ABI, contractAddress)
 }
 
 async function getTokenPrice(tokenTicker: string, chainId: number): Promise<number> {
@@ -25,12 +33,10 @@ async function getTokenPrice(tokenTicker: string, chainId: number): Promise<numb
     // @ts-ignore
     let convertedValue = new Decimal(value.toString()).div(10 ** 8)
     return convertedValue.toNumber()
-
   } catch (error) {
-    console.error("Error fetching token price")
+    console.error('Error fetching token price')
     return -1
   }
-
 }
 
 // not using this but we might need this in the future
@@ -38,11 +44,11 @@ async function convertTokenAmountToUSD(amount: number, tokenTicker: string, chai
   try {
     let USDValue = await getTokenPrice(tokenTicker, chainId)
     // @ts-ignore
-    return USDValue !== -1 ? USDValue * amount : -1   
+    return USDValue !== -1 ? USDValue * amount : -1
   } catch {
-    console.error("Error fetching the amount in USD")
+    console.error('Error fetching the amount in USD')
     return -1
   }
 }
 
-export { getTokenPrice };
+export { getTokenPrice }

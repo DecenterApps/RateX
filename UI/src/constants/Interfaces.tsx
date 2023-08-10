@@ -1,29 +1,29 @@
-import { type } from "os";
+import { type } from 'os'
 
 interface Oracle {
-    ticker: string;
-    address: {
-      [key: string]: string;
-    };
-    ABI: any; 
+  ticker: string
+  address: {
+    [key: string]: string
+  }
+  ABI: any
 }
 
 interface OracleData {
-  oracles: Oracle[];
+  oracles: Oracle[]
 }
 
 interface Token {
-    ticker: string
-    img: string
-    name: string
-    address: {
-        [key: string]: string;
-    }
-    decimals: number
+  ticker: string
+  img: string
+  name: string
+  address: {
+    [key: string]: string
+  }
+  decimals: number
 }
 
 interface TokenData {
-    tokens: Token[]
+  tokens: Token[]
 }
 
-export type {Oracle, OracleData, Token, TokenData}
+export type { Oracle, OracleData, Token, TokenData }
