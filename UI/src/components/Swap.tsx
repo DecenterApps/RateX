@@ -1,130 +1,132 @@
-import {useEffect, useState} from "react"
-import {Input, Popover, Radio, Modal} from "antd"
-import {ArrowDownOutlined, DownOutlined, SettingOutlined} from "@ant-design/icons"
+import { useEffect, useState } from "react"
+import { Input, Popover, Radio, Modal } from "antd"
+import { ArrowDownOutlined, DownOutlined, SettingOutlined } from "@ant-design/icons"
 import RoutingDiagram from "../components/RoutingDiagram"
 import tokenList from "../constants/tokenList.json"
-import {Token} from "../constants/Interfaces"
-import {getTokenPrice} from "../providers/OracleProvider"
-import {initGetQuote} from "../sdk/quoter/front_communication"
-import Web3 from "web3";
-import initRPCProvider from "../providers/RPCProvider";
-const web3: Web3 = initRPCProvider(42161);
+import { Token } from "../constants/Interfaces"
+import { getTokenPrice } from "../providers/OracleProvider"
+import { initGetQuote } from "../sdk/quoter/front_communication"
+import Web3 from "web3"
+import initRPCProvider from "../providers/RPCProvider"
+import './Swap.scss'
+
+const web3: Web3 = initRPCProvider(42161)
 
 interface SwapProps {
-    chainIdState: [number, React.Dispatch<React.SetStateAction<number>>];
-    walletState: [string, React.Dispatch<React.SetStateAction<string>>];
+    chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
+    walletState: [string, React.Dispatch<React.SetStateAction<string>>]
 }
 
 function Swap({chainIdState, walletState}: SwapProps) {
 
-    const [chainId, setChainId] = chainIdState;
+    const [chainId, setChainId] = chainIdState
 
     const [slippage, setSlippage] = useState(0.5)
-    const [tokenOneAmount, setTokenOneAmount] = useState<number>(0)
-    const [tokenOnePrice, setTokenOnePrice] = useState(0)
-    const [tokenTwoAmount, setTokenTwoAmount] = useState(0)
-    const [tokenTwoPrice, setTokenTwoPrice] = useState(0)
-    const [tokenOne, setTokenOne] = useState<Token>(tokenList[3])
-    const [tokenTwo, setTokenTwo] = useState<Token>(tokenList[4])
-    const [isOpen, setIsOpen] = useState(false)
+    const [tokenFromAmount, setTokenFromAmount] = useState<number>(0)
+    const [tokenFromPrice, setTokenFromPrice] = useState(0)
+    const [tokenToAmount, setTokenToAmount] = useState(0)
+    const [tokenToPrice, setTokenToPrice] = useState(0)
+    const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
+    const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
+    const [isOpenModal, setIsOpenModal] = useState(false)
     const [changeToken, setChangeToken] = useState(1)
 
     useEffect(() => {
         async function getPrices() {
-            const tokenOnePrice = await getTokenPrice(tokenOne.ticker, chainId)
-            tokenOnePrice === -1 ? setTokenOnePrice(0) : setTokenOnePrice(tokenOnePrice)
-            const tokenTwoPrice = await getTokenPrice(tokenTwo.ticker, chainId)
-            tokenTwoPrice === -1 ? setTokenOnePrice(0) : setTokenTwoPrice(tokenTwoPrice)
+            const tokenFromPrice = await getTokenPrice(tokenFrom.ticker, chainId)
+            tokenFromPrice === -1 ? setTokenFromPrice(0) : setTokenFromPrice(tokenFromPrice)
+            const tokenToPrice = await getTokenPrice(tokenTo.ticker, chainId)
+            tokenToPrice === -1 ? setTokenFromPrice(0) : setTokenToPrice(tokenToPrice)
         }
         getPrices()
     }, [])
 
     useEffect(() => {
         const interval = setInterval(() => {
-          getQuote()
+            getQuote()
         }, 5000)
         return () => clearInterval(interval)
-    }, [tokenOneAmount, tokenOne, tokenTwo])
+    }, [tokenFromAmount, tokenFrom, tokenTo])
 
     useEffect(() => {
         getQuote()
-    }, [tokenOneAmount, tokenOne, tokenTwo])
+    }, [tokenFromAmount, tokenFrom, tokenTo])
 
     function handleSlippage(e: any) {
         setSlippage(e.target.value)
     }
 
     function changeAmount(e: any) {
-        setTokenOneAmount(e.target.value)
+        setTokenFromAmount(e.target.value)
     }
 
     function switchTokens() {
-        const tempToken = tokenOne
-        setTokenOne(tokenTwo)
-        setTokenTwo(tempToken)
+        const tempToken = tokenFrom
+        setTokenFrom(tokenTo)
+        setTokenTo(tempToken)
 
-        const tempPrice = tokenOnePrice
-        setTokenOnePrice(tokenTwoPrice)
-        setTokenTwoPrice(tempPrice)
+        const tempPrice = tokenFromPrice
+        setTokenFromPrice(tokenToPrice)
+        setTokenToPrice(tempPrice)
 
         // doing it the opposite direction because the state values have not been updated until the next render
-        const tokenTwoAmount = tokenOneAmount * tokenTwoPrice / tokenOnePrice
-        setTokenTwoAmount(tokenTwoAmount)
+        const tokenToAmount = tokenFromAmount * tokenToPrice / tokenFromPrice
+        setTokenToAmount(tokenToAmount)
     }
 
     function openModal(token: number) {
         setChangeToken(token)
-        setIsOpen(true)
+        setIsOpenModal(true)
     }
 
     async function modifyToken(index: number) {
         if (changeToken === 1) {
-            setTokenOne(tokenList[index])
-            const _tokenOnePrice = await getTokenPrice(tokenList[index].ticker, chainId)
-            console.log("Fetched price", _tokenOnePrice, "for", tokenList[index].ticker)
-            setTokenOnePrice(_tokenOnePrice === -1 ? 0 : _tokenOnePrice)
+            setTokenFrom(tokenList[index])
+            const _tokenFromPrice = await getTokenPrice(tokenList[index].ticker, chainId)
+            console.log("Fetched price", _tokenFromPrice, "for", tokenList[index].ticker)
+            setTokenFromPrice(_tokenFromPrice === -1 ? 0 : _tokenFromPrice)
 
-            const tokenTwoAmount = tokenOneAmount * _tokenOnePrice / tokenTwoPrice
-            setTokenTwoAmount(tokenTwoAmount)
+            const tokenToAmount = tokenFromAmount * _tokenFromPrice / tokenToPrice
+            setTokenToAmount(tokenToAmount)
         } else {
-            setTokenTwo(tokenList[index])
-            const _tokenTwoPrice = await getTokenPrice(tokenList[index].ticker, chainId)
-            console.log("Fetched price", _tokenTwoPrice, "for", tokenList[index].ticker)
-            setTokenTwoPrice(_tokenTwoPrice === -1 ? 0 : _tokenTwoPrice)
+            setTokenTo(tokenList[index])
+            const _tokenToPrice = await getTokenPrice(tokenList[index].ticker, chainId)
+            console.log("Fetched price", _tokenToPrice, "for", tokenList[index].ticker)
+            setTokenToPrice(_tokenToPrice === -1 ? 0 : _tokenToPrice)
 
-            const tokenTwoAmount = tokenOneAmount * tokenOnePrice / _tokenTwoPrice
-            setTokenTwoAmount(tokenTwoAmount)
+            const tokenToAmount = tokenFromAmount * tokenFromPrice / _tokenToPrice
+            setTokenToAmount(tokenToAmount)
         }
 
-        setIsOpen(false)
+        setIsOpenModal(false)
     }
 
     function calculatePriceImpact(): number {
-        let tokenOneMarketPrice = tokenOneAmount * tokenOnePrice
-        let tokenTwoMarketPrice = tokenTwoAmount * tokenTwoPrice
-        let percentage = 100.0 * tokenTwoMarketPrice / tokenOneMarketPrice
+        let tokenFromMarketPrice = tokenFromAmount * tokenFromPrice
+        let tokenToMarketPrice = tokenToAmount * tokenToPrice
+        let percentage = 100.0 * tokenToMarketPrice / tokenFromMarketPrice
         if(isNaN(percentage)) return 0
         return percentage - 100
     }
 
     function priceImpactColor(): string {
         const impact = calculatePriceImpact()
-        if(impact > -1) return "#339900"
-        if(impact > -3) return "#99cc33"
-        if(impact > -5) return "#ffcc00"
+        if(impact > -1 ) return "#339900"
+        if(impact > -3 ) return "#99cc33"
+        if(impact > -5 ) return "#ffcc00"
         if(impact > -15) return "#ff9966"
         return "#cc3300"
     }
 
     function getQuote() {
-        if (tokenOneAmount <= 0 || isNaN(tokenOneAmount)) {
-            setTokenTwoAmount(0)
+        if (tokenFromAmount <= 0 || isNaN(tokenFromAmount)) {
+            setTokenToAmount(0)
             return
         }
-        const amount = web3.utils.toBigInt(tokenOneAmount * (10 ** tokenOne.decimals))
-        initGetQuote(tokenOne.address[chainId], tokenTwo.address[chainId], amount, chainId)
+        const amount = web3.utils.toBigInt(tokenFromAmount * (10 ** tokenFrom.decimals))
+        initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount, chainId)
             .then((value: bigint) => {
-                setTokenTwoAmount(Number(value) / (10 ** tokenTwo.decimals))
+                setTokenToAmount(Number(value) / (10 ** tokenTo.decimals))
             })
             .catch((error: string) => {
                 console.log(error)
@@ -132,6 +134,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
     }
 
     function commitSwap() {
+        
     }
 
     const settings = (
@@ -149,7 +152,7 @@ function Swap({chainIdState, walletState}: SwapProps) {
 
     return (
         <>
-        <Modal open={isOpen} footer={null} onCancel={()=>setIsOpen(false)} title="Select a token">
+        <Modal open={isOpenModal} footer={null} onCancel={()=>setIsOpenModal(false)} title="Select a token">
         <div className="modalContent">
             {tokenList.map((token, index) => {
                 return (
@@ -173,29 +176,29 @@ function Swap({chainIdState, walletState}: SwapProps) {
                 </Popover>
             </div>
             <div className="inputs">
-                <Input placeholder="0" value={tokenOneAmount} onChange={changeAmount} />
-                <div className="tokenOneAmountUSD">
-                    {`$${(tokenOneAmount * tokenOnePrice).toFixed(4)}`} 
+                <Input placeholder="0" value={tokenFromAmount} onChange={changeAmount} />
+                <div className="tokenFromAmountUSD">
+                    {`$${(tokenFromAmount * tokenFromPrice).toFixed(4)}`} 
                 </div>
-                <Input placeholder="0" value={tokenTwoAmount.toFixed(4)} disabled={true} />
-                <div className="tokenTwoAmountUSD">
-                    {`$${(tokenTwoAmount * tokenTwoPrice).toFixed(4)}`} (<span style={{color:priceImpactColor()}}>{calculatePriceImpact().toFixed(2)}%</span>)
+                <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
+                <div className="tokenToAmountUSD">
+                    {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`} (<span style={{color:priceImpactColor()}}>{calculatePriceImpact().toFixed(2)}%</span>)
                 </div>
-                <div className="assetOne" onClick={() => openModal(1)}>
-                    <img src={tokenOne.img} alt="assetOneLogo" className="assetLogo"/>
-                    {tokenOne.ticker}
+                <div className="assetFrom" onClick={() => openModal(1)}>
+                    <img src={tokenFrom.img} alt="assetFromLogo" className="assetLogo"/>
+                    {tokenFrom.ticker}
                     <DownOutlined />
                 </div>
                 <div className="switchButton" onClick={switchTokens}>
                     <ArrowDownOutlined className="switchArrow" />
                 </div>
-                <div className="assetTwo" onClick={() => openModal(2)}>
-                    <img src={tokenTwo.img} alt="assetOneLogo" className="assetLogo"/>
-                    {tokenTwo.ticker}
+                <div className="assetTo" onClick={() => openModal(2)}>
+                    <img src={tokenTo.img} alt="assetFromLogo" className="assetLogo"/>
+                    {tokenTo.ticker}
                     <DownOutlined />
                 </div>
-                <RoutingDiagram></RoutingDiagram>
-                <button className="swapButton" onClick={commitSwap} disabled={true}>Swap</button>
+                {/* <RoutingDiagram></RoutingDiagram> */}
+                <button className="swapButton" onClick={commitSwap} disabled={false}>Swap</button>
             </div>
         </div>
         </>

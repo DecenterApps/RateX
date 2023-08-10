@@ -2,12 +2,13 @@ import { useEffect, useState } from "react"
 import tokenList from "../constants/tokenList.json"
 import { Token } from "../constants/Interfaces"
 import { ArrowRightOutlined, ExpandAltOutlined } from "@ant-design/icons"
+import './RoutingDiagram.scss'
 
 interface Pool {
     poolId: string,
     dexId: string
-    tokenOne: Token,
-    tokenTwo: Token
+    tokenFrom: Token,
+    tokenTo: Token
 }
 
 interface Path {
@@ -23,20 +24,20 @@ let route: Path[] = [
             {
                 dexId: "SushiSwapV2",
                 poolId: "0x0000000000000000000000000000000000000000",
-                tokenOne: tokenList[3],
-                tokenTwo: tokenList[4]
+                tokenFrom: tokenList[3],
+                tokenTo: tokenList[4]
             },
             {
                 dexId: "SushiSwapV2",
                 poolId: "0x0000000000000000000000000000000000000000",
-                tokenOne: tokenList[4],
-                tokenTwo: tokenList[2]
+                tokenFrom: tokenList[4],
+                tokenTo: tokenList[2]
             },
             {
                 dexId: "SushiSwapV2",
                 poolId: "0x0000000000000000000000000000000000000000",
-                tokenOne: tokenList[2],
-                tokenTwo: tokenList[5]
+                tokenFrom: tokenList[2],
+                tokenTo: tokenList[5]
             }
         ]
     },
@@ -46,14 +47,14 @@ let route: Path[] = [
             {
                 dexId: "SushiSwapV2",
                 poolId: "0x0000000000000000000000000000000000000000",
-                tokenOne: tokenList[3],
-                tokenTwo: tokenList[4]
+                tokenFrom: tokenList[3],
+                tokenTo: tokenList[4]
             },
             {
                 dexId: "SushiSwapV2",
                 poolId: "0x0000000000000000000000000000000000000000",
-                tokenOne: tokenList[4],
-                tokenTwo: tokenList[5]
+                tokenFrom: tokenList[4],
+                tokenTo: tokenList[5]
             }
         ]
     }
@@ -76,8 +77,8 @@ function Path({path}: {path: Path}) {
 function Pool({pool}: {pool: Pool}) {
     return (
         <div className="routingDiagramPool">
-            <img src={pool.tokenOne.img} alt="assetOneLogo"/>
-            <img src={pool.tokenTwo.img} alt="assetTwoLogo"/>
+            <img src={pool.tokenFrom.img} alt="assetFromLogo"/>
+            <img src={pool.tokenTo.img} alt="assetToLogo"/>
         </div>
     )
 }
@@ -85,7 +86,7 @@ function Pool({pool}: {pool: Pool}) {
 function RoutingDiagram() {
     return (
         <div className="routingDiagam">
-            <h4>Order Routing (mock)</h4>
+            <h4>Order Routing</h4>
             <ExpandAltOutlined className="routingDiagramExpandIcon"></ExpandAltOutlined>
             {route.map((path) => (
                 <Path path={path}></Path>

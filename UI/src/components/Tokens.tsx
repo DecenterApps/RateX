@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react"
-import { checkFetchPoolsData, checkGetPoolIdsForTokenPairs } from "../sdk/testing/fetchPools";
-import { call } from "web3/lib/commonjs/eth.exports";
+import { checkFetchPoolsData, checkGetPoolIdsForTokenPairs } from "../sdk/testing/fetchPools"
+import { call } from "web3/lib/commonjs/eth.exports"
 
 function Token() {
   const callCheckFetchPoolsData = async () => {
@@ -16,7 +16,7 @@ function Token() {
       <button onClick={callCheckFetchPoolsData}>Call checkFetchPoolsData</button>
       <button onClick={callCheckGetPoolIdsForTokenPairs}>Call checkGetPoolIdsForTokenPairs</button>
     </div>
-  );
+  )
 }
 
 export default Token
