@@ -1,29 +1,22 @@
-import {PoolInfo} from "../DEXGraphFunctionality"
-import {getPoolIdsForTokenPairs} from "./graph_communication";
-import {PoolEntry, QuoteResultEntry, ResponseType} from "../types";
-import {RateXContract} from "../../contracts/RateX";
-import Web3 from "web3";
-import initRPCProvider from "../../providers/RPCProvider";
-import {ERC20_ABI} from "../../contracts/ERC20_ABI";
+import { PoolInfo } from '../DEXGraphFunctionality'
 
 // In future will have chainId
 export type AdditionalPoolInfo = {
-    poolId: string
-    dexId: string
-    token0: string         // address
-    token1: string         // address
-    reserve0: bigint       // in wei
-    reserve1: bigint       // in wei
-    fee: number
+  poolId: string
+  dexId: string
+  tokenA: string // address
+  tokenB: string // address
+  reserveA: bigint // in wei
+  reserveB: bigint // in wei
+  fee: number
 }
 
 async function getAdditionalPoolInfo(poolsInfo: PoolInfo[]): Promise<AdditionalPoolInfo[]> {
+  const additionalPoolsInfo: AdditionalPoolInfo[] = []
 
-    const additionalPoolsInfo: AdditionalPoolInfo[] = []
+  // TO-DO: calls to Solidity
 
-    // TO-DO: calls to Solidity
-
-    return additionalPoolsInfo
+  return additionalPoolsInfo
 }
 
 
