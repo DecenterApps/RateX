@@ -18,7 +18,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     result.pairs.forEach((pool: any) => {
       poolsInfo.push({
         poolId: pool.id,
-        dexId: 'SushiSwapV2',
+        dexId: 'SUSHI_V2',
         token0: pool.token0.id,
         token1: pool.token1.id
       })
@@ -34,7 +34,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     result.pairs.forEach((pool: any) => {
       poolsInfo.push({
         poolId: pool.id,
-        dexId: 'SushiSwapV2',
+        dexId: 'SUSHI_V2',
         token0: pool.token0.id,
         token1: pool.token1.id
       })
@@ -51,7 +51,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     result.pairs.forEach((pool: any) => {
       poolsInfo.push({
         poolId: pool.id,
-        dexId: 'SushiSwapV2',
+        dexId: 'SUSHI_V2',
         token0: pool.token0.id,
         token1: pool.token1.id,
       })

@@ -18,7 +18,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     result.liquidityPools.forEach((pool: any) => {
       poolsInfo.push({
         poolId: pool.id,
-        dexId: 'UniswapV3',
+        dexId: 'UNI_V3',
         token0: pool.inputTokens[0].id,
         token1: pool.inputTokens[1].id,
       })
@@ -34,7 +34,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     result.liquidityPools.forEach((pool: any) => {
       poolsInfo.push({
         poolId: pool.id,
-        dexId: 'UniswapV3',
+        dexId: 'UNI_V3',
         token0: pool.inputTokens[0].id,
         token1: pool.inputTokens[1].id,
       })
@@ -50,7 +50,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     result.liquidityPools.forEach((pool: any) => {
       poolsInfo.push({
           poolId: pool.id,
-          dexId: 'UniswapV3',
+          dexId: 'UNI_V3',
           token0: pool.inputTokens[0].id,
           token1: pool.inputTokens[1].id,
         })
