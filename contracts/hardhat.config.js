@@ -37,6 +37,13 @@ module.exports = {
     localhost: {
       chainId: 31337,
       url: "http://127.0.0.1:8545/"
+    },
+    tenderly: {
+        chainId: 42161,
+        url: process.env.TENDERLY_URL,
+        accounts: [
+            process.env.ACC1_SK || "",
+        ]
     }
   }
 };

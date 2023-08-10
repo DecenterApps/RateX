@@ -152,7 +152,8 @@ function Swap({chainIdState, walletState}: SwapProps) {
         swap(tokenOne.address[chainId], tokenTwo.address[chainId], quote, amountIn, slippage, wallet, chainId)
             .then((res) => {
                 setLoadingSwap(false);
-                res.isSuccess ? notification.success({message: `Tx hash: ${res.txHash}`}) :
+                // for now hardcode it for testing purposes
+                res.isSuccess ? notification.success({message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`}) :
                                 notification.error({message: res.errorMessage})
             })
             .catch((error: string) => {
