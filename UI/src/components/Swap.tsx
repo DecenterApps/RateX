@@ -220,7 +220,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <div className="inputs">
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
-                {`$${(tokenFromAmount * tokenFromPrice).toFixed(4)}`}(
+                {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
                 <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
               </div>
             </div>
