@@ -84,4 +84,4 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numPools: numb
   return poolsInfo
 }
 
-export { fetchPoolsData }
+export { fetchPoolsData, getPoolIdsForToken, getPoolIdsForTokenPairs }
