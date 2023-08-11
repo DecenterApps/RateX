@@ -1,0 +1,148 @@
+@import './shared.scss';
+
+.App {
+  text-align: center;
+}
+
+header {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  padding-right: 20px;
+}
+
+.eth {
+  width: 20px;
+  height: 20px;
+  padding-right: 10px;
+}
+
+.leftHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.headerItem {
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.headerItem:hover {
+  cursor: pointer;
+}
+
+.chooseChain,
+.connectButton {
+  background-color: $color-light;
+  color: $color-text-primary;
+  border: none;
+  padding: 10px;
+  padding-right: 20px;
+  padding-left: 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.chooseChain:hover,
+.connectButton:hover {
+  background-color: $color-light-hover;
+  cursor: pointer;
+}
+
+.chainLogo {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.mainWindow {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.link {
+  text-decoration: none;
+  color: $color-text-primary;
+}
+
+.cog {
+  color: $color-light;
+  transition: 0.3s;
+}
+
+.cog:hover {
+  color: $color-light-hover;
+  rotate: 90deg;
+  cursor: pointer;
+}
+
+.assetLogo {
+  height: 22px;
+  margin-left: 5px;
+}
+
+.tokenLogo {
+  height: 40px;
+  width: 40px;
+}
+
+.modalContent {
+  border-top: 1px solid $color-neutral;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  // gap: 10px;
+}
+
+.chainChoice,
+.tokenChoice {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.chainChoice:hover,
+.tokenChoice:hover {
+  cursor: pointer;
+  background-color: $color-neutral;
+}
+
+.tokenName {
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tokenTicker {
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 300;
+  color: $color-text-secondary;
+}

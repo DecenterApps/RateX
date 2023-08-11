@@ -89,15 +89,5 @@
             "42161": "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978"
         },
         "decimals": 18
-    },
-    {
-        "ticker": "MKR",
-        "img": "https://cdn.moralis.io/eth/0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2.png",
-        "name": "Maker",
-        "address": {
-            "1": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
-            "42161": "??"
-        },
-        "decimals": 18
     }
 ]

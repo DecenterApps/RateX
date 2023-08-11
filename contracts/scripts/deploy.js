@@ -1,33 +1,66 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+hre = require("hardhat");
+const {resolve, join} = require("path");
+const fs = require("fs");
+const {deployRateX} = require("./utils/deployment");
+const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
+const {config} = require("../addresses.config");
+
+const addresses = config[hre.network.config.chainId];
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+    const {rateX, addr1} = await deployRateX();
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+    await sendWethTokensToUser(addr1, hre.ethers.parseEther("1000"));
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+    const address = await rateX.getAddress();
+    console.log("RateX address:" + address);
+    saveNewAddressToFile(address);
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+    const RateX = await hre.artifacts.readArtifact("RateX");
+    const rateXAbi = RateX.abi;
+    saveAbiToFile(rateXAbi);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+function saveAbiToFile(abi) {
+    const content = `export const RateXAbi = ${JSON.stringify(abi)}`;
+
+    const dirPath = resolve(__dirname, '../../UI/src/contracts');
+    const filePath = join(dirPath, 'RateXAbi.ts');
+    try {
+        fs.writeFileSync(filePath, content);
+        console.log("File written successfully");
+    } catch (error) {
+        console.error(`Error writing file: ${error}`);
+    }
+}
+
+function saveNewAddressToFile(address) {
+    const content =
+        `import {RateXAbi} from "./RateXAbi";
+import Web3 from "web3";
+
+import initRPCProvider from "../providers/RPCProvider";
+
+const web3: Web3 = initRPCProvider(42161);
+export const rateXAddress: string =  '${address}'
+
+export const RateXContract = new web3.eth.Contract(
+    RateXAbi,
+    rateXAddress
+);`;
+
+    const dirPath = resolve(__dirname, '../../UI/src/contracts');
+    const filePath = join(dirPath, 'RateX.ts');
+
+    try {
+        fs.writeFileSync(filePath, content);
+        console.log("File written successfully");
+    } catch (error) {
+        console.error(`Error writing file: ${error}`);
+    }
+}
+
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+    console.error(error);
+    process.exitCode = 1;
 });

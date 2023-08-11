@@ -1,12 +1,24 @@
 [
     {
         "chainId": 42161,
-        "name": "Arbitrum",
-        "img": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.obvious.technology%2Fbest-wallet-for-arbitrum&psig=AOvVaw2kqg3MJ3Qw0ceY4GdVLC78&ust=1690722035984000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCMDsjsX8s4ADFQAAAAAdAAAAABAJ"
+        "name": "Arbitrum One",
+        "Token": {
+            "name": "ETH",
+            "symbol": "ETH",
+            "decimals": 18
+        },
+        "RPC": "https://arb1.arbitrum.io/rpc",
+        "img": "https://altcoinsbox.com/wp-content/uploads/2023/03/arbitrum-logo.png"
     },
     {
         "chainId": 10,
         "name": "Optimism",
-        "img": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.coingecko.com%2Fen%2Fcoins%2Foptimism&psig=AOvVaw1D6MEQcrmKAcyWXtaVxA5p&ust=1690722078284000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCOCQ-9j8s4ADFQAAAAAdAAAAABAJ"
+        "Token": {
+            "name": "ETH",
+            "symbol": "ETH",
+            "decimals": 18
+        },
+        "RPC": "https://mainnet.optimism.io",
+        "img": "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png"
     }
 ]
