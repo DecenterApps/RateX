@@ -9,6 +9,6 @@ export type PoolInfo = {
 
 export interface DEXGraphFunctionality {
   getTopPools: (numPools: number) => Promise<PoolInfo[]>
-  getPoolsWithTokenPair: (token1: string, token2: string, first: number) => Promise<PoolInfo[]>
+  getPoolsWithTokenPair: (tokenA: string, tokenB: string, first: number) => Promise<PoolInfo[]>
   getPoolsWithToken: (token: string, first: number) => Promise<PoolInfo[]>
 }
