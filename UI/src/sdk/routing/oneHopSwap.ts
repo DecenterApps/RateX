@@ -44,7 +44,7 @@ async function preprocessPools(tokenIn: string, tokenOut: string, amountIn: bigi
 function findViableRoutes(poolsIn: AdditionalPoolInfo[], poolsOut: AdditionalPoolInfo[]): Route[] {
 
     return poolsIn.flatMap(poolIn => poolsOut
-        .filter(poolOut => poolIn.token1 === poolOut.token0)
+        .filter(poolOut => poolIn.tokenA === poolOut.tokenB)
         .map(poolOut => ({ pools: [poolIn.poolId, poolOut.poolId] }))
     )
 }
@@ -66,7 +66,7 @@ function calculateExpectedOutputAmountRoute(poolInfoMap: Map<string, AdditionalP
     for (let i = 0; i < route.pools.length; i++) {
         const pool: AdditionalPoolInfo | undefined = poolInfoMap.get(route.pools[i]);
         if (pool)
-            amountOut = calculateExpectedOutputAmountPool(amountOut, pool.reserve0, pool.reserve1);
+            amountOut = calculateExpectedOutputAmountPool(amountOut, pool.reserveA, pool.reserveB);
     }
     return amountOut
 }
@@ -96,14 +96,14 @@ function updatePools(poolInfoMap: Map<string, AdditionalPoolInfo>, route: Route,
         const poolId = route.pools[i];
         const pool: AdditionalPoolInfo | undefined = poolInfoMap.get(poolId);
         if (pool) {
-            const newReserve0 = pool.reserve0 + currAmount
-            currAmount = calculateExpectedOutputAmountPool(currAmount, pool.reserve0, pool.reserve1);
-            const newReserve1 = pool.reserve1 - currAmount
+            const newReserveA = pool.reserveA + currAmount
+            currAmount = calculateExpectedOutputAmountPool(currAmount, pool.reserveA, pool.reserveB);
+            const newReserveB = pool.reserveB - currAmount
             
             poolInfoMap.set(poolId, {
                 ...pool,
-                reserve0: newReserve0,
-                reserve1: newReserve1
+                reserveA: newReserveA,
+                reserveB: newReserveB
             })
         }
     }

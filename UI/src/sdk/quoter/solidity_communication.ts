@@ -1,35 +1,36 @@
-import {PoolInfo} from "../DEXGraphFunctionality"
-import {getPoolIdsForTokenPairs} from "./graph_communication";
-import {PoolEntry, QuoteResultEntry, ResponseType} from "../types";
-import {RateXContract} from "../../contracts/RateX";
-import Web3 from "web3";
-import initRPCProvider from "../../providers/RPCProvider";
-import {ERC20_ABI} from "../../contracts/ERC20_ABI";
+import { PoolInfo } from '../DEXGraphFunctionality'
+import { QuoteResultEntry } from '../types'
+import { fetchPoolsData, getPoolIdsForTokenPairs } from './graph_communication'
+import { PoolEntry } from '../types'
+import { ERC20_ABI } from '../../contracts/ERC20_ABI'
+import initRPCProvider from '../../providers/RPCProvider'
+import Web3 from 'web3'
+import { ResponseType } from '../types'
+import { RateXContract } from '../../contracts/RateX'
 
 // In future will have chainId
 export type AdditionalPoolInfo = {
-    poolId: string
-    dexId: string
-    token0: string         // address
-    token1: string         // address
-    reserve0: bigint       // in wei
-    reserve1: bigint       // in wei
-    fee: number
+  poolId: string
+  dexId: string
+  tokenA: string // address
+  tokenB: string // address
+  reserveA: bigint // in wei
+  reserveB: bigint // in wei
+  fee: number
 }
 
 async function getAdditionalPoolInfo(poolsInfo: PoolInfo[]): Promise<AdditionalPoolInfo[]> {
+  const additionalPoolsInfo: AdditionalPoolInfo[] = []
 
-    const additionalPoolsInfo: AdditionalPoolInfo[] = []
+  // TO-DO: calls to Solidity
 
-    // TO-DO: calls to Solidity
-
-    return additionalPoolsInfo
+  return additionalPoolsInfo
 }
 
 
 async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<QuoteResultEntry> {
 
-    const pools: PoolInfo[] =  await getPoolIdsForTokenPairs(token1, token2, 3)
+    const pools: PoolInfo[] =  await fetchPoolsData(token1, token2, 3)
     const poolEntries: PoolEntry[] = pools.map((p: PoolInfo) => new PoolEntry(p.poolId, p.dexId))
 
     //@ts-ignore
@@ -71,7 +72,7 @@ async function executeSwap(
 
         // @ts-ignore
         await RateXContract.methods.swap(quote.poolAddress, token1, token2, amountIn, minAmountOut, signer, quote.dexId).send({from: signer})
-            .on('transactionHash', function(hash){
+            .on('transactionHash', function(hash: string){
                 transactionHash = hash;
             });
 
