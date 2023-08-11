@@ -28,9 +28,8 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
 
   for (const dex of initializedDexes) {
     const pools = await dex.getPoolsWithTokenPair(tokenA, tokenB, numPools)
-    poolsInfo.concat(pools)
+    poolsInfo.push(...pools)
   }
-
   return poolsInfo
 }
 
@@ -45,7 +44,7 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
 
   for (const dex of initializedDexes) {
     const pools = await dex.getPoolsWithToken(token, numPools)
-    poolsInfo.concat(pools)
+    poolsInfo.push(...pools)
   }
 
   return poolsInfo
@@ -57,29 +56,30 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @returns: list of poolIds
  */
 async function getTopPools(numPools: number = 5): Promise<PoolInfo[]> {
-  const poolsInfo: PoolInfo[] = []
+  let poolsInfo: PoolInfo[] = []
 
   for (const dex of initializedDexes) {
     const pools = await dex.getTopPools(numPools)
-    poolsInfo.concat(pools)
+    poolsInfo = poolsInfo.concat(pools)
   }
 
   return poolsInfo
 }
 
 async function fetchPoolsData(tokenFrom: string, tokenTo: string, numPools: number = 5): Promise<PoolInfo[]> {
-  const poolsInfo: PoolInfo[] = []
+  let poolsInfo: PoolInfo[] = []
 
   if (!initialized) {
     await initializeDexes()
     initialized = true
   }
 
-  const poolsFrom = await getPoolIdsForToken(tokenFrom, numPools)
-  const poolsTo = await getPoolIdsForToken(tokenTo, numPools)
-  const topPools = await getTopPools(numPools)
+  // const poolsFrom = await getPoolIdsForToken(tokenFrom, numPools)
+  // const poolsTo = await getPoolIdsForToken(tokenTo, numPools)
+  // const topPools = await getTopPools(numPools)
+  const poolsForTokenPair = await getPoolIdsForTokenPairs(tokenFrom, tokenTo, numPools)
 
-  poolsInfo.concat(poolsFrom, poolsTo, topPools)
+  poolsInfo.push(...poolsForTokenPair)
 
   return poolsInfo
 }

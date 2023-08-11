@@ -1,4 +1,12 @@
 import { PoolInfo } from '../DEXGraphFunctionality'
+import { QuoteResultEntry } from '../types'
+import { fetchPoolsData, getPoolIdsForTokenPairs } from './graph_communication'
+import { PoolEntry } from '../types'
+import { ERC20_ABI } from '../../contracts/ERC20_ABI'
+import initRPCProvider from '../../providers/RPCProvider'
+import Web3 from 'web3'
+import { ResponseType } from '../types'
+import { RateXContract } from '../../contracts/RateX'
 
 // In future will have chainId
 export type AdditionalPoolInfo = {
@@ -22,7 +30,7 @@ async function getAdditionalPoolInfo(poolsInfo: PoolInfo[]): Promise<AdditionalP
 
 async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<QuoteResultEntry> {
 
-    const pools: PoolInfo[] =  await getPoolIdsForTokenPairs(token1, token2, 3)
+    const pools: PoolInfo[] =  await fetchPoolsData(token1, token2, 3)
     const poolEntries: PoolEntry[] = pools.map((p: PoolInfo) => new PoolEntry(p.poolId, p.dexId))
 
     //@ts-ignore
@@ -64,7 +72,7 @@ async function executeSwap(
 
         // @ts-ignore
         await RateXContract.methods.swap(quote.poolAddress, token1, token2, amountIn, minAmountOut, signer, quote.dexId).send({from: signer})
-            .on('transactionHash', function(hash){
+            .on('transactionHash', function(hash: string){
                 transactionHash = hash;
             });
 
