@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Input, Popover, Radio, Modal } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
 import RoutingDiagram from '../components/RoutingDiagram'
@@ -31,11 +31,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenToPrice, setTokenToPrice] = useState(0)
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
+  const [quote, setQuote] = useState<QuoteResultEntry>()
+
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
   const [loadingQuote, setLoadingQuote] = useState(false)
   const [loadingSwap, setLoadingSwap] = useState(false)
-  const [quote, setQuote] = useState<QuoteResultEntry>()
+  const lastCallTime = useRef(0)
 
   useEffect(() => {
     async function getPrices() {
@@ -64,7 +66,11 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function changeAmount(e: any) {
-    setTokenFromAmount(e.target.value)
+    let val = e.target.value
+    let isValid = /^\d*\.?\d*$/.test(val)
+    if (isValid) {
+      setTokenFromAmount(val)
+    }
   }
 
   function switchTokens() {
@@ -126,8 +132,14 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function getQuote() {
+    let callTime = new Date().getTime()
+    if (lastCallTime.current < callTime) {
+      lastCallTime.current = callTime
+    }
+
     if (tokenFromAmount <= 0 || isNaN(tokenFromAmount)) {
       setTokenToAmount(0)
+      setLoadingQuote(false)
       return
     }
 
@@ -136,6 +148,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     setLoadingQuote(true)
     initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
       .then((q: QuoteResultEntry) => {
+        if(callTime < lastCallTime.current) {
+          return
+        }
         setTokenToAmount(Number(q.amountOut) / 10 ** tokenTo.decimals)
         setLoadingQuote(false)
         setQuote(q)
