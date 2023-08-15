@@ -1,17 +1,18 @@
 import { useEffect, useState, useRef } from 'react'
 import { Input, Popover, Radio, Modal } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
+import Web3 from 'web3'
+
 import RoutingDiagram from '../components/RoutingDiagram'
 import tokenList from '../constants/tokenList.json'
-
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
 import { initGetQuote, swap } from '../sdk/quoter/front_communication'
-import Web3 from 'web3'
 import initRPCProvider from '../providers/RPCProvider'
 import { QuoteResultEntry } from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
+import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -57,9 +58,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   //     return () => clearInterval(interval)
   // }, [tokenOneAmount, tokenOne, tokenTwo])
 
-  useEffect(() => {
-    getQuote()
-  }, [tokenFromAmount, tokenFrom, tokenTo])
+  useDebouncedEffect(
+    () => {
+      getQuote()
+    },
+    500,
+    [tokenFromAmount, tokenFrom, tokenTo]
+  )
 
   function handleSlippage(e: any) {
     setSlippage(e.target.value)
@@ -148,7 +153,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     setLoadingQuote(true)
     initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
       .then((q: QuoteResultEntry) => {
-        if(callTime < lastCallTime.current) {
+        if (callTime < lastCallTime.current) {
           return
         }
         setTokenToAmount(Number(q.amountOut) / 10 ** tokenTo.decimals)
