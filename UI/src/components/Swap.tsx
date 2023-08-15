@@ -72,7 +72,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   function changeAmount(e: any) {
     let val = e.target.value
-    let isValid = /^\d*\.?\d*$/.test(val)
+    const numberRegex = /^\d*\.?\d*$/
+    let isValid = numberRegex.test(val)
     if (isValid) {
       setTokenFromAmount(val)
     }
@@ -137,7 +138,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function getQuote() {
-    let callTime = new Date().getTime()
+    let callTime = Date.now()
     if (lastCallTime.current < callTime) {
       lastCallTime.current = callTime
     }
