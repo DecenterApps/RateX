@@ -1,7 +1,6 @@
 hre = require("hardhat");
 const {config} = require("../../addresses.config");
 
-
 const addresses = config[hre.network.config.chainId];
 
 async function deploySushiDex() {
@@ -32,6 +31,14 @@ async function deployUniswapDex() {
     return {uniswap, addr1, addr2, addr3};
 }
 
+async function deployCurveDex() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const Curve = await hre.ethers.getContractFactory("CurveDex");
+    const curve = await Curve.deploy(addresses.Curve.curve2Pool);
+    await curve.waitForDeployment();
+    return {curve, addr1, addr2, addr3};
+}
+
 async function deployRateX() {
     const [addr1, addr2, addr3] = await hre.ethers.getSigners();
     const { sushiSwap} = await deploySushiDex();
@@ -49,5 +56,6 @@ async function deployRateX() {
 module.exports = {
     deployRateX,
     deploySushiDex,
-    deployUniswapDex
+    deployUniswapDex,
+    deployCurveDex
 }

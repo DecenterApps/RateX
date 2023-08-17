@@ -9,11 +9,19 @@ const config = {
         usdcToken: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
         uniToken: "0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0",
         linkToken: "0xf97f4df75117a78c1A5a0DBb814Af92458539FB4",
+        usdceToken: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
 
         sushiRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
         sushiFactory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
 
-        curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDC USDT pool,
+        Curve: {
+            curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDC USDT pool,
+            curve_wBTC_renBTCPool: "0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb",
+            eurusd: "0xA827a652Ead76c6B0b3D19dba05452E06e25c27e",
+            wsteth: "0x6eB2dc694eB516B16Dc9FBc678C60052BbdD7d80",
+            // tricryptoPool: "0x960ea3e3C7FB317332d990873d354E18d7645590", WE CANT DO THIS FOR NOW BECAUSE OF THE 3 TOKENS
+        },
+        stableSwapFactory: "0xb17b674D9c5CB2e441F8e196a2f048A81355d031", // Gas
 
         uniQuoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
         uniRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
@@ -37,8 +45,6 @@ const config = {
 
         sushiRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
         sushiFactory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
-
-        curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDC USDT pool,
 
         uniQuoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
         uniRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
