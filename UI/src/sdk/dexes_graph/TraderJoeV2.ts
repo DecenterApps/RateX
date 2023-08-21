@@ -15,13 +15,8 @@ export default class TraderJoeV2 implements DEXGraphFunctionality {
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools))
-    queryResult.pairs.forEach((pair: any) => {
-      poolsInfo.push({
-        poolId: pair.id,
-        dexId: this.dexId,
-        tokenA: pair.tokenX.id,
-        tokenB: pair.tokenY.id,
-      })
+    queryResult.pairs.forEach((pool: any) => {
+      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
     return poolsInfo
@@ -30,13 +25,8 @@ export default class TraderJoeV2 implements DEXGraphFunctionality {
   async getPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(tokenA, tokenB, numPools))
-    queryResult.pairs.forEach((pair: any) => {
-      poolsInfo.push({
-        poolId: pair.id,
-        dexId: this.dexId,
-        tokenA: pair.tokenX.id,
-        tokenB: pair.tokenY.id,
-      })
+    queryResult.pairs.forEach((pool: any) => {
+      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
     return poolsInfo
@@ -45,13 +35,8 @@ export default class TraderJoeV2 implements DEXGraphFunctionality {
   async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
-    queryResult.pairs.forEach((pair: any) => {
-      poolsInfo.push({
-        poolId: pair.id,
-        dexId: this.dexId,
-        tokenA: pair.tokenX.id,
-        tokenB: pair.tokenY.id,
-      })
+    queryResult.pairs.forEach((pool: any) => {
+      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
     return poolsInfo
@@ -65,9 +50,11 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
         id
         tokenX {
           id
+          decimals
         }
         tokenY {
           id
+          decimals
         }
       }
     }
@@ -95,9 +82,11 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
         id
         tokenX {
           id
+          decimals
         }
         tokenY {
           id
+          decimals
         }
       }
     }`)
@@ -115,10 +104,32 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
         name
         tokenX {
           id
+          decimals
         }
         tokenY {
           id
+          decimals
         }
       }
     }`)
+}
+
+function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
+
+  // always has 2 tokens in pool ?
+  const pool: PoolInfo = {
+    poolId: jsonData.id,
+    dexId: dexId,
+    tokens: [
+      {
+        address: jsonData.tokenX.id,
+        decimals: jsonData.tokenX.decimals
+      },
+      {
+        address: jsonData.tokenY.id,
+        decimals: jsonData.tokenY.decimals
+      }
+    ]
+  }
+  return pool
 }
