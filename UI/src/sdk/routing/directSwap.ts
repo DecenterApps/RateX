@@ -1,6 +1,6 @@
 import { getPoolIdsForTokenPairs } from '../quoter/graph_communication'
 import { AdditionalPoolInfo, getAdditionalPoolInfo } from '../quoter/solidity_communication'
-import { PoolInfo } from '../types'
+import { PoolInfo } from '../DEXGraphFunctionality'
 
 export interface Route {
   pools: string[] //addresses of the pools

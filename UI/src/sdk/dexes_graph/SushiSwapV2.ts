@@ -1,28 +1,8 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import { Pool, PoolInfo } from '../types'
 
-export class SushiSwapV2Pool extends Pool {
-  reserveA: bigint
-  reserveB: bigint
-
-  static readonly fee: number = 0.003
-
-  constructor(poolId: string, dexId: string, tokenA: string, tokenB: string, reserveA: bigint, reserveB: bigint) {
-    super(poolId, dexId, tokenA, tokenB)
-    this.reserveA = reserveA
-    this.reserveB = reserveB
-  }
-
-  calculateExpectedOutputAmount(tokenIn: string, amountIn: bigint): bigint {
-    const k = this.reserveA * this.reserveB
-    const amount2 =
-      tokenIn === this.tokenA ? this.reserveB - k / (this.reserveA + amountIn) : this.reserveA - k / (this.reserveB + amountIn)
-    return BigInt(Math.round(Number(amount2) * (1 - SushiSwapV2Pool.fee)))
-  }
-}
 export default class SushiSwapV2 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
   dexId = 'SUSHI_V2'
@@ -91,7 +71,11 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
   }`)
 }
 
-function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
+function queryPoolsWithTokenPair(
+  tokenA: string,
+  tokenB: string,
+  numPools: number
+): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
         pairs(first: ${numPools}, orderBy: volumeUSD, where: {
           or: [
@@ -123,8 +107,8 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
   return parse(gql`{
         pairs(first: ${numPools}, orderBy: volumeUSD, where: {
           or: [
-            { token0: "${token.toLowerCase()}" },
-            { token1: "${token.toLowerCase()}" }
+            { token0: "${token}" },
+            { token1: "${token}" }
           ]
         }
         ) {
