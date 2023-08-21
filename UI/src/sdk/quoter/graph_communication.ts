@@ -1,5 +1,4 @@
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
-import { PoolInfo } from '../types'
+import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
 
 let initializedDexes: DEXGraphFunctionality[] = []
 let initialized = false
@@ -75,17 +74,14 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numPools: numb
     initialized = true
   }
 
-  const poolsFrom = await getPoolIdsForToken(tokenFrom, numPools)
-  const poolsTo = await getPoolIdsForToken(tokenTo, numPools)
-  const topPools = await getTopPools(numPools)
+  // const poolsFrom = await getPoolIdsForToken(tokenFrom, numPools)
+  // const poolsTo = await getPoolIdsForToken(tokenTo, numPools)
+  // const topPools = await getTopPools(numPools)
+  const poolsForTokenPair = await getPoolIdsForTokenPairs(tokenFrom, tokenTo, numPools)
 
-  poolsInfo.push(...poolsFrom)
-  poolsInfo.push(...poolsTo)
-  poolsInfo.push(...topPools)
+  poolsInfo.push(...poolsForTokenPair)
 
-  return poolsInfo.filter((pool, index, allPools) => {
-    return allPools.findIndex((pool2) => pool2.poolId === pool.poolId) === index
-  })
+  return poolsInfo
 }
 
 export { fetchPoolsData, getPoolIdsForToken, getPoolIdsForTokenPairs }

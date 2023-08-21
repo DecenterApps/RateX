@@ -1,8 +1,7 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import { PoolInfo } from '../types'
 
 export default class TraderJoeV2 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arbitrum'
@@ -74,7 +73,11 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
   `)
 }
 
-function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
+function queryPoolsWithTokenPair(
+  tokenA: string,
+  tokenB: string,
+  numPools: number
+): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
       lbpairs(first: ${numPools}, orderBy: volumeUSD, orderDirection: desc, where: {
         or: [
