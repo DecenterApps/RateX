@@ -1,7 +1,8 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
+import { PoolInfo } from '../types'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
@@ -71,11 +72,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
   `)
 }
 
-function queryPoolsWithTokenPair(
-  tokenA: string,
-  tokenB: string,
-  numPools: number
-): TypedDocumentNode<any, Record<string, unknown>> {
+function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
         liquidityPools(first: ${numPools}, orderDirection: desc, orderBy: cumulativeVolumeUSD, where: {
           and: [
