@@ -40,21 +40,19 @@ contract UniswapHelper is IUniswapHelper {
     function _fetchPoolData(address _pool, uint256 _numOfTicks)
     internal view returns (PoolData memory)
     {
-        int24 tickSpacing = IUniswapV3PoolImmutables(_pool).tickSpacing();
-        uint24 fee = IUniswapV3PoolImmutables(_pool).fee();
-        uint128 liquidity = IUniswapV3Pool(_pool).liquidity();
-        (uint160 sqrtPriceX96,int24 tick, , , , ,) = IUniswapV3Pool(_pool).slot0();
-
-        console.log("AA Pool Address:", _pool);
-        console.log("AA Start tick: ", uint256(int256(tick)));
+        IUniswapV3Pool pool = IUniswapV3Pool(_pool);
+        IUniswapV3PoolImmutables immutables = IUniswapV3PoolImmutables(_pool);
+        (uint160 sqrtPriceX96,int24 tick, , , , ,) = pool.slot0();
 
         PoolInfo memory info = PoolInfo({
             pool: _pool,
+            token0: immutables.token0(),
+            token1: immutables.token1(),
             tick: tick,
-            tickSpacing: tickSpacing,
-            fee: fee,
+            tickSpacing: immutables.tickSpacing(),
+            fee: immutables.fee(),
             sqrtPriceX96: sqrtPriceX96,
-            liquidity: liquidity
+            liquidity: pool.liquidity()
         });
 
         return PoolData({
@@ -64,92 +62,32 @@ contract UniswapHelper is IUniswapHelper {
         });
     }
 
-
-
     function _fetchTicks(PoolInfo memory _info, uint256 _numOfTicks, bool _zeroForOne)
     internal view returns (TickData[] memory)
     {
         TickData[] memory ticks = new TickData[](_numOfTicks);
+        int24 tick = _info.tick;
+        int128 liquidityNet;
+        bool initialized;
+        for (uint256 i = 0; i < _numOfTicks; ++i) {
+            (tick, initialized) = TickBitmap.nextInitializedTickWithinOneWord(_info.pool, tick, _info.tickSpacing, _zeroForOne);
 
-        uint160 sqrtPriceLimitX96 = _zeroForOne ? (TickMath.MIN_SQRT_RATIO + 1) : (TickMath.MAX_SQRT_RATIO - 1);
-        int256 amountIn = 10 ** 30 * 10 ** 18; // simulate large trade and stop after _tickSize is reached
-
-        SwapState memory state = SwapState({
-            amountSpecifiedRemaining: amountIn,
-            amountCalculated: 0,
-            sqrtPriceX96: _info.sqrtPriceX96,
-            tick: _info.tick,
-            liquidity: _info.liquidity
-        });
-
-        console.log("==================================");
-        console.log("AA Zero for one: ", _zeroForOne);
-        console.log("AA Start tick: ", uint256(int256(_info.tick)));
-
-        uint256 counter = 0;
-
-        while (
-            state.amountSpecifiedRemaining != 0 &&
-            state.sqrtPriceX96 != sqrtPriceLimitX96 &&
-            counter < _numOfTicks
-        ) {
-            StepComputations memory step;
-            step.sqrtPriceStartX96 = state.sqrtPriceX96;
-
-            (step.tickNext, step.initialized, step.sqrtPriceNextX96) = _getNextTick(
-                _info.pool,
-                state.tick,
-                _info.tickSpacing,
-                _zeroForOne
-            );
-
-            (state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount) = SwapMath.computeSwapStep(
-                state.sqrtPriceX96,
-                (_zeroForOne ? step.sqrtPriceNextX96 < sqrtPriceLimitX96 : step.sqrtPriceNextX96 > sqrtPriceLimitX96)
-                    ? sqrtPriceLimitX96
-                    : step.sqrtPriceNextX96,
-                state.liquidity,
-                state.amountSpecifiedRemaining,
-                _info.fee
-            );
-
-            state.amountSpecifiedRemaining -= (step.amountIn + step.feeAmount).toInt256();
-            state.amountCalculated = state.amountCalculated.sub(step.amountOut.toInt256());
-
-            int128 liquidityNet = 0;
-
-            // shift tick if we reached the next price
-            if (state.sqrtPriceX96 == step.sqrtPriceNextX96) {
-                // if the tick is initialized, run the tick transition
-                if (step.initialized) {
-                    (, liquidityNet,,,,,,) = IUniswapV3Pool(_info.pool).ticks(step.tickNext);
-                    // if we're moving leftward, we interpret liquidityNet as the opposite sign
-                    // safe because liquidityNet cannot be type(int128).min
-                    if (_zeroForOne)
-                        liquidityNet = - liquidityNet;
-                    state.liquidity = LiquidityMath.addDelta(state.liquidity, liquidityNet);
-                }
-                state.tick = _zeroForOne ? step.tickNext - 1 : step.tickNext;
-            } else if (state.sqrtPriceX96 != step.sqrtPriceStartX96) {
-                // recompute unless we're on a lower tick boundary (i.e. already transitioned ticks), and haven't moved
-                state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96);
+            if (initialized) {
+                (, liquidityNet,,,,,,) = IUniswapV3Pool(_info.pool).ticks(tick);
+            } else {
+                liquidityNet = 0;
             }
 
-            console.log("AA Tick next: ", uint256(int256(step.tickNext)));
-            console.log("AA Liquidity net: ", uint256(int256(liquidityNet)));
-            console.log("-----");
-
-            ticks[counter] = TickData({
-                tick: step.tickNext,
-                initialized: step.initialized,
+            ticks[i] = TickData({
+                tick: tick,
+                initialized: initialized,
                 liquidityNet: liquidityNet
             });
-            counter++;
-        }
 
+            if (_zeroForOne) tick -= 1;
+        }
         return ticks;
     }
-
 
     function _getNextTick(
         address _poolAddress,

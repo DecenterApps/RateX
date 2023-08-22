@@ -1,13 +1,17 @@
 export class PoolInfo {
     pool: string;
+    token0: string;
+    token1: string;
     tick: bigint;
     tickSpacing: bigint;
     fee: bigint;
     sqrtPriceX96: bigint;
     liquidity: bigint;
 
-    constructor(pool: string, tick: bigint, tickSpacing: bigint, fee: bigint, sqrtPriceX96: bigint, liquidity: bigint) {
+    constructor(pool: string, token0: string, token1: string, tick: bigint, tickSpacing: bigint, fee: bigint, sqrtPriceX96: bigint, liquidity: bigint) {
         this.pool = pool;
+        this.token0 = token0;
+        this.token1 = token1;
         this.tick = tick;
         this.tickSpacing = tickSpacing;
         this.fee = fee;
@@ -57,3 +61,22 @@ export type StepComputations = {
     amountOut: bigint,
     feeAmount: bigint
 }
+
+
+// helper used for test
+export class TradeInfo {
+    pool: string;
+    tokenIn: string;
+    tokenOut: string;
+    amountIn: bigint;
+    fee: bigint;
+
+    constructor(pool, tokenIn, tokenOut, amountIn, fee) {
+        this.pool = pool;
+        this.tokenIn = tokenIn;
+        this.tokenOut = tokenOut;
+        this.amountIn = amountIn;
+        this.fee = fee;
+    }
+}
+

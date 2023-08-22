@@ -36,6 +36,8 @@ interface IUniswapState {
 
     struct PoolInfo {
         address pool;
+        address token0;
+        address token1;
         int24 tick;
         int24 tickSpacing;
         uint24 fee;

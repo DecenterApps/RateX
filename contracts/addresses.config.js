@@ -33,6 +33,7 @@ const config = {
         gmx_usdc_pool_0_1: "0x0A36952Fb8C8dc6daeFB2fADb07C5212f560880e",
         uni_weth_pool: "0xC24f7d8E51A64dc1238880BD00bb961D54cbeb29",
         weth_link_pool: "0x468b88941e7Cc0B88c1869d68ab6b570bCEF62Ff",
+        dai_usdce_pool_0_0_1: "0xF0428617433652c9dc6D1093A42AdFbF30D29f74",
 
         impersonate_weth: "0x0df5dfd95966753f01cb80e76dc20ea958238c46",
         impersonate_dai: "0xd85e038593d7a098614721eae955ec2022b9b91b"
