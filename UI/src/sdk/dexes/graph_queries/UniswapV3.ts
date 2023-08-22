@@ -1,12 +1,14 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import { PoolInfo } from '../types'
+import dexIds from '../dexIdsList'
+import { PoolInfo } from '../../types'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
+  
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
-  dexId = 'UNI_V3'
+  dexId = dexIds.UNISWAP_V3
 
   static initialize(): DEXGraphFunctionality {
     return new UniswapV3()

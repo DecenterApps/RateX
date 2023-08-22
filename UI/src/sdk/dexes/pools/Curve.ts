@@ -1,4 +1,4 @@
-import { Token, Pool } from '../types'
+import { Token, Pool, PoolInfo } from '../../types'
 import BigNumber from 'bignumber.js'
 
 // Output amount calculations resource: https://atulagarwal.dev/posts/curveamm/stableswap/
@@ -18,6 +18,12 @@ export class CurvePool extends Pool {
   
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
       return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
+    }
+
+    static createFromSolidityData(oldPool: PoolInfo, A: string, fee: string, balances: string[]): CurvePool {
+        const { poolId, dexId, tokens } = oldPool 
+        const reserves = balances.map(balance => new BigNumber(balance))   
+        return new CurvePool(poolId, dexId, tokens, reserves, fee, A)
     }
 }
 

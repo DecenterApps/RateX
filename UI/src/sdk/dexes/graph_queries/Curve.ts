@@ -1,15 +1,16 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import { PoolInfo } from '../types'
+import dexIds from '../dexIdsList'
+import { PoolInfo } from '../../types'
 
 // test queries on: https://thegraph.com/hosted-service/subgraph/messari/curve-finance-arbitrum
 
 export default class Curve implements DEXGraphFunctionality {
 
     endpoint = 'https://api.thegraph.com/subgraphs/name/messari/curve-finance-arbitrum'
-    dexId = 'Curve'
+    dexId = dexIds.CURVE
 
     static initialize(): DEXGraphFunctionality {
         return new Curve()
