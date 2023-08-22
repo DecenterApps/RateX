@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js'
+
 export class PoolEntry {
   poolAddress: string
   dexId: string
@@ -28,25 +30,29 @@ export interface ResponseType {
   errorMessage: string
 }
 
+export type Token = {
+  address: string
+  decimals: number
+}
+
+// we get from Graph QL
 export type PoolInfo = {
   poolId: string
   dexId: string
-  tokenA: string // address
-  tokenB: string // address
+  tokens: Token[]          // list of addresses
 }
 
+// we get from Solidity (extra info)
 export abstract class Pool {
   poolId: string
   dexId: string
-  tokenA: string
-  tokenB: string
+  tokens: Token[]         // list of addresses
 
-  protected constructor(poolId: string, dexId: string, tokenA: string, tokenB: string) {
+  protected constructor(poolId: string, dexId: string, tokens: Token[]) {
     this.poolId = poolId
     this.dexId = dexId
-    this.tokenA = tokenA
-    this.tokenB = tokenB
+    this.tokens = tokens
   }
 
-  abstract calculateExpectedOutputAmount(tokenIn: string, amountIn: bigint): bigint
+  abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint
 }

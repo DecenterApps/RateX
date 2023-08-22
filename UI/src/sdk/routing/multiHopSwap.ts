@@ -28,12 +28,12 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
   for (let hop = 0; hop < max_hops - 1; hop++) {
     dp.get(hop)?.forEach((tokenPathInfo, tokenA) => {
       graph.get(tokenA)?.forEach((pool) => {
-        const tokenB: string = pool.tokenA == tokenA ? pool.tokenB : pool.tokenA
+        const tokenB: string = pool.tokens[0].address == tokenA ? pool.tokens[1].address : pool.tokens[0].address
         if (tokenPathInfo.path.includes(tokenB)) {
           return
         }
 
-        const amountOut = pool.calculateExpectedOutputAmount(tokenA, tokenPathInfo.amountOut)
+        const amountOut = pool.calculateExpectedOutputAmount(tokenA, tokenB, tokenPathInfo.amountOut)
         const newPath = [...tokenPathInfo.path, tokenB]
 
         if (!dp.has(hop + 1)) {
@@ -68,16 +68,16 @@ function createGraph(pools: Pool[]): Map<string, Pool[]> {
   for (let pool of pools) {
     const poolId = pool.poolId
 
-    if (!graph.has(pool.tokenA)) {
-      graph.set(pool.tokenA, [])
+    if (!graph.has(pool.tokens[0].address)) {
+      graph.set(pool.tokens[0].address, [])
     }
 
-    if (!graph.has(pool.tokenB)) {
-      graph.set(pool.tokenB, [])
+    if (!graph.has(pool.tokens[1].address)) {
+      graph.set(pool.tokens[1].address, [])
     }
 
-    graph.get(pool.tokenA)?.push(pool)
-    graph.get(pool.tokenB)?.push(pool)
+    graph.get(pool.tokens[0].address)?.push(pool)
+    graph.get(pool.tokens[1].address)?.push(pool)
   }
 
   return graph
