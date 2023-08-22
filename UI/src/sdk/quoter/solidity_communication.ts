@@ -44,7 +44,7 @@ async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigi
 }
 
 async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint) {
-  const poolsInfo: PoolInfo[] = await fetchPoolsData(tokenA, tokenB, 5)
+  //const poolsInfo: PoolInfo[] = await fetchPoolsData(tokenA, tokenB, 5)
   // send to solidity to get other info for each pool
   // parse return values into Pool[] with every DEX having its own class that extends Pool
 
@@ -55,9 +55,10 @@ async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bi
   // pools.push(new SushiSwapV2Pool('3', 'SUSHI_V2', 'b', 'c', BigInt(1000), BigInt(1000)))
   // pools.push(new SushiSwapV2Pool('4', 'SUSHI_V2', 'a', 'c', BigInt(1), BigInt(500)))
 
-  const graph = createGraph(pools)
+  // NE RADI VAM OVO????
+  //const graph = createGraph(pools)
 
-  return multiHopSwap(amountIn, tokenA, tokenB, graph)
+  //return multiHopSwap(amountIn, tokenA, tokenB, graph)
 }
 
 async function executeSwap(

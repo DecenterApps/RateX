@@ -8,10 +8,10 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    const files = ['SushiSwapV2.ts', 'UniswapV3.ts']
+    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
-        const module = await import(`../dexes_graph/${file}`)
+        const module = await import(`../dexes/graph_queries/${file}`)
         initializedDexes.push(module.default.initialize())
       }
     }
@@ -20,11 +20,19 @@ async function initializeDexes(): Promise<void> {
   }
 }
 
+async function checkInitializedDexes() {
+  if (!initialized) {
+    await initializeDexes()
+    initialized = true
+  }
+}
+
 /* returns dictionary of dexes and their poolIds for token1 and token2:
  *   UniswapV3: [poolId1, poolId2, ...],
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<PoolInfo[]> {
+  await checkInitializedDexes();
   const poolsInfo: PoolInfo[] = []
 
   for (const dex of initializedDexes) {
@@ -41,6 +49,7 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @returns: list of poolIds
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<PoolInfo[]> {
+  await checkInitializedDexes();
   const poolsInfo: PoolInfo[] = []
 
   for (const dex of initializedDexes) {
@@ -57,7 +66,9 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @returns: list of poolIds
  */
 async function getTopPools(numPools: number = 5): Promise<PoolInfo[]> {
+  await checkInitializedDexes();
   let poolsInfo: PoolInfo[] = []
+  
 
   for (const dex of initializedDexes) {
     const pools = await dex.getTopPools(numPools)
@@ -68,12 +79,8 @@ async function getTopPools(numPools: number = 5): Promise<PoolInfo[]> {
 }
 
 async function fetchPoolsData(tokenFrom: string, tokenTo: string, numPools: number = 5): Promise<PoolInfo[]> {
+  await checkInitializedDexes();
   let poolsInfo: PoolInfo[] = []
-
-  if (!initialized) {
-    await initializeDexes()
-    initialized = true
-  }
 
   const poolsFrom = await getPoolIdsForToken(tokenFrom, numPools)
   const poolsTo = await getPoolIdsForToken(tokenTo, numPools)

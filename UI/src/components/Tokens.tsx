@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react"
-import { checkFetchPoolsData, checkGetPoolIdsForTokenPairs } from "../sdk/testing/fetchPools"
-import { call } from "web3/lib/commonjs/eth.exports"
+import { fetchPoolsData } from "../sdk/quoter/graph_communication"
 
 function Token() {
-  const callCheckFetchPoolsData = async () => {
-    await checkFetchPoolsData()
-  }
-  const callCheckGetPoolIdsForTokenPairs = async () => {
-    await checkGetPoolIdsForTokenPairs()
+  const checkFetchPoolsData = async () => {
+    const res = await fetchPoolsData("0x3082cc23568ea640225c2467653db90e9250aaa0", "0x82af49447d8a07e3bd95bd0d56f35241523fbab1", 5)
+    console.log(res)
   }
 
   return (
     <div>
       <h1>Token</h1>
-      <button onClick={callCheckFetchPoolsData}>Call checkFetchPoolsData</button>
-      <button onClick={callCheckGetPoolIdsForTokenPairs}>Call checkGetPoolIdsForTokenPairs</button>
+      <button onClick={checkFetchPoolsData}>Check FetchPoolsData</button>
     </div>
   )
 }
