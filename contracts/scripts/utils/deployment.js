@@ -31,10 +31,10 @@ async function deployUniswapDex() {
     return {uniswap, addr1, addr2, addr3};
 }
 
-async function deployCurveDex() {
+async function deployCurveDex(poolId = addresses.Curve.curve2Pool) {
     const [addr1, addr2, addr3] = await hre.ethers.getSigners();
     const Curve = await hre.ethers.getContractFactory("CurveDex");
-    const curve = await Curve.deploy(addresses.Curve.curve2Pool);
+    const curve = await Curve.deploy(poolId);
     await curve.waitForDeployment();
     return {curve, addr1, addr2, addr3};
 }
