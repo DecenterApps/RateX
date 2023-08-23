@@ -1,4 +1,4 @@
-import { PoolEntry, PoolInfo, QuoteResultEntry, ResponseType } from '../types'
+import { Pool, PoolEntry, PoolInfo, QuoteResultEntry, ResponseType } from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
@@ -48,8 +48,8 @@ async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bi
   // send to solidity to get other info for each pool
   // parse return values into Pool[] with every DEX having its own class that extends Pool
 
-  // const pools: Pool[] = []
-  //
+  const pools: Pool[] = []
+
   // pools.push(new SushiSwapV2Pool('1', 'SUSHI_V2', 'a', 'b', BigInt(1), BigInt(1000)))
   // pools.push(new SushiSwapV2Pool('2', 'SUSHI_V2', 'a', 'b', BigInt(1), BigInt(2000)))
   // pools.push(new SushiSwapV2Pool('3', 'SUSHI_V2', 'b', 'c', BigInt(1000), BigInt(1000)))

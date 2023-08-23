@@ -1,4 +1,4 @@
-import { Pool } from '../types'
+import { Pool, Token } from '../types'
 
 export interface Route {
   pools: string[] //addresses of the pools
@@ -28,25 +28,26 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
   for (let hop = 0; hop < max_hops - 1; hop++) {
     dp.get(hop)?.forEach((tokenPathInfo, tokenA) => {
       graph.get(tokenA)?.forEach((pool) => {
-        const tokenB: string = pool.tokens[0].address == tokenA ? pool.tokens[1].address : pool.tokens[0].address
-        if (tokenPathInfo.path.includes(tokenB)) {
-          return
-        }
+        pool.tokens.forEach((tokenB: Token) => {
+          if (tokenPathInfo.path.includes(tokenB.address)) {
+            return
+          }
 
-        const amountOut = pool.calculateExpectedOutputAmount(tokenA, tokenB, tokenPathInfo.amountOut)
-        const newPath = [...tokenPathInfo.path, tokenB]
+          const amountOut = pool.calculateExpectedOutputAmount(tokenA, tokenB.address, tokenPathInfo.amountOut)
+          const newPath = [...tokenPathInfo.path, tokenB.address]
 
-        if (!dp.has(hop + 1)) {
-          dp.set(hop + 1, new Map<string, DpInfo>())
-        }
+          if (!dp.has(hop + 1)) {
+            dp.set(hop + 1, new Map<string, DpInfo>())
+          }
 
-        const dpEntry = dp.get(hop + 1)
+          const dpEntry = dp.get(hop + 1)
 
-        if (!dpEntry?.has(tokenB)) {
-          dp.get(hop + 1)?.set(tokenB, { amountOut: amountOut, path: newPath })
-        } else if (amountOut > (dpEntry?.get(tokenB)?.amountOut || 0)) {
-          dp.get(hop + 1)?.set(tokenB, { amountOut: amountOut, path: newPath })
-        }
+          if (!dpEntry?.has(tokenB.address)) {
+            dp.get(hop + 1)?.set(tokenB.address, { amountOut: amountOut, path: newPath })
+          } else if (amountOut > (dpEntry?.get(tokenB.address)?.amountOut || 0)) {
+            dp.get(hop + 1)?.set(tokenB.address, { amountOut: amountOut, path: newPath })
+          }
+        })
       })
     })
 
@@ -59,25 +60,17 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
   return res.path
 }
 
-// function noEntryOrBetterAvailable(dp: Map<number, Map<string, DpInfo>>, amountOut: bigint): boolean {
-//   !dp.get(hop + 1)?.has(tokenB)
-// }
-
 function createGraph(pools: Pool[]): Map<string, Pool[]> {
   const graph: Map<string, Pool[]> = new Map<string, Pool[]>()
   for (let pool of pools) {
     const poolId = pool.poolId
 
-    if (!graph.has(pool.tokens[0].address)) {
-      graph.set(pool.tokens[0].address, [])
+    for (let token of pool.tokens) {
+      if (!graph.has(token.address)) {
+        graph.set(token.address, [])
+      }
+      graph.get(token.address)?.push(pool)
     }
-
-    if (!graph.has(pool.tokens[1].address)) {
-      graph.set(pool.tokens[1].address, [])
-    }
-
-    graph.get(pool.tokens[0].address)?.push(pool)
-    graph.get(pool.tokens[1].address)?.push(pool)
   }
 
   return graph
