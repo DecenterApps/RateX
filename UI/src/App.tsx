@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Swap from './components/Swap'
 import Header from './components/Header'
-import Tokens from './components/Tokens'
 
 import './App.scss'
 import 'notyf/notyf.min.css'
@@ -17,7 +16,6 @@ function App() {
       <div className="mainWindow">
         <Routes>
           <Route path="/" element={<Swap chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />} />
-          <Route path="/tokens" element={<Tokens />} />
         </Routes>
       </div>
     </div>
