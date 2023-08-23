@@ -1,15 +1,30 @@
 // Ported from Solidity:
 // https://github.com/balancer-labs/balancer-core-v2/blob/70843e6a61ad11208c1cfabf5cfe15be216ca8d3/pkg/pool-stable/contracts/StableMath.sol
 
+import { Token, Pool } from '../../types'
 import BigNumber from "bignumber.js"
-import * as fp from "../../../utils/math/fixed-points"
-import * as math from "../../../utils/math/math"
+import * as fp from "../../utils/math/fixed-points"
+import * as math from "../../utils/math/math"
 
-export const MIN_AMP = new BigNumber(1)
-export const MAX_AMP = new BigNumber(5000)
-export const AMP_PRECISION = new BigNumber(1000)
+const AMP_PRECISION = new BigNumber(1000)
 
-export const MAX_STABLE_TOKENS = 5
+export class BalancerPool extends Pool {
+
+    reserves: BigNumber[]
+    fee: BigNumber
+    amplificationCoeff: BigNumber
+  
+    protected constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], fee: string, A: string) {
+      	super(poolId, dexId, tokens)
+      	this.reserves = reserves
+      	this.fee = new BigNumber(fee)
+      	this.amplificationCoeff = new BigNumber(A)
+    }
+  
+    calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
+      	return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
+    }
+}
 
 /* Computes how many tokens can be taken out of a pool if `tokenAmountIn` are sent, given the current balances.
   The amplification parameter equals: A n^(n-1)
@@ -24,25 +39,30 @@ export const MAX_STABLE_TOKENS = 5
   // S = sum of final balances but y                                                                           //
   // P = product of final balances but y                                                                       //
   **************************************************************************************************************/
-export function _calcOutGivenIn(amplificationParameter: BigNumber, balances: BigNumber[], tokenIndexIn: number, tokenIndexOut: number, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): BigNumber {
+function calculateOutputAmount(pool: BalancerPool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
+
+	// Get the index of the token we are swapping from and to
+    const i = pool.tokens.findIndex(token => token.address === tokenA)
+    const j = pool.tokens.findIndex(token => token.address === tokenB)
 
 	// Subtract the fee from the amount in if requested
 	if (swapFeePercentage) 
 		tokenAmountIn = fp.sub(tokenAmountIn, fp.mulUp(tokenAmountIn, swapFeePercentage))
 
 	// Given that we need to have a greater final balance out, the invariant needs to be rounded up
-	const invariant = _calculateInvariant(amplificationParameter, balances, true);
-	balances[tokenIndexIn] = fp.add(balances[tokenIndexIn], tokenAmountIn);
+	const invariant = _calculateInvariant(pool.amplificationCoeff, pool.reserves, true);
+	pool.reserves[i] = fp.add(pool.reserves[i], tokenAmountIn);
 
 	const finalBalanceOut = _getTokenBalanceGivenInvariantAndAllOtherBalances(
-		amplificationParameter,
-		balances,
+		pool.amplificationCoeff,
+		pool.reserves,
 		invariant,
-		tokenIndexOut
+		j
 	)
 
-	balances[tokenIndexIn] = fp.sub(balances[tokenIndexIn], tokenAmountIn)
-	return fp.sub(fp.sub(balances[tokenIndexOut], finalBalanceOut), math.ONE)
+	pool.reserves[i] = fp.sub(pool.reserves[i], tokenAmountIn)
+	const res = fp.sub(fp.sub(pool.reserves[j], finalBalanceOut), math.ONE)
+	return BigInt(res.toFixed())
 }
 
 // This function calculates the balance of a given token (tokenIndex) given all the other balances and the invariant
@@ -155,4 +175,4 @@ function _calculateInvariant(amplificationParameter: BigNumber, balances: BigNum
 	}
   
 	throw new Error("STABLE_GET_BALANCE_DIDNT_CONVERGE");
-  }
+}

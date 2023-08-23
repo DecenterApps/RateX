@@ -1,4 +1,4 @@
-import { Token, Pool, PoolInfo } from '../../types'
+import { Token, Pool } from '../../types'
 import BigNumber from 'bignumber.js'
 
 // Output amount calculations resource: https://atulagarwal.dev/posts/curveamm/stableswap/
@@ -10,20 +10,14 @@ export class CurvePool extends Pool {
     amplificationCoeff: BigNumber
   
     protected constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], fee: string, A: string) {
-      super(poolId, dexId, tokens)
-      this.reserves = reserves
-      this.fee = new BigNumber(fee)
-      this.amplificationCoeff = new BigNumber(A)
+        super(poolId, dexId, tokens)
+        this.reserves = reserves
+        this.fee = new BigNumber(fee)
+        this.amplificationCoeff = new BigNumber(A)
     }
   
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
-      return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
-    }
-
-    static createFromSolidityData(oldPool: PoolInfo, A: string, fee: string, balances: string[]): CurvePool {
-        const { poolId, dexId, tokens } = oldPool 
-        const reserves = balances.map(balance => new BigNumber(balance))   
-        return new CurvePool(poolId, dexId, tokens, reserves, fee, A)
+        return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
     }
 }
 
@@ -56,7 +50,6 @@ function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, 
     const res = floor(dy.minus(fee))
     return BigInt(res.toFixed())                                                       
 }
-
 
 /* 
     Calculate y = pool.tokens[j].amount if one makes pool.tokens[i].amount = x
