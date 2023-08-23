@@ -3,10 +3,9 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
-import { PoolInfo } from '../../types'
+import { Pool, PoolInfo } from '../../types'
 
 export default class TraderJoeV2 implements DEXGraphFunctionality {
-  
   endpoint = 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arbitrum'
   dexId = dexIds.TRADERJOE_V2
 
@@ -42,6 +41,10 @@ export default class TraderJoeV2 implements DEXGraphFunctionality {
     })
 
     return poolsInfo
+  }
+
+  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    return []
   }
 }
 
@@ -117,21 +120,20 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-
   // always has 2 tokens in pool ?
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
     tokens: [
       {
-        address: jsonData.tokenX.id,
-        decimals: jsonData.tokenX.decimals
+        _address: jsonData.tokenX.id,
+        decimals: jsonData.tokenX.decimals,
       },
       {
-        address: jsonData.tokenY.id,
-        decimals: jsonData.tokenY.decimals
-      }
-    ]
+        _address: jsonData.tokenY.id,
+        decimals: jsonData.tokenY.decimals,
+      },
+    ],
   }
   return pool
 }

@@ -3,10 +3,9 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
-import { PoolInfo } from '../../types'
+import { Pool, PoolInfo } from '../../types'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
-  
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
   dexId = dexIds.UNISWAP_V3
 
@@ -42,6 +41,10 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     })
 
     return poolsInfo
+  }
+
+  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    return []
   }
 }
 
@@ -96,16 +99,15 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
     tokens: jsonData.inputTokens.map((token: any, index: any) => {
       return {
         address: token.id,
-        decimals: token.decimals
+        decimals: token.decimals,
       }
-    })
+    }),
   }
   return pool
 }
