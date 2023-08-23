@@ -23,6 +23,8 @@ const config = {
         },
         stableSwapFactory: "0xb17b674D9c5CB2e441F8e196a2f048A81355d031", // Gas
 
+        balancerVault: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+
         uniQuoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
         uniRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         univ3_wbtc_eth_pool_0_05: "0x2f5e87C9312fa29aed5c179E456625D79015299c", // 0.05 fee

@@ -39,6 +39,14 @@ async function deployCurveDex(poolId) {
     return {curve, addr1, addr2, addr3};
 }
 
+async function deployBalancerDex() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const Balancer = await hre.ethers.getContractFactory("BalancerDex");
+    const balancer = await Balancer.deploy(addresses.balancerVault);
+    await balancer.waitForDeployment();
+    return {balancer, addr1, addr2, addr3};
+}
+
 async function deployRateX() {
     const [addr1, addr2, addr3] = await hre.ethers.getSigners();
     const { sushiSwap} = await deploySushiDex();
@@ -57,5 +65,6 @@ module.exports = {
     deployRateX,
     deploySushiDex,
     deployUniswapDex,
-    deployCurveDex
+    deployCurveDex,
+    deployBalancerDex
 }
