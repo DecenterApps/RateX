@@ -40,8 +40,8 @@ contract CurveDex is IDex {
       decimals = curvePool.decimals();
       A = curvePool.A();
       poolFee = curvePool.fee();
-
       balances = curvePool.get_balances();
+      return (decimals, A, poolFee, balances);
   }
   
   function coins(uint256 i) external view returns (address coin) {

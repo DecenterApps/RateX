@@ -1,9 +1,12 @@
 import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
-import { DEXGraphFunctionality, PoolInfo } from '../DEXGraphFunctionality'
+import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
+import dexIds from '../dexIdsList'
+import { PoolInfo } from '../../types'
 
 export default class NewDex implements DEXGraphFunctionality {
+
   endpoint = ''
   dexId = ''
 
@@ -46,11 +49,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
   return parse(gql``)
 }
 
-function queryPoolsWithTokenPair(
-  tokenA: string,
-  tokenB: string,
-  numPools: number
-): TypedDocumentNode<any, Record<string, unknown>> {
+function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql``)
 }
 
