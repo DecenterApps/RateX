@@ -37,10 +37,10 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
+    console.log("Pools with token:", queryResult)
     queryResult.pairs.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
-
     return poolsInfo
   }
 }

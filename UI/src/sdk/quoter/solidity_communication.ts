@@ -55,9 +55,9 @@ async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bi
   // pools.push(new SushiSwapV2Pool('3', 'SUSHI_V2', 'b', 'c', BigInt(1000), BigInt(1000)))
   // pools.push(new SushiSwapV2Pool('4', 'SUSHI_V2', 'a', 'c', BigInt(1), BigInt(500)))
 
-  const graph = createGraph(pools)
+  //const graph = createGraph(pools)
 
-  return multiHopSwap(amountIn, tokenA, tokenB, graph)
+  //return multiHopSwap(amountIn, tokenA, tokenB, graph)
 }
 
 async function executeSwap(

@@ -53,9 +53,19 @@ async function deployRateX() {
     return {rateX, addr1, addr2, addr3};
 }
 
+async function deployUniswapHelper() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const UniswapHelper = await hre.ethers.getContractFactory("UniswapHelper");
+    const uniswapHelper = await UniswapHelper.deploy();
+    await uniswapHelper.waitForDeployment();
+    return {uniswapHelper, addr1, addr2, addr3};
+}
+
+
 module.exports = {
     deployRateX,
     deploySushiDex,
     deployUniswapDex,
-    deployCurveDex
+    deployCurveDex,
+    deployUniswapHelper
 }

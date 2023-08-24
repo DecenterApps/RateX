@@ -11,7 +11,7 @@ async function initializeDexes(): Promise<void> {
     const files = ['SushiSwapV2.ts', 'UniswapV3.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
-        const module = await import(`../dexes_graph/${file}`)
+        const module = await import(`../dexes/graph_queries/${file}`)
         initializedDexes.push(module.default.initialize())
       }
     }
