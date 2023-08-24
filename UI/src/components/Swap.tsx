@@ -11,6 +11,7 @@ import { Quote } from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
+import RoutingDiagram from './RoutingDiagram'
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -257,7 +258,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             {tokenTo.ticker}
             <DownOutlined />
           </div>
-          {/* <RoutingDiagram></RoutingDiagram> */}
+          {quote && quote.amountOut > 0 ? <RoutingDiagram quote={quote}></RoutingDiagram> : <></>}
           {loadingSwap ? (
             <div className="lds-ellipsis">
               <div></div>
