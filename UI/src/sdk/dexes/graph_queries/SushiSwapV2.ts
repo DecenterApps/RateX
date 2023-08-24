@@ -1,9 +1,9 @@
-import {parse} from 'graphql'
+import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
-import {Pool, PoolInfo, Token} from '../../types'
+import { Pool, PoolInfo, Token } from '../../types'
 import { SushiSwapHelperContract } from '../../../contracts/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
@@ -51,10 +51,10 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
     const pools: Pool[] = []
     for (let pool of rawData) {
-      const poolId = pool[0];
-      const dexId = pool[1];
-      const tokensRaw1 = pool[2][0];
-      const tokensRaw2 = pool[2][1];
+      const poolId = pool[0]
+      const dexId = pool[1]
+      const tokensRaw1 = pool[2][0]
+      const tokensRaw2 = pool[2][1]
 
       const token1: Token = {
         _address: tokensRaw1[0],

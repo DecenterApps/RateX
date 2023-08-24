@@ -54,7 +54,6 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
     }
   }
 
-  console.log("DP:", dp);
   return { swaps: res.swaps, amountOut: res.amountOut, percentage: 100 }
 }
 
