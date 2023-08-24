@@ -11,6 +11,9 @@ export class UniswapState {
     private constructor() {}
 
     public static async getPoolData(poolAddress: string): Promise<PoolData> {
+        poolAddress = poolAddress.toLowerCase();
+        console.log("GAS ", poolAddress)
+
         if (!this.poolDataMap.has(poolAddress)) {
             console.log("Pool data not found in cache, fetching from contract");
             const p = await this.getPoolDataFromContract(poolAddress);
@@ -43,7 +46,9 @@ export class UniswapState {
 
     public static async initializeFreshPoolsData(pools: string[]) {
         const poolsData: PoolData[] = await this.getPoolsDataFromContract(pools);
-        poolsData.forEach((poolData: PoolData) => this.poolDataMap.set(poolData.info.pool, poolData));
+        console.log("GAS? ", poolsData)
+        poolsData.forEach((poolData: PoolData) => console.log(poolData.info.pool.toLowerCase()));
+        poolsData.forEach((poolData: PoolData) => this.poolDataMap.set(poolData.info.pool.toLowerCase(), poolData));
     }
 
 

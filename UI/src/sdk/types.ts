@@ -47,9 +47,15 @@ export abstract class Pool {
   tokens: Token[] // list of addresses
 
   protected constructor(poolId: string, dexId: string, tokens: Token[]) {
-    this.poolId = poolId
+    this.poolId = poolId.toLowerCase()
     this.dexId = dexId
-    this.tokens = tokens
+
+    let _tokens: Token[] = []
+    for (let token of tokens) {
+        _tokens.push({ _address: token._address.toLowerCase(), decimals: token.decimals })
+    }
+
+    this.tokens = _tokens
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint

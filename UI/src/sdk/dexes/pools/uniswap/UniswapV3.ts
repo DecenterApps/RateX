@@ -5,7 +5,7 @@ import {PoolData} from "./types";
 export class UniswapV3Pool extends Pool {
 
     public constructor(poolId: string, dexId: string, tokens: Token[]) {
-        super(poolId, dexId, tokens);
+        super(poolId.toLowerCase(), dexId, tokens);
     }
 
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
@@ -15,11 +15,13 @@ export class UniswapV3Pool extends Pool {
             return BigInt(0);
         }
 
-        return UniswapState.quoter.quote(
+        const rez = UniswapState.quoter.quote(
             poolData,
             tokenIn,
             tokenOut,
             amountIn
         )[0];
+        console.log("Amount out: " + rez);
+        return rez;
     }
 }

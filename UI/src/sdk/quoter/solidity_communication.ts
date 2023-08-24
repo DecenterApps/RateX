@@ -44,7 +44,7 @@ async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigi
 }
 
 async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 10, 10)
+  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 2, 2)
   const graph = createGraph(pools)
   const route: Route = multiHopSwap(amountIn, tokenA, tokenB, graph)
   return { routes: [route], amountOut: route.amountOut }

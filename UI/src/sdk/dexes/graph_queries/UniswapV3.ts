@@ -4,6 +4,8 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
+import {UniswapState} from "../pools/uniswap/uniswapState";
+import {UniswapV3Pool} from "../pools/uniswap/UniswapV3";
 
 export default class UniswapV3 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
@@ -16,7 +18,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools))
-    queryResult.pairs.forEach((pool: any) => {
+    queryResult.liquidityPools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
@@ -26,7 +28,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(tokenA, tokenB, numPools))
-    queryResult.pairs.forEach((pool: any) => {
+    queryResult.liquidityPools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
@@ -37,14 +39,16 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
     console.log("Pools with token:", queryResult)
-    queryResult.pairs.forEach((pool: any) => {
+    queryResult.liquidityPools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
     return poolsInfo
   }
 
   async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
-    return []
+    const pools = poolInfos.map((poolInfo: PoolInfo) => poolInfo.poolId);
+    await UniswapState.initializeFreshPoolsData(pools);
+    return poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens));
   }
 }
 
@@ -104,7 +108,7 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
     dexId: dexId,
     tokens: jsonData.inputTokens.map((token: any, index: any) => {
       return {
-        address: token.id,
+        _address: token.id,
         decimals: token.decimals,
       }
     }),
