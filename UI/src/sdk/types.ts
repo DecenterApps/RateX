@@ -49,7 +49,7 @@ export abstract class Pool {
   protected constructor(poolId: string, dexId: string, tokens: Token[]) {
     this.poolId = poolId
     this.dexId = dexId
-    this.tokens = tokens
+    this.tokens = tokens.map((token) => ({ _address: token._address.toLowerCase(), decimals: token.decimals }))
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint

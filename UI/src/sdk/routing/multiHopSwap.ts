@@ -9,6 +9,9 @@ type DpInfo = {
 const max_hops = 4
 
 function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph: Map<string, Pool[]>): Route {
+  tokenIn = tokenIn.toLowerCase()
+  tokenOut = tokenOut.toLowerCase()
+
   // dp[hop][token]
   const dp: Map<number, Map<string, DpInfo>> = new Map<number, Map<string, DpInfo>>()
   dp.set(0, new Map<string, DpInfo>())

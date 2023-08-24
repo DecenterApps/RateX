@@ -22,8 +22,8 @@ function RouteComponent({ route }: { route: Route }) {
 function SwapComponent({ swap }: { swap: Swap }) {
   return (
     <div className="routingDiagramPool">
-      <img src={tokenAddressToImage[swap.tokenA].img} alt="assetFromLogo" />
-      <img src={tokenAddressToImage[swap.tokenB].img} alt="assetToLogo" />
+      {/*<img src={tokenAddressToImage[swap.tokenA.toLowerCase()].img} alt="assetFromLogo" />*/}
+      {/*<img src={tokenAddressToImage[swap.tokenB.toLowerCase()].img} alt="assetToLogo" />*/}
     </div>
   )
 }

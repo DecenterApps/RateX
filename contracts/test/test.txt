@@ -1,0 +1,48 @@
+
+  Examples with uniswap helper
+=================UNISWAP================
+=============================================
+QUOTED AMOUNT 1: 948716116
+CROSSED TICKS 1: 5
+=============MY QUOTER=======================
+=============================================
+Pool Address: 0x149e36e72726e0bcea5c59d40df2c43f60f5a22d
+Start tick:  257721
+Step initialized : true
+Tick next:  257760
+State Tick:  257760
+Liquidity net:  115792089237316195423570985008687907853269984665640564039457583409505303579114
+Sqrt price next: 31317495652248475665431435350955747
+Sqrt price: 31317495652248475665431435350955747
+-------
+Step initialized : true
+Tick next:  257820
+State Tick:  257820
+Liquidity net:  115792089237316195423570985008687907853269984665640564039457583710948436869796
+Sqrt price next: 31411584497546210966172950056294283
+Sqrt price: 31411584497546210966172950056294283
+-------
+Step initialized : true
+Tick next:  257880
+State Tick:  257880
+Liquidity net:  455177793423195
+Sqrt price next: 31505956019048575214492727940162769
+Sqrt price: 31505956019048575214492727940162769
+-------
+Step initialized : true
+Tick next:  257940
+State Tick:  257940
+Liquidity net:  115792089237316195423570985008687907853269984665640564039457583598389802949838
+Sqrt price next: 31600611066014972227837356526135934
+Sqrt price: 31600611066014972227837356526135934
+-------
+Step initialized : true
+Tick next:  258000
+State Tick:  257975
+Liquidity net:  0
+Sqrt price next: 31695550490256281763834154638057766
+Sqrt price: 31657402503101986440808906099558290
+-------
+--------------------
+QUOTED AMOUNT 2: 948716116
+--------------------
