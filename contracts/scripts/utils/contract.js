@@ -18,6 +18,7 @@ async function approveToContract(owner, contractAddress, tokenAddress, amount) {
 async function sendERCTokensToUser(impersonatedAddress, tokenAddress, toAddress, amount) {
     const signer = await hre.ethers.getImpersonatedSigner(impersonatedAddress);
     const ercToken = await hre.ethers.getContractAt("IERC20", tokenAddress, signer);
+    const balance = await ercToken.balanceOf(signer.address);
     const txTransfer = await ercToken.connect(signer).transfer(toAddress, amount);
     await txTransfer.wait();
 }
