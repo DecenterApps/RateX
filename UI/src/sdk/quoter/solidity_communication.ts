@@ -1,4 +1,4 @@
-import { Pool, PoolEntry, PoolInfo, QuoteResultEntry, ResponseType } from '../types'
+import { Pool, PoolEntry, PoolInfo, Quote, QuoteResultEntry, ResponseType, Route } from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
@@ -43,11 +43,11 @@ async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigi
   })
 }
 
-async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint) {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 15, 15)
-  console.log(pools)
+async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
+  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 10, 10)
   const graph = createGraph(pools)
-  multiHopSwap(amountIn, tokenA, tokenB, graph)
+  const route: Route = multiHopSwap(amountIn, tokenA, tokenB, graph)
+  return { routes: [route], amountOut: route.amountOut }
 }
 
 async function executeSwap(

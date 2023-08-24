@@ -54,3 +54,21 @@ export abstract class Pool {
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint
 }
+
+export type Swap = {
+  poolId: string
+  dexId: string
+  tokenA: string
+  tokenB: string
+}
+
+export type Route = {
+  swaps: Swap[]
+  amountOut: bigint
+  percentage: number
+}
+
+export type Quote = {
+  routes: Route[]
+  amountOut: bigint
+}
