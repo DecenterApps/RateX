@@ -1,95 +1,40 @@
 import { useEffect, useState } from 'react'
-import tokenList from '../constants/tokenList.json'
+import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { Token } from '../constants/Interfaces'
 import { ArrowRightOutlined, ExpandAltOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
+import { Quote, Route, Swap } from '../sdk/types'
 
-interface Pool {
-  poolId: string
-  dexId: string
-  tokenFrom: Token
-  tokenTo: Token
-}
-
-interface Path {
-  percentage: number
-  pools: Pool[]
-}
-
-// mock data
-let route: Path[] = [
-  {
-    percentage: 60,
-    pools: [
-      {
-        dexId: 'SushiSwapV2',
-        poolId: '0x0000000000000000000000000000000000000000',
-        tokenFrom: tokenList[3],
-        tokenTo: tokenList[4],
-      },
-      {
-        dexId: 'SushiSwapV2',
-        poolId: '0x0000000000000000000000000000000000000000',
-        tokenFrom: tokenList[4],
-        tokenTo: tokenList[2],
-      },
-      {
-        dexId: 'SushiSwapV2',
-        poolId: '0x0000000000000000000000000000000000000000',
-        tokenFrom: tokenList[2],
-        tokenTo: tokenList[5],
-      },
-    ],
-  },
-  {
-    percentage: 40,
-    pools: [
-      {
-        dexId: 'SushiSwapV2',
-        poolId: '0x0000000000000000000000000000000000000000',
-        tokenFrom: tokenList[3],
-        tokenTo: tokenList[4],
-      },
-      {
-        dexId: 'SushiSwapV2',
-        poolId: '0x0000000000000000000000000000000000000000',
-        tokenFrom: tokenList[4],
-        tokenTo: tokenList[5],
-      },
-    ],
-  },
-]
-
-function Path({ path }: { path: Path }) {
+function RouteComponent({ route }: { route: Route }) {
   return (
     <div className="routingDiagramPath">
-      {path.percentage}%
-      {path.pools.map((pool) => (
+      {route.percentage}%
+      {route.swaps.map((swap) => (
         <>
           <ArrowRightOutlined className="routingDiagramPoolArrow" />
-          <Pool pool={pool}></Pool>
+          <SwapComponent swap={swap}></SwapComponent>
         </>
       ))}
     </div>
   )
 }
 
-function Pool({ pool }: { pool: Pool }) {
+function SwapComponent({ swap }: { swap: Swap }) {
   return (
     <div className="routingDiagramPool">
-      <img src={pool.tokenFrom.img} alt="assetFromLogo" />
-      <img src={pool.tokenTo.img} alt="assetToLogo" />
+      <img src={tokenAddressToImage[swap.tokenA].img} alt="assetFromLogo" />
+      <img src={tokenAddressToImage[swap.tokenB].img} alt="assetToLogo" />
     </div>
   )
 }
 
-function RoutingDiagram() {
+function RoutingDiagram({ quote }: { quote: Quote }) {
   return (
     <div className="routingDiagam">
       <h4>Order Routing</h4>
       <ExpandAltOutlined className="routingDiagramExpandIcon"></ExpandAltOutlined>
-      {route.map((path) => (
-        <Path path={path}></Path>
+      {quote.routes.map((route) => (
+        <RouteComponent route={route}></RouteComponent>
       ))}
     </div>
   )
