@@ -29,8 +29,8 @@ export class CurvePool extends Pool {
 */
 function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, dx: BigNumber): bigint {
   // Get the index of the token we are swapping from and to
-  const i = pool.tokens.findIndex((token) => token.address === tokenA)
-  const j = pool.tokens.findIndex((token) => token.address === tokenB)
+  const i = pool.tokens.findIndex((token) => token._address === tokenA)
+  const j = pool.tokens.findIndex((token) => token._address === tokenB)
 
   // Get the precision of the token with the most decimals
   const maxDecimals = Math.max(...pool.tokens.map((token) => token.decimals))

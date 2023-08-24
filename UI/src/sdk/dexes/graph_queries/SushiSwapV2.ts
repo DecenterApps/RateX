@@ -3,10 +3,11 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
-import { PoolInfo } from '../../types'
+import { Pool, PoolInfo } from '../../types'
+import { SushiSwapHelperContract } from '../../../contracts/SushiSwapHelper'
+import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
-
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
   dexId = dexIds.SUSHISWAP_V2
 
@@ -42,6 +43,18 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     })
 
     return poolsInfo
+  }
+
+  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    //@ts-ignore
+    const rawData: any[][] = await SushiSwapHelperContract.methods.getPoolsData(poolInfos).call()
+
+    const pools: Pool[] = []
+    for (let pool of rawData) {
+      pools.push(new SushiSwapV2Pool(pool[0], pool[1], pool[2], pool[3]))
+    }
+
+    return pools
   }
 }
 
@@ -114,21 +127,20 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-
   // always has 2 tokens in pool
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
     tokens: [
       {
-        address: jsonData.token0.id,
-        decimals: jsonData.token0.decimals
+        _address: jsonData.token0.id,
+        decimals: jsonData.token0.decimals,
       },
       {
-        address: jsonData.token1.id,
-        decimals: jsonData.token1.decimals
-      }
-    ]
+        _address: jsonData.token1.id,
+        decimals: jsonData.token1.decimals,
+      },
+    ],
   }
   return pool
 }

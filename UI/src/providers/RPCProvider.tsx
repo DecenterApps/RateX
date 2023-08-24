@@ -9,7 +9,7 @@ const alchemyMainnetEndpoint = `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_K
 const tenderlyForkEndpoint: string = `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`
 
 // FOR NOW WE CAN USE IT LIKE THIS
-const USE_TENDERLKLY_FORK = true
+const USE_TENDERLKLY_FORK = false
 
 // Optimism Endpoints
 const optimismEndpoint = 'https://mainnet.optimism.io'
