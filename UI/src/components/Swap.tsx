@@ -1,15 +1,13 @@
-import { useEffect, useState, useRef } from 'react'
-import { Input, Popover, Radio, Modal } from 'antd'
+import { useEffect, useRef, useState } from 'react'
+import { Input, Modal, Popover, Radio } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
 import Web3 from 'web3'
-
-import RoutingDiagram from '../components/RoutingDiagram'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
 import { initGetQuote, swap } from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
-import { QuoteResultEntry } from '../sdk/types'
+import { Quote } from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
@@ -32,7 +30,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenToPrice, setTokenToPrice] = useState(0)
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
-  const [quote, setQuote] = useState<QuoteResultEntry>()
+  const [quote, setQuote] = useState<Quote>()
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -153,13 +151,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     setLoadingQuote(true)
     initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-      .then((q: QuoteResultEntry) => {
+      .then((quote: Quote) => {
         if (callTime < lastCallTime.current) {
           return
         }
-        setTokenToAmount(Number(q.amountOut) / 10 ** tokenTo.decimals)
+        setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
         setLoadingQuote(false)
-        setQuote(q)
+        setQuote(quote)
       })
       .catch((error: string) => {
         setLoadingQuote(false)

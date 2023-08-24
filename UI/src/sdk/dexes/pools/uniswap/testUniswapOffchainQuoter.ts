@@ -48,8 +48,8 @@ async function testQuote() {
             fee: tradeInfo.fee,
             sqrtPriceLimitX96: 0
         };
-        const tokenIn = { address: tradeInfo.tokenIn } as Token;
-        const tokenOut = { address: tradeInfo.tokenOut} as Token;
+        const tokenIn = { _address: tradeInfo.tokenIn } as Token;
+        const tokenOut = { _address: tradeInfo.tokenOut} as Token;
         //@ts-ignore
         let x: any[] = await quoterContract.methods.quoteExactInputSingle(params).call();
 

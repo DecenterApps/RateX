@@ -1,5 +1,3 @@
-import BigNumber from 'bignumber.js'
-
 export class PoolEntry {
   poolAddress: string
   dexId: string
@@ -31,7 +29,7 @@ export interface ResponseType {
 }
 
 export type Token = {
-  address: string
+  _address: string
   decimals: number
 }
 
@@ -39,14 +37,14 @@ export type Token = {
 export type PoolInfo = {
   poolId: string
   dexId: string
-  tokens: Token[]          // list of addresses
+  tokens: Token[] // list of addresses
 }
 
 // we get from Solidity (extra info)
 export abstract class Pool {
   poolId: string
   dexId: string
-  tokens: Token[]         // list of addresses
+  tokens: Token[] // list of addresses
 
   protected constructor(poolId: string, dexId: string, tokens: Token[]) {
     this.poolId = poolId
@@ -55,4 +53,22 @@ export abstract class Pool {
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint
+}
+
+export type Swap = {
+  poolId: string
+  dexId: string
+  tokenA: string
+  tokenB: string
+}
+
+export type Route = {
+  swaps: Swap[]
+  amountOut: bigint
+  percentage: number
+}
+
+export type Quote = {
+  routes: Route[]
+  amountOut: bigint
 }
