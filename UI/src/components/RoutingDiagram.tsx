@@ -8,29 +8,42 @@ import { Quote, Route, Swap } from '../sdk/types'
 function RouteComponent({ route }: { route: Route }) {
   return (
     <div className="routingDiagramPath">
-      {route.percentage}%
+      <div className="percentage">
+        {route.percentage}% 
+      </div>
+      <TokenComponent token={route.swaps[0].tokenA}></TokenComponent>
       {route.swaps.map((swap) => (
         <>
           <ArrowRightOutlined className="routingDiagramPoolArrow" />
-          <SwapComponent swap={swap}></SwapComponent>
+          <TokenComponent token={swap.tokenB}></TokenComponent>
         </>
       ))}
     </div>
   )
 }
 
-function SwapComponent({ swap }: { swap: Swap }) {
+function TokenComponent({ token }: { token: string }) {
+  let img = 'empty-token.webp'
+  let ticker = `${token.substring(0, 10)}...` 
+  if (token in tokenAddressToImage) {
+    img = tokenAddressToImage[token].img
+    ticker = tokenAddressToImage[token].ticker
+  }
   return (
-    <div className="routingDiagramPool">
-      {/*<img src={tokenAddressToImage[swap.tokenA.toLowerCase()].img} alt="assetFromLogo" />*/}
-      {/*<img src={tokenAddressToImage[swap.tokenB.toLowerCase()].img} alt="assetToLogo" />*/}
+    <div className="routingDiagramToken tooltip">
+      <a href={`https://arbiscan.io/token/${token}`} target="_blank"><img src={img} alt="assetFromLogo" /></a>
+      <span className="tooltiptext">{ticker}</span>
     </div>
   )
 }
 
-function RoutingDiagram({ quote }: { quote: Quote }) {
+function RoutingDiagram({ quote }: { quote: Quote | undefined }) {
+  if (!quote || quote.amountOut <= 0) {
+    return (<></>)
+  }
+  quote.routes.sort((a, b) => a.percentage - b.percentage)
   return (
-    <div className="routingDiagam">
+    <div className="routingDiagram">
       <h4>Order Routing</h4>
       <ExpandAltOutlined className="routingDiagramExpandIcon"></ExpandAltOutlined>
       {quote.routes.map((route) => (
