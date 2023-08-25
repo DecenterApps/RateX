@@ -99,6 +99,6 @@ async function testOnchainAmountStable(tokenIn, tokenOut, amountIn) {
 
 const tokenIn = addresses.wbtcToken
 const tokenOut = "0x542f16da0efb162d20bf4358efa095b70a100f9e"
-const amountIn = "100000000"                                      // 1 WBTC
+const amountIn = "10000000"                                      // 1 WBTC
 
 testOnchainAmountStable(tokenIn, tokenOut, amountIn)
