@@ -1,6 +1,6 @@
 @import '../shared.scss';
 
-.routingDiagam {
+.routingDiagram {
   background-color: $color-neutral;
   border-radius: 12px;
   width: 100%;
@@ -9,7 +9,7 @@
   position: relative;
 }
 
-.routingDiagam h4 {
+.routingDiagram h4 {
   margin-top: 10px;
   margin-bottom: 5px;
   display: inline-block;
@@ -25,14 +25,22 @@
   align-items: center;
 }
 
-.routingDiagramPool {
-  align-items: center;
+.routingDiagramPath .percentage {
+  text-align: right;
+  width: 42px;
+  margin-right: 10px;
 }
 
-.routingDiagramPool img {
+.routingDiagramToken img {
   width: 26px;
   margin: -3px;
-  margin-top: -1px;
+  margin-top: 1px;
+}
+
+.routingDiagramToken {
+  align-items: center;
+  text-align: center;
+  width: 32px;
 }
 
 .routingDiagramPoolArrow {
