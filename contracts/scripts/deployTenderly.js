@@ -1,63 +1,53 @@
 hre = require("hardhat");
-const {resolve, join} = require("path");
-const fs = require("fs");
-const {deployRateX} = require("./utils/deploymentTenderly");
-const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
-const {config} = require("../addresses.config");
+const {deployRateX, deployUniswapHelper, deploySushiSwapHelper} = require("./utils/deploymentTenderly");
+const {
+    saveRateXAddressToFile,
+    saveRateXAbiToFile,
+    saveUniswapHelperAddressToFile,
+    saveUniswapHelperAbiToFile,
+    saveSushiSwapAddressToFile,
+    saveSushiSwapAbiToFile
+} = require("./utils/saveABIAndAddresses");
 
-const addresses = config[hre.network.config.chainId];
 
 async function main() {
     const {rateX, addr1} = await deployRateX();
+    const {uniswapHelper} = await deployUniswapHelper();
+    const { sushiHelper } = await deploySushiSwapHelper()
 
-    await sendWethTokensToUser(addr1, hre.ethers.parseEther("1000"));
+    await saveRateXContract(rateX);
+    await saveUniswapHelperContract(uniswapHelper);
+    await saveSushiSwapHelperContract(sushiHelper);
+}
 
-    const address = await rateX.getAddress();
+async function saveRateXContract(rateXContract) {
+    const address = await rateXContract.getAddress();
     console.log("RateX address:" + address);
-    saveNewAddressToFile(address);
+    saveRateXAddressToFile(address);
 
     const RateX = await hre.artifacts.readArtifact("RateX");
     const rateXAbi = RateX.abi;
-    saveAbiToFile(rateXAbi);
+    saveRateXAbiToFile(rateXAbi);
 }
 
-function saveAbiToFile(abi) {
-    const content = `export const RateXAbi = ${JSON.stringify(abi)}`;
+async function saveUniswapHelperContract(uniswapHelperContract) {
+    const address = await uniswapHelperContract.getAddress();
+    console.log("UniswapHelper address:" + address);
+    saveUniswapHelperAddressToFile(address);
 
-    const dirPath = resolve(__dirname, '../../UI/src/contracts');
-    const filePath = join(dirPath, 'RateXAbi.ts');
-    try {
-        fs.writeFileSync(filePath, content);
-        console.log("File written successfully");
-    } catch (error) {
-        console.error(`Error writing file: ${error}`);
-    }
+    const UniswapHelper = await hre.artifacts.readArtifact("UniswapHelper");
+    const uniswapHelperAbi = UniswapHelper.abi;
+    saveUniswapHelperAbiToFile(uniswapHelperAbi);
 }
 
-function saveNewAddressToFile(address) {
-    const content =
-        `import {RateXAbi} from "./RateXAbi";
-import Web3 from "web3";
+async function saveSushiSwapHelperContract(sushiHelper) {
+    const addressSushiHelper = await sushiHelper.getAddress()
+    console.log('SushiSwapHelper address:' + addressSushiHelper)
+    saveSushiSwapAddressToFile(addressSushiHelper)
 
-import initRPCProvider from "../providers/RPCProvider";
-
-const web3: Web3 = initRPCProvider(42161);
-export const rateXAddress: string =  '${address}'
-
-export const RateXContract = new web3.eth.Contract(
-    RateXAbi,
-    rateXAddress
-);`;
-
-    const dirPath = resolve(__dirname, '../../UI/src/contracts');
-    const filePath = join(dirPath, 'RateX.ts');
-
-    try {
-        fs.writeFileSync(filePath, content);
-        console.log("File written successfully");
-    } catch (error) {
-        console.error(`Error writing file: ${error}`);
-    }
+    const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
+    const sushiSwapAbi = SushiSwapHelper.abi
+    saveSushiSwapAbiToFile(sushiSwapAbi)
 }
 
 main().catch((error) => {

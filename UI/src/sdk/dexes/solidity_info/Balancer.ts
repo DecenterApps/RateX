@@ -1,6 +1,7 @@
 import { Pool, PoolInfo } from '../../types'
 import {deployBalancerDex} from "../../../../../contracts/scripts/utils/deployment.js"
-import { BalancerPool } from '../pools/BalancerStableMath'
+import { BalancerStablePool } from '../pools/BalancerStableMath'
+import { BalancerWeightedPool } from '../pools/BalancerStableMath'
 import BigNumber from 'bignumber.js'
 
 const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers")
@@ -32,5 +33,5 @@ export async function callSolidityForAdditionalData(pools: PoolInfo[], dexId: st
 
 // FIX ANY
 function createStablePoolFromSolidity(oldPool: PoolInfo, balances: BigNumber[], aValue: BigNumber, aPrecision: BigNumber, swapFeePercentage: BigNumber): Pool {
-    return BalancerPool.createFromSolidityData(oldPool, balances, aValue, aPrecision, swapFeePercentage)
+    return BalancerStablePool.createFromSolidityData(oldPool, balances, aValue, aPrecision, swapFeePercentage)
 }
