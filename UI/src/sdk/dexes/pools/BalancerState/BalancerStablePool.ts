@@ -19,6 +19,7 @@ export class BalancerStablePool extends Pool {
       	this.reserves = reserves
 		this.swapFeePercentage = swapFeePercentage
       	this.amplificationCoeff = new BigNumber(A)
+		this.swapFeePercentage = swapFeePercentage
     }
   
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {

@@ -12,7 +12,7 @@ export async function callSolidityForAdditionalData(poolsInfo: PoolInfo[], dexId
     const [curve, ,] = await loadFixture(await deployCurveDex(poolInfo.poolId))
     const [decimals, A, fee, balances] = await curve.getPoolInfo()
 
-    newPools.push(new CurvePool(poolInfo.poolId, poolInfo.dexId, poolInfo.tokens, A, fee, balances))
+    // newPools.push(new CurvePool(poolInfo.poolId, poolInfo.dexId, poolInfo.tokens, A, fee, balances))
   }
 
   return newPools

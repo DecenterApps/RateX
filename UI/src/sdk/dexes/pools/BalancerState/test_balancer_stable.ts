@@ -1,5 +1,5 @@
-import { BalancerStablePool } from "./BalancerStableMath"
-import { Token } from "../../types"
+import { BalancerStablePool } from "./BalancerStablePool"
+import { Token } from "../../../types"
 import BigNumber from "bignumber.js"
 
 const tokenIn = '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f'      // token: WBTC
@@ -12,14 +12,14 @@ export default function testOffchainAmountStable(tokenIn: string, tokenOut: stri
 
     const tokens: Token[] = [
       {
-        address: '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
+        _address: '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
         decimals: 8
       },
       {
-        address: '0x542f16da0efb162d20bf4358efa095b70a100f9e',
+        _address: '0x542f16da0efb162d20bf4358efa095b70a100f9e',
         decimals: 18
       }, {
-        address: '0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40',
+        _address: '0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40',
         decimals: 18
       }
     ]
