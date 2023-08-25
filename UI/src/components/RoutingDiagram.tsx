@@ -24,14 +24,15 @@ function RouteComponent({ route }: { route: Route }) {
 
 function TokenComponent({ token }: { token: string }) {
   let img = 'empty-token.webp'
-  let ticker = `${token.substring(0, 6)}...` 
+  let ticker = `${token.substring(0, 10)}...` 
   if (token in tokenAddressToImage) {
     img = tokenAddressToImage[token].img
     ticker = tokenAddressToImage[token].ticker
   }
   return (
-    <div className="routingDiagramToken">
+    <div className="routingDiagramToken tooltip">
       <a href={`https://arbiscan.io/token/${token}`} target="_blank"><img src={img} alt="assetFromLogo" /></a>
+      <span className="tooltiptext">{ticker}</span>
     </div>
   )
 }
