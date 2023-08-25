@@ -33,6 +33,9 @@ const config = {
         gmx_usdc_pool_0_1: "0x0A36952Fb8C8dc6daeFB2fADb07C5212f560880e",
         uni_weth_pool: "0xC24f7d8E51A64dc1238880BD00bb961D54cbeb29",
         weth_link_pool: "0x468b88941e7Cc0B88c1869d68ab6b570bCEF62Ff",
+        weth_usdce_pool_0_3: "0x17c14D2c404D167802b16C450d3c99F88F2c4F4d",
+        usdt_usdce_pool_0_0_1: "0x8c9D230D45d6CfeE39a6680Fb7CB7E8DE7Ea8E71",
+        weth_usdt_pool_0_3: "0xc82819F72A9e77E2c0c3A69B3196478f44303cf4",
         dai_usdce_pool_0_0_1: "0xF0428617433652c9dc6D1093A42AdFbF30D29f74",
 
         impersonate_weth: "0x0df5dfd95966753f01cb80e76dc20ea958238c46",

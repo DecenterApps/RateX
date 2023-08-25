@@ -42,15 +42,26 @@ async function deployUniswapDex() {
     return {uniswap, addr1};
 }
 
+async function deploySushiSwapHelper() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+    const Sushi = await hre.ethers.getContractFactory('SushiSwapHelper')
+    const sushiHelper = await Sushi.deploy()
+    await sushiHelper.waitForDeployment()
+    return { sushiHelper, addr1, addr2, addr3 }
+}
+
+
 async function deployRateX() {
     const [addr1] = await hre.ethers.getSigners();
     const { sushiSwap} = await deploySushiDex();
     const { uniswap } = await deployUniswapDex();
     const {uniswapHelper} = await deployUniswapHelper();
+    const {sushiHelper} = await deploySushiSwapHelper();
 
     const sushiSwapAddress = await sushiSwap.getAddress();
     const uniswapAddress = await uniswap.getAddress();
     const uniswapHelperAddress = await uniswapHelper.getAddress();
+    const sushiSwapHelperAddress = await sushiHelper.getAddress();
 
     const RateX = await hre.ethers.getContractFactory("RateX");
     const rateX = await RateX.deploy(sushiSwapAddress, uniswapAddress);
@@ -62,7 +73,8 @@ async function deployRateX() {
         sushiSwapAddress,
         uniswapAddress,
         rateXAddress,
-        uniswapHelperAddress
+        uniswapHelperAddress,
+        sushiSwapHelperAddress
     );
 
     return {rateX, addr1};
@@ -73,13 +85,15 @@ function saveAddressesToFile(
     sushiSwapAddress,
     uniswapAddress,
     rateXAddress,
-    uniswapHelperAddress
+    uniswapHelperAddress,
+    sushiSwapHelperAddress
 ) {
     const content = `
 rateXAddress: ${rateXAddress}
 sushiSwapAddress: ${sushiSwapAddress}
 uniSwapAddress: ${uniswapAddress}
 uniswapHelperAddress: ${uniswapHelperAddress}
+suhsiSwapHelperAddress: ${sushiSwapHelperAddress}
     `;
     const dirPath = resolve(__dirname, './');
     const filePath = join(dirPath, 'tenderlyAddresses.txt');
@@ -91,5 +105,6 @@ module.exports = {
     deployRateX,
     deploySushiDex,
     deployUniswapDex,
-    deployUniswapHelper
+    deployUniswapHelper,
+    deploySushiSwapHelper
 }
