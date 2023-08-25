@@ -145,6 +145,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     if (tokenFromAmount <= 0 || isNaN(tokenFromAmount)) {
       setTokenToAmount(0)
       setLoadingQuote(false)
+      setQuote(undefined)
       return
     }
 
@@ -226,25 +227,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <SettingOutlined className="cog" />
           </Popover>
         </div>
-        <div className="inputs">
+        <div className="input">
           <Input placeholder="0" value={tokenFromAmount} onChange={changeAmount} />
           <div className="tokenFromAmountUSD">{`$${(tokenFromAmount * tokenFromPrice).toFixed(4)}`}</div>
-          {loadingQuote ? (
-            <div className="lds-ellipsis">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          ) : (
-            <div className="inputs">
-              <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
-              <div className="tokenToAmountUSD">
-                {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
-                <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
-              </div>
-            </div>
-          )}
           <div className="assetFrom" onClick={() => openModal(1)}>
             <img src={tokenFrom.img} alt="assetFromLogo" className="assetLogo" />
             {tokenFrom.ticker}
@@ -253,25 +238,37 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           <div className="switchButton" onClick={switchTokens}>
             <ArrowDownOutlined className="switchArrow" />
           </div>
+        </div>
+        <div className="input">
+          {loadingQuote ? (
+            <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+          ) : (
+            <>
+              <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
+              <div className="tokenToAmountUSD">
+                {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
+                <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
+              </div>
+            </>
+          )}
           <div className="assetTo" onClick={() => openModal(2)}>
             <img src={tokenTo.img} alt="assetFromLogo" className="assetLogo" />
             {tokenTo.ticker}
             <DownOutlined />
           </div>
-          {quote && quote.amountOut > 0 ? <RoutingDiagram quote={quote}></RoutingDiagram> : <></>}
+        </div>
+        <RoutingDiagram quote={quote}></RoutingDiagram>
+        <>
           {loadingSwap ? (
-            <div className="lds-ellipsis">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
+              <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+            </button>
           ) : (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
               Swap
             </button>
           )}
-        </div>
+        </>
       </div>
     </>
   )

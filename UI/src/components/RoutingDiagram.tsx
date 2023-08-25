@@ -36,7 +36,10 @@ function TokenComponent({ token }: { token: string }) {
   )
 }
 
-function RoutingDiagram({ quote }: { quote: Quote }) {
+function RoutingDiagram({ quote }: { quote: Quote | undefined }) {
+  if (!quote || quote.amountOut <= 0) {
+    return (<></>)
+  }
   quote.routes.sort((a, b) => a.percentage - b.percentage)
   return (
     <div className="routingDiagram">
