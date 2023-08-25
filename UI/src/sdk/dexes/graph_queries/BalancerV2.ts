@@ -5,6 +5,8 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
 import { PoolInfo } from '../../types'
 
+// test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
+
 export default class BalancerV2 implements DEXGraphFunctionality {
 
   endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
@@ -58,7 +60,8 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
         name
       }
     }
-  }`)
+  }
+  `)
 }
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
@@ -80,7 +83,8 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
             name
           }
       }
-  }`)
+  }
+  `)
 }
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
@@ -98,12 +102,14 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
             name
           }
       }
-  }`)
+  }
+  `)
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
 
   // always has 2 tokens in pool
+  // TO_DO: IMPORTANT POOL TYPE 
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,

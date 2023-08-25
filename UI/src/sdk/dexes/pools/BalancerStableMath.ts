@@ -8,16 +8,16 @@ import * as math from "../../utils/math/math"
 
 const AMP_PRECISION = new BigNumber(1000)
 
-export class BalancerPool extends Pool {
+export class BalancerStablePool extends Pool {
 
     reserves: BigNumber[]
-    fee: BigNumber
+	swapFeePercentage: BigNumber
     amplificationCoeff: BigNumber
   
-    protected constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], fee: string, A: string) {
+    constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], swapFeePercentage: BigNumber, A: string) {
       	super(poolId, dexId, tokens)
       	this.reserves = reserves
-      	this.fee = new BigNumber(fee)
+		this.swapFeePercentage = swapFeePercentage
       	this.amplificationCoeff = new BigNumber(A)
     }
   
@@ -39,7 +39,7 @@ export class BalancerPool extends Pool {
   // S = sum of final balances but y                                                                           //
   // P = product of final balances but y                                                                       //
   **************************************************************************************************************/
-function calculateOutputAmount(pool: BalancerPool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
+function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
 
 	// Get the index of the token we are swapping from and to
     const i = pool.tokens.findIndex(token => token.address === tokenA)
@@ -170,7 +170,7 @@ function _calculateInvariant(amplificationParameter: BigNumber, balances: BigNum
   
 		if (invariant.gt(prevInvariant) && fp.sub(invariant, prevInvariant).lte(math.ONE))
 			return invariant
-	  	else if (fp.sub(prevInvariant, invariant).lte(math.ONE))
+	  	else if ((prevInvariant.minus(invariant)).lte(math.ONE))
 		  	return invariant
 	}
   
