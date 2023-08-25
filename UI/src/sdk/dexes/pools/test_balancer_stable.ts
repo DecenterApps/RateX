@@ -44,3 +44,30 @@ export default function testOffchainAmountStable(tokenIn: string, tokenOut: stri
     console.log("OFFCHAIN: ", res)
   }
 
+/*
+
+swap: ["0x542f16da0efb162d20bf4358efa095b70a100f9e000000000000000000000436", "0", "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f", "0x542f16da0efb162d20bf4358efa095b70a100f9e", "100000000", "0x"]
+funds: ["0x", false, "0x", false]
+limit: 1
+deadline: 1792968092
+
+{
+  "poolId": "0x542f16da0efb162d20bf4358efa095b70a100f9e000000000000000000000436",
+  "kind": 0,                
+  "assetIn": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+  "assetOut": "0x542f16da0efb162d20bf4358efa095b70a100f9e",
+  "amount": "10000000",
+  "userData": "0x"
+}
+
+{
+  "sender": "0x00d4A50f3f6ff23072a7e60E3EA6c8F2036F978A",
+  "fromInternalBalance": false,
+  "recipient": "0x00d4A50f3f6ff23072a7e60E3EA6c8F2036F978A",
+  "toInternalBalance": false
+}
+
+*/
+//99796866023226590
+//99796866023226590
+// rezerce  3530005308,2596148429267412923497806828284479,86544196105233714855
