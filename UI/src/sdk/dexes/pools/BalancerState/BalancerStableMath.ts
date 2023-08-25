@@ -1,10 +1,10 @@
 // Ported from Solidity:
 // https://github.com/balancer-labs/balancer-core-v2/blob/70843e6a61ad11208c1cfabf5cfe15be216ca8d3/pkg/pool-stable/contracts/StableMath.sol
 
-import { Token, Pool } from '../../types'
+import { Token, Pool } from '../../../types'
 import BigNumber from "bignumber.js"
-import * as fp from "../../utils/math/fixed-points"
-import * as math from "../../utils/math/math"
+import * as fp from "../../../utils/math/fixed-points"
+import * as math from "../../../utils/math/math"
 
 const AMP_PRECISION = new BigNumber(1000)
 
@@ -12,11 +12,8 @@ export class BalancerStablePool extends Pool {
 
     reserves: BigNumber[]
 	swapFeePercentage: BigNumber
-    amplificationCoeff: BigNumber,
-	balances: BigNumber[],
-	weights: BigNumber[],
-	swapFeePercentage: BigNumber,
-  
+	amplificationCoeff: BigNumber
+
     constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], swapFeePercentage: BigNumber, A: string) {
       	super(poolId, dexId, tokens)
       	this.reserves = reserves
@@ -45,8 +42,8 @@ export class BalancerStablePool extends Pool {
 function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
 
 	// Get the index of the token we are swapping from and to
-    const i = pool.tokens.findIndex(token => token.address === tokenA)
-    const j = pool.tokens.findIndex(token => token.address === tokenB)
+    const i = pool.tokens.findIndex(token => token._address === tokenA)
+    const j = pool.tokens.findIndex(token => token._address === tokenB)
 
 	// Subtract the fee from the amount in if requested
 	if (swapFeePercentage) 

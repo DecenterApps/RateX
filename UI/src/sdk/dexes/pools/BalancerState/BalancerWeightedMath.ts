@@ -1,10 +1,10 @@
 // Ported from Solidity:
 // https://github.com/balancer/balancer-v2-monorepo/blob/master/pkg/pool-weighted/contracts/WeightedMath.sol
 
-import { Token, Pool } from '../../types'
+import { Token, Pool } from '../../../types'
 import BigNumber from "bignumber.js"
-import * as fp from "../../utils/math/fixed-points"
-import * as math from "../../utils/math/math"
+import * as fp from "../../../utils/math/fixed-points"
+import * as math from "../../../utils/math/math"
 
 // Swap limits: amounts swapped may not be larger than this percentage of total balance.
 const _MAX_IN_RATIO = new BigNumber(0.3e18)
@@ -29,8 +29,8 @@ export class BalancerWeightedPool extends Pool {
 function calculateOutputAmount(pool: BalancerWeightedPool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
 
 	// Get the index of the token we are swapping from and to
-    const i = pool.tokens.findIndex(token => token.address === tokenA)
-    const j = pool.tokens.findIndex(token => token.address === tokenB)
+    const i = pool.tokens.findIndex(token => token._address === tokenA)
+    const j = pool.tokens.findIndex(token => token._address === tokenB)
 
     const res = _calcOutGivenIn(
         pool.reserves[i],

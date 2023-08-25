@@ -3,7 +3,9 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import {dexIds, balancerWeightedPoolTypes, balancerStablePoolTypes} from '../dexIdsList'
-import { PoolInfo } from '../../types'
+import { Pool, PoolInfo } from '../../types'
+
+const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers")
 
 // test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
 
@@ -45,6 +47,14 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     })
 
     return poolsInfo
+  }
+
+  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    const pools: Pool[] = []
+
+    poolInfos.forEach((poolInfo: PoolInfo) => {
+    })
+    return pools
   }
 }
 
@@ -117,11 +127,11 @@ function createPoolFromGraph(jsonData: any, dexIdStable: string, dexIdWeighted: 
     dexId: (isStable ? dexIdStable : dexIdWeighted),
     tokens: [
       {
-        address: jsonData.tokens[0].id,
+        _address: jsonData.tokens[0].id,
         decimals: jsonData.tokens[0].decimals
       },
       {
-        address: jsonData.tokens[1].id,
+        _address: jsonData.tokens[1].id,
         decimals: jsonData.tokens[1].decimals
       }
     ]
