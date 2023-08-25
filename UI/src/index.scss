@@ -1,0 +1,111 @@
+@import './shared.scss';
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: rgb(25, 33, 52) !important;
+  background: rgb(25, 33, 52);
+  background: linear-gradient(180deg, rgba(25, 33, 52, 1) 28%, rgba(7, 8, 21, 1) 75%);
+  color: $color-text-primary;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.ant-input {
+  background-color: $color-neutral !important;
+  color: $color-text-primary !important;
+  border-width: 0px !important;
+  height: 96px !important;
+  margin-bottom: 5px;
+  font-size: 35px;
+  border-radius: $border-radius !important;
+}
+
+.ant-input::placeholder {
+  color: $color-text-secondary !important;
+}
+
+.ant-popover-arrow {
+  visibility: hidden;
+}
+
+.ant-popover-title {
+  color: $color-text-primary !important;
+}
+
+.ant-popover-inner-content {
+  color: $color-text-primary !important;
+}
+
+.ant-popover-inner {
+  min-width: 210px !important;
+  min-height: 120px !important;
+  border: 2px solid $color-neutral;
+  background-color: $color-dark !important;
+  border-radius: $border-radius !important;
+}
+
+.ant-radio-group {
+  margin-top: 10px;
+  border-radius: $border-radius !important;
+}
+
+.ant-radio-button-wrapper {
+  background-color: $color-neutral !important;
+  color: $color-text-primary !important;
+  font-weight: 500;
+  border-color: $color-light !important;
+}
+
+.ant-radio-button-wrapper-checked {
+  // border-color: $color-light-hover !important;
+  background-color: $color-light !important;
+}
+
+.ant-radio-button-wrapper::before {
+  background-color: $color-light !important;
+}
+
+.ant-radio-button-wrapper-checked::before {
+  background-color: $color-light !important;
+}
+
+.ant-modal-content {
+  background-color: $color-dark !important;
+  color: $color-text-primary !important;
+  padding: 0px !important;
+}
+
+.ant-modal {
+  border: 2px solid $color-neutral;
+  width: 400px !important;
+  border-radius: $border-radius !important;
+  padding-bottom: 0;
+}
+
+.ant-modal-header {
+  background-color: $color-dark !important;
+}
+
+.ant-modal-title {
+  color: $color-text-primary !important;
+  padding-top: 17px !important;
+  margin-left: 20px !important;
+}
+
+.ant-modal-close-icon {
+  color: $color-text-secondary !important;
+  transition: 0.3s;
+}
+
+.ant-modal-close-icon:hover {
+  color: $color-text-primary !important;
+}
