@@ -12,7 +12,10 @@ export class BalancerPool extends Pool {
 
     reserves: BigNumber[]
     fee: BigNumber
-    amplificationCoeff: BigNumber
+    amplificationCoeff: BigNumber,
+	balances: BigNumber[],
+	weights: BigNumber[],
+	swapFeePercentage: BigNumber,
   
     protected constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], fee: string, A: string) {
       	super(poolId, dexId, tokens)

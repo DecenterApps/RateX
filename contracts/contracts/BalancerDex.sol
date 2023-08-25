@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import './interfaces/IDex.sol';
 import './interfaces/balancer/IVault.sol';
 import './interfaces/balancer/IWeightedPool.sol';
+import './interfaces/balancer/IStablePool.sol';
 
 contract BalancerDex is IDex {
   enum PoolType {
@@ -40,17 +41,34 @@ contract BalancerDex is IDex {
     (poolAddress, ) = balancerVault.getPool(_poolId);
   }
 
-  function getPoolInfo(
+  function getWeightedPoolInfo(
     bytes32 _poolId
   )
     external
     view
-    returns (uint8 decimals, uint256 invariant, address[] memory tokens, uint256[] memory balances, uint256[] memory weights)
+    returns (uint8 decimals, uint256 invariant, address[] memory tokens, uint256[] memory balances, uint256[] memory weights, uint256 feePercentage)
   {
     IWeightedPool pool = IWeightedPool(this.getPool(_poolId));
     decimals = pool.decimals();
     invariant = pool.getInvariant();
-    (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
     weights = pool.getNormalizedWeights();
+    feePercentage = pool.getSwapFeePercentage();
+
+    (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
+  }
+
+  function getStablePoolInfo(
+    bytes32 _poolId
+  )
+    external
+    view
+    returns (uint8 decimals, address[] memory tokens, uint256[] memory balances, uint256 aValue, uint256 aPrecision, uint256 feePercentage)
+  {
+    IStablePool pool = IStablePool(this.getPool(_poolId));
+    decimals = pool.decimals();
+    (aValue, , aPrecision) = pool.getAmplificationParameter();
+    feePercentage = pool.getSwapFeePercentage();
+
+    (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
   }
 }

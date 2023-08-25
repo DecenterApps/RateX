@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// EXAMPLE POOL (RDNT - WETH)
-// https://arbiscan.io/address/0x32dF62dc3aEd2cD6224193052Ce665DC18165841
+// COPIED FROM WEIGHTED
+// EXAMPLE POOL (wstETH - wETH)
+// https://arbiscan.io/address/0x36bf227d6BaC96e2aB1EbB5492ECec69C691943f#readContract
 
-interface IWeightedPool {
+interface IStablePool {
     function decimals() external view returns (uint8 decimals);
     function getInvariant() external view returns (uint256 invariant);
     function getPoolId() external view returns (bytes32 poolId);
-    function getNormalizedWeights() external view returns (uint256[] memory weights);
+    function getAmplificationParameter() external view returns (uint256 value, bool isUpdating, uint256 precision);
     function getSwapFeePercentage() external view returns (uint256 swapFee);
 }

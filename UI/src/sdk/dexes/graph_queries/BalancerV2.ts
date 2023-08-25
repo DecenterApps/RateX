@@ -2,13 +2,14 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import dexIds from '../dexIdsList'
+import {dexIds, balancerWeightedPoolTypes, balancerStablePoolTypes} from '../dexIdsList'
 import { PoolInfo } from '../../types'
 
 export default class BalancerV2 implements DEXGraphFunctionality {
 
   endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
-  dexId = dexIds.BALANCER_V2
+  dexIdStable = dexIds.BALANCER_V2_STABLE
+  dexIdWeighted = dexIds.BALANCER_V2_WEIGHTED
 
   static initialize(): DEXGraphFunctionality {
     return new BalancerV2()
@@ -18,7 +19,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools))
     queryResult.pools.forEach((pool: any) => {
-      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
+      poolsInfo.push(createPoolFromGraph(pool, this.dexIdStable, this.dexIdWeighted))
     })
 
     return poolsInfo
@@ -28,7 +29,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(tokenA, tokenB, numPools))
     queryResult.pools.forEach((pool: any) => {
-      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
+      poolsInfo.push(createPoolFromGraph(pool, this.dexIdStable, this.dexIdWeighted))
     })
 
     return poolsInfo
@@ -38,7 +39,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
     queryResult.pools.forEach((pool: any) => {
-      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
+      poolsInfo.push(createPoolFromGraph(pool, this.dexIdStable, this.dexIdWeighted))
     })
 
     return poolsInfo
@@ -101,12 +102,13 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
   }`)
 }
 
-function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
+function createPoolFromGraph(jsonData: any, dexIdStable: string, dexIdWeighted: string): PoolInfo {
+  const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
 
   // always has 2 tokens in pool
   const pool: PoolInfo = {
     poolId: jsonData.id,
-    dexId: dexId,
+    dexId: (isStable ? dexIdStable : dexIdWeighted),
     tokens: [
       {
         address: jsonData.tokens[0].id,
