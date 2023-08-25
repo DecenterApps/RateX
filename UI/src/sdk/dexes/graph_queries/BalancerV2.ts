@@ -2,10 +2,8 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import {dexIds, balancerWeightedPoolTypes, balancerStablePoolTypes} from '../dexIdsList'
+import {dexIds, balancerStablePoolTypes} from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
-
-const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers")
 
 // test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
 
