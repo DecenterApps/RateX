@@ -46,7 +46,9 @@ export default class UniswapV3 implements DEXGraphFunctionality {
 
   async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
     const pools = poolInfos.map((poolInfo: PoolInfo) => poolInfo.poolId)
+    console.log("Start initialization");
     await UniswapState.initializeFreshPoolsData(pools)
+    console.log("End initialization");
     return poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens))
   }
 }
