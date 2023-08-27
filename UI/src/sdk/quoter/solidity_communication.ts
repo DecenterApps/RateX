@@ -5,6 +5,7 @@ import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
 import { RateXContract } from '../../contracts/RateX'
 import { createGraph, multiHopSwap } from '../routing/multiHopSwap'
+import {findRoute} from "../routing/uni_like_algo/uni_like_algo";
 
 async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
   const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
@@ -56,7 +57,16 @@ async function executeSwapMultiHop(
   }
 }
 
+async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn: bigint){
+  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
+  console.log("Fetched pools:", pools);
+  console.log("Pool size: ", pools.length);
+  return findRoute(tokenA, tokenB, amountIn, pools);
+}
+
 export {
   getBestQuoteMultiHop,
-  executeSwapMultiHop
+  executeSwapMultiHop,
+
+  getBestQuoteUniLikeAlgo
 }
