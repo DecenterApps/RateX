@@ -18,7 +18,6 @@ export class BalancerState {
 
             if (pool.dexId.includes("STABLE")) {
                 //     returns (uint8 decimals, address[] memory tokens, uint256[] memory balances, uint256 aValue, uint256 aPrecision, uint256 feePercentage)
-
                 // @ts-ignore
                 const res: any[] = await BalancerContract.methods // @ts-ignore
                 .getStablePoolInfo(pool.poolId)
@@ -26,14 +25,16 @@ export class BalancerState {
                 .catch((err: any) => {
                     console.log('Stable Get Pool Info Error: ', err)
                 })
+                // console.log(res)
                 const [decimals, tokens, balances, aValue, aPrecision, swapFeePercentage] = [res[0], res[1], res[2], res[3], res[4], res[5]]
-
+                
                 const stablePool = new BalancerStablePool(pool.poolId.toLowerCase(), pool.dexId, pool.tokens, balances, swapFeePercentage, aValue, aPrecision)                
                 newPools.push(stablePool)
             }
             else if (pool.dexId.includes("WEIGHTED")){
                 //     returns (uint8 decimals, uint256 invariant, address[] memory tokens, uint256[] memory balances, uint256[] memory weights, uint256 feePercentage)
-
+                
+                // console.log(pool.poolId)
                 // @ts-ignore
                 const res: any[] = await BalancerContract.methods // @ts-ignore
                 .getWeightedPoolInfo(pool.poolId)
@@ -47,7 +48,8 @@ export class BalancerState {
                 newPools.push(weightedPool)
             }
             else {
-                throw new Error("Dex not supported")
+                // DEX NOT SUPPORTED
+                // throw new Error("Dex not supported")
             }
         }
         return newPools

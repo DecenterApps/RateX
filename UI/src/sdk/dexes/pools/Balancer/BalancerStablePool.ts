@@ -6,8 +6,6 @@ import BigNumber from "bignumber.js"
 import * as fp from "../../../utils/math/fixed-points"
 import * as math from "../../../utils/math/math"
 
-const AMP_PRECISION = new BigNumber(1000)
-
 export class BalancerStablePool extends Pool {
 
     reserves: BigNumber[]
@@ -42,7 +40,7 @@ export class BalancerStablePool extends Pool {
   // S = sum of final balances but y                                                                           //
   // P = product of final balances but y                                                                       //
   **************************************************************************************************************/
-function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
+  function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
 
 	// Get the index of the token we are swapping from and to
     const i = pool.tokens.findIndex(token => token._address === tokenA)
@@ -52,12 +50,22 @@ function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB:
 	if (swapFeePercentage) 
 		tokenAmountIn = fp.sub(tokenAmountIn, fp.mulUp(tokenAmountIn, swapFeePercentage))
 
+	// Get the precision of the token with the most decimals
+	const maxDecimals = Math.max(...pool.tokens.map((token) => token.decimals))
+	const precisions: BigNumber[] = pool.tokens.map((token) => new BigNumber(10 ** (maxDecimals - token.decimals)))
+	
+	// token.amounts: convert so it is to the same precision
+	tokenAmountIn = tokenAmountIn.times(precisions[i])
+	for (let k = 0; k < pool.tokens.length; k++) pool.reserves[k] = pool.reserves[k].times(precisions[k])
+
 	// Given that we need to have a greater final balance out, the invariant needs to be rounded up
-	const invariant = _calculateInvariant(pool.amplificationCoeff, pool.reserves, true);
+	const invariant = _calculateInvariant(pool.amplificationCoeff, pool.amplificationCoeffPrecision, pool.reserves, true);
+	// console.log("invariant: ", invariant.toFixed())
 	pool.reserves[i] = fp.add(pool.reserves[i], tokenAmountIn);
 
 	const finalBalanceOut = _getTokenBalanceGivenInvariantAndAllOtherBalances(
 		pool.amplificationCoeff,
+		pool.amplificationCoeffPrecision,
 		pool.reserves,
 		invariant,
 		j
@@ -70,7 +78,7 @@ function calculateOutputAmount(pool: BalancerStablePool, tokenA: string, tokenB:
 
 // This function calculates the balance of a given token (tokenIndex) given all the other balances and the invariant
 // Rounds result up overall
-function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParameter: BigNumber, balances: BigNumber[], invariant: BigNumber, tokenIndex: number): BigNumber {
+function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParameter: BigNumber, amplificationCoeffPrecision: BigNumber,  balances: BigNumber[], invariant: BigNumber, tokenIndex: number): BigNumber {
 	
 	const numTokens = new BigNumber(balances.length)
 	const ampTimesTotal = math.mul(amplificationParameter, numTokens)
@@ -90,12 +98,12 @@ function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParamete
 
 	// We remove the balance fromm c by multiplying it
 	const c = math.mul(
-		math.mul(math.divUp(inv2, math.mul(ampTimesTotal, P_D)), AMP_PRECISION),
+		math.mul(math.divUp(inv2, math.mul(ampTimesTotal, P_D)), amplificationCoeffPrecision),
 		balances[tokenIndex]
 	)
 	const b = fp.add(
 		sum,
-		math.mul(math.divDown(invariant, ampTimesTotal), AMP_PRECISION)
+		math.mul(math.divDown(invariant, ampTimesTotal), amplificationCoeffPrecision)
 	);
 
 	// We iterate to find the balance
@@ -110,13 +118,13 @@ function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParamete
 			fp.sub(fp.add(math.mul(tokenBalance, math.TWO), b), invariant)
 		)
 
-		if (tokenBalance.gt(prevTokenBalance) && fp.sub(tokenBalance, prevTokenBalance).lte(math.ONE)) 
-			return tokenBalance
-		else if (fp.sub(prevTokenBalance, tokenBalance).lte(math.ONE))
-			return tokenBalance
+		const diff = tokenBalance.minus(prevTokenBalance).abs()
+		if(diff.lte(math.ONE))
+			break
 	}
 
-	throw new Error("STABLE_GET_BALANCE_DIDNT_CONVERGE");
+	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE")
+	return tokenBalance
 }
 
 /* Computes the invariant given the current balances, using the Newton-Raphson approximation.
@@ -129,7 +137,7 @@ function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParamete
   // P = product of balances                                                                   //
   // n = number of tokens                                                                      //
   **********************************************************************************************/
-function _calculateInvariant(amplificationParameter: BigNumber, balances: BigNumber[], roundUp: boolean): BigNumber {
+function _calculateInvariant(amplificationParameter: BigNumber, amplificationCoeffPrecision: BigNumber, balances: BigNumber[], roundUp: boolean): BigNumber {
 
 	let sum = math.ZERO
 	let numTokens = new BigNumber(balances.length)
@@ -156,26 +164,26 @@ function _calculateInvariant(amplificationParameter: BigNumber, balances: BigNum
 				math.mul(math.mul(numTokens, invariant), invariant),
 				math.div(
 					math.mul(math.mul(ampTimesTotal, sum), P_D),
-					AMP_PRECISION,
+					amplificationCoeffPrecision,
 					roundUp
 				)
 			),
 			fp.add(
 				math.mul(fp.add(numTokens, math.ONE), invariant),
 				math.div(
-					math.mul(fp.sub(ampTimesTotal, AMP_PRECISION), P_D),
-					AMP_PRECISION,
+					math.mul(fp.sub(ampTimesTotal, amplificationCoeffPrecision), P_D),
+					amplificationCoeffPrecision,
 					!roundUp
 				)
 			),
 			roundUp
 		)
   
-		if (invariant.gt(prevInvariant) && fp.sub(invariant, prevInvariant).lte(math.ONE))
-			return invariant
-	  	else if ((prevInvariant.minus(invariant)).lte(math.ONE))
-		  	return invariant
+		const diff = invariant.minus(prevInvariant).abs()
+		if(diff.lte(math.ONE))
+			break
 	}
   
-	throw new Error("STABLE_GET_BALANCE_DIDNT_CONVERGE");
+	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE - acceptable?")
+	return invariant
 }

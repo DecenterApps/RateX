@@ -2,10 +2,10 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import {dexIds, balancerStablePoolTypes} from '../dexIdsList'
+import {dexIds, balancerStablePoolTypes, balancerWeightedPoolTypes} from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { BalancerState } from '../pools/Balancer/BalancerState'
-import { BalancerStablePool } from '../pools/Balancer/BalancerStablePool'
+import { json } from 'stream/consumers'
 
 // test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
 
@@ -122,21 +122,24 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 
 function createPoolFromGraph(jsonData: any, dexIdStable: string, dexIdWeighted: string): PoolInfo {
   const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
+  const isWeighted = balancerWeightedPoolTypes.includes(jsonData.poolType)
 
   // console.log(jsonData)
   // always has 2 tokens in pool
   // TO_DO: IMPORTANT POOL TYPE 
   const pool: PoolInfo = {
     poolId: jsonData.id,
-    dexId: (isStable ? dexIdStable : dexIdWeighted),
+    dexId: (isStable ? dexIdStable : (isWeighted ? dexIdWeighted : "NOT_SUPPORTED")),
     tokens: [
       {
         _address: jsonData.tokens[0].id,
-        decimals: jsonData.tokens[0].decimals
+        decimals: jsonData.tokens[0].decimals,
+        name: jsonData.tokens[0].name
       },
       {
         _address: jsonData.tokens[1].id,
-        decimals: jsonData.tokens[1].decimals
+        decimals: jsonData.tokens[1].decimals,
+        name: jsonData.tokens[1].name
       }
     ]
   }

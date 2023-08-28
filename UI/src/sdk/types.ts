@@ -31,6 +31,7 @@ export interface ResponseType {
 export type Token = {
   _address: string
   decimals: number
+  name?: string
 }
 
 // we get from Graph QL

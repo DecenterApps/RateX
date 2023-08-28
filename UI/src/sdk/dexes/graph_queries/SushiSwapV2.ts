@@ -80,10 +80,12 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
       token0 {
         id
         decimals
+        name
       }
       token1 {
         id
         decimals
+        name
       }
     }
   }`)
@@ -110,10 +112,12 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
           token0 {
             id
             decimals
+            name
           }
           token1 {
             id
             decimals
+            name
           }
         }
   }`)
@@ -132,10 +136,12 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
           token0 {
             id
             decimals
+            name
           }
           token1 {
             id
             decimals
+            name
           }
         }
   }`)
@@ -150,10 +156,12 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       {
         _address: jsonData.token0.id,
         decimals: jsonData.token0.decimals,
+        name: jsonData.token0.name
       },
       {
         _address: jsonData.token1.id,
         decimals: jsonData.token1.decimals,
+        name: jsonData.token1.name
       },
     ],
   }

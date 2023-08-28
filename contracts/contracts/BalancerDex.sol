@@ -61,6 +61,7 @@ contract BalancerDex is IDex {
     // invariant = pool.getInvariant();
     // console.log("ZAVRSIO SE INVARIANT");
     weights = pool.getNormalizedWeights();
+    require(weights.length > 0, "Weights are empty");
     console.log("ZAVRSIO SE NORMALIZED");
     feePercentage = pool.getSwapFeePercentage();
     console.log("ZAVRSIO SE SWAPFEE");
