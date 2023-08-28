@@ -78,8 +78,8 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
   return parse(gql`{
       pools(first: ${numPools}, orderBy: totalLiquidity, where: {
           and: [
-              {tokens_: {address: "${tokenA.toLowerCase()}"}},
-              {tokens_: {address: "${tokenB.toLowerCase()}"}}
+              {tokens_: {address_contains: "${tokenA.toLowerCase()}"}},
+              {tokens_: {address_contains: "${tokenB.toLowerCase()}"}}
             ],
             totalLiquidity_not: "0"
         }
@@ -102,7 +102,7 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
   return parse(gql`{
       pools(first: ${numPools}, orderBy: totalLiquidity, where: 
           {
-              tokens_: {address: "${token.toLowerCase()}"},
+              tokens_: {address_contains: "${token.toLowerCase()}"},
               totalLiquidity_not: "0"
           }
         ) {
