@@ -153,35 +153,35 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
-    // setLoadingQuote(true)
-    // initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-    //   .then((quote: Quote) => {
-    //     if (callTime < lastCallTime.current) {
-    //       return
-    //     }
-    //     setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
-    //     setLoadingQuote(false)
-    //     setQuote(quote)
-    //   })
-    //   .catch((error: string) => {
-    //     setLoadingQuote(false)
-    //     console.log(error)
-    //   })
-
     setLoadingQuote(true)
-    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-      .then((quote: TQuoteUniLike) => {
+    initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+      .then((quote: Quote) => {
         if (callTime < lastCallTime.current) {
           return
         }
-        setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+        setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
         setLoadingQuote(false)
-        setUniLikeQuote(quote)
+        setQuote(quote)
       })
       .catch((error: string) => {
         setLoadingQuote(false)
         console.log(error)
       })
+
+    // setLoadingQuote(true)
+    // getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    //   .then((quote: TQuoteUniLike) => {
+    //     if (callTime < lastCallTime.current) {
+    //       return
+    //     }
+    //     setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+    //     setLoadingQuote(false)
+    //     setUniLikeQuote(quote)
+    //   })
+    //   .catch((error: string) => {
+    //     setLoadingQuote(false)
+    //     console.log(error)
+    //   })
   }
 
   function commitSwap() {
@@ -274,7 +274,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <DownOutlined />
           </div>
         </div>
-        {/*<RoutingDiagram quote={quote}></RoutingDiagram>*/}
+        <RoutingDiagram quote={quote}></RoutingDiagram>
         <>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
