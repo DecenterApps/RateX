@@ -1,5 +1,10 @@
 import { Quote, ResponseType } from '../types'
-import {executeSwapMultiHop, getBestQuoteMultiHop, getBestQuoteUniLikeAlgo} from './solidity_communication'
+import {
+  executeSwapMultiHop,
+  executeSwapWithSplitting,
+  getBestQuoteMultiHop,
+  getBestQuoteUniLikeAlgo
+} from './solidity_communication'
 import {TQuoteUniLike} from "../routing/uni_like_algo/types";
 
 async function initGetQuote(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
@@ -27,4 +32,23 @@ async function swap(
   return executeSwapMultiHop(token1, token2, quote, amountIn, minAmountOut, signer, chainId);
 }
 
-export { initGetQuote, swap, getQuoteUniLike }
+async function swapWithSplitting(
+    token1: string,
+    token2: string,
+    quote: TQuoteUniLike,
+    amountIn: bigint,
+    slippagePercentage: number,
+    signer: string,
+    chainId: number
+): Promise<ResponseType> {
+
+  const amountOut = quote.quote;
+  const slippageBigInt = BigInt(slippagePercentage * 100);
+  const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100);
+
+  return executeSwapWithSplitting(token1, token2, quote, amountIn, minAmountOut, signer, chainId);
+}
+
+
+
+export { initGetQuote, swap, swapWithSplitting, getQuoteUniLike }

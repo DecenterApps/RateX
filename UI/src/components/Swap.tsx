@@ -5,7 +5,7 @@ import Web3 from 'web3'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
-import {getQuoteUniLike, initGetQuote, swap} from '../sdk/quoter/front_communication'
+import {getQuoteUniLike, initGetQuote, swap, swapWithSplitting} from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
 import { Quote } from '../sdk/types'
 import { notification } from './notifications'
@@ -153,58 +153,83 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
-    setLoadingQuote(true)
-    initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-      .then((quote: Quote) => {
-        if (callTime < lastCallTime.current) {
-          return
-        }
-        setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
-        setLoadingQuote(false)
-        setQuote(quote)
-      })
-      .catch((error: string) => {
-        setLoadingQuote(false)
-        console.log(error)
-      })
-
     // setLoadingQuote(true)
-    // getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-    //   .then((quote: TQuoteUniLike) => {
+    // initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    //   .then((quote: Quote) => {
     //     if (callTime < lastCallTime.current) {
     //       return
     //     }
-    //     setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+    //     setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
     //     setLoadingQuote(false)
-    //     setUniLikeQuote(quote)
+    //     setQuote(quote)
     //   })
     //   .catch((error: string) => {
     //     setLoadingQuote(false)
     //     console.log(error)
     //   })
+
+    setLoadingQuote(true)
+    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+      .then((quote: TQuoteUniLike) => {
+        if (callTime < lastCallTime.current) {
+          return
+        }
+        setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+        setLoadingQuote(false)
+        setUniLikeQuote(quote)
+      })
+      .catch((error: string) => {
+        setLoadingQuote(false)
+        console.log(error)
+      })
   }
 
   function commitSwap() {
-    if (quote === undefined) return
+    //if (quote === undefined) return
+    if (uniLikeQuote === undefined) return
 
     setLoadingSwap(true)
 
     const amountIn = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
-      .then((res) => {
-        setLoadingSwap(false)
-        // for now hardcode it for testing purposes
-        res.isSuccess
-          ? notification.success({
-              message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
-            })
-          : notification.error({ message: res.errorMessage })
-      })
-      .catch((error: string) => {
-        setLoadingSwap(false)
-        notification.open({ message: error })
-      })
+    // swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+    //   .then((res) => {
+    //     setLoadingSwap(false)
+    //     // for now hardcode it for testing purposes
+    //     res.isSuccess
+    //       ? notification.success({
+    //           message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+    //         })
+    //       : notification.error({ message: res.errorMessage })
+    //   })
+    //   .catch((error: string) => {
+    //     setLoadingSwap(false)
+    //     notification.open({ message: error })
+    //   })
+
+    swapWithSplitting(
+        tokenFrom.address[chainId],
+        tokenTo.address[chainId],
+        uniLikeQuote,
+        amountIn,
+        slippage,
+        wallet,
+        chainId
+    )
+        .then((res) => {
+          setLoadingSwap(false)
+          // for now hardcode it for testing purposes
+          res.isSuccess
+              ? notification.success({
+                message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+              })
+              : notification.error({ message: res.errorMessage })
+        })
+        .catch((error: string) => {
+          console.log("Error on swap: ", error);
+          setLoadingSwap(false)
+          notification.open({ message: error })
+        })
   }
 
   const settings = (
