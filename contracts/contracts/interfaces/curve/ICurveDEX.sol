@@ -8,5 +8,5 @@ interface ICurveStableSwapDEX {
     function fee() external view returns (uint256 poolFee);
     function get_dy(int128 i, int128 j, uint256 dx) external view returns (uint256 dy);
     function coins(uint256 arg0) external view returns (address tokenAddress);
-    function get_balances() external view returns (uint256[2] memory balancesArray);
+    function balances(uint256 arg0) external view returns (uint256 balance);
 }

@@ -21,14 +21,6 @@ async function deployUniswapDex() {
   return { uniswap, addr1, addr2, addr3 }
 }
 
-async function deployCurveDex(poolId) {
-  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
-  const Curve = await hre.ethers.getContractFactory('CurveDex')
-  const curve = await Curve.deploy(poolId)
-  await curve.waitForDeployment()
-  return { curve, addr1, addr2, addr3 }
-}
-
 async function deployRateX() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const { sushiSwap } = await deploySushiDex()
@@ -52,18 +44,26 @@ async function deploySushiSwapHelper() {
 }
 
 async function deployUniswapHelper() {
-    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
-    const UniswapHelper = await hre.ethers.getContractFactory("UniswapHelper");
-    const uniswapHelper = await UniswapHelper.deploy();
-    await uniswapHelper.waitForDeployment();
-    return {uniswapHelper, addr1, addr2, addr3};
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const UniswapHelper = await hre.ethers.getContractFactory('UniswapHelper')
+  const uniswapHelper = await UniswapHelper.deploy()
+  await uniswapHelper.waitForDeployment()
+  return { uniswapHelper, addr1, addr2, addr3 }
+}
+
+async function deployCurveHelper() {
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const CurveHelper = await hre.ethers.getContractFactory('CurveHelper')
+  const curveHelper = await CurveHelper.deploy()
+  await curveHelper.waitForDeployment()
+  return { curveHelper, addr1, addr2, addr3 }
 }
 
 module.exports = {
-    deployRateX,
-    deploySushiDex,
-    deployUniswapDex,
-    deployCurveDex,
-    deployUniswapHelper,
-    deploySushiSwapHelper
+  deployRateX,
+  deploySushiDex,
+  deployUniswapDex,
+  deployUniswapHelper,
+  deploySushiSwapHelper,
+  deployCurveHelper,
 }

@@ -9,7 +9,7 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    const files = ['SushiSwapV2.ts', "UniswapV3.ts"]
+    const files = ['SushiSwapV2.ts', 'Curve.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -41,19 +41,18 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @returns: list of poolIds
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
-  const allPoolsPromises = initializedDexes.map(dex => dex.getPoolsWithToken(token, numPools));
-  const allPoolsResults = await Promise.all(allPoolsPromises);
+  const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
+  const allPoolsResults = await Promise.all(allPoolsPromises)
 
   initializedDexes.forEach((dex, index) => {
-    const pools = allPoolsResults[index];
+    const pools = allPoolsResults[index]
     if (dexesPools.has(dex)) {
-      dexesPools.get(dex)?.push(...pools);
+      dexesPools.get(dex)?.push(...pools)
     } else {
-      dexesPools.set(dex, pools);
+      dexesPools.set(dex, pools)
     }
-  });
+  })
 }
-
 
 /* Get top pools from each dex in initializedDexes list - returns a list of poolIds
  * @param numPools: number of pools to return from each dex
@@ -61,44 +60,46 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @returns: list of poolIds
  */
 async function getTopPools(numPools: number = 5): Promise<void> {
-  const allPoolsPromises = initializedDexes.map(dex => dex.getTopPools(numPools));
-  const allPoolsResults = await Promise.all(allPoolsPromises);
+  const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
+  const allPoolsResults = await Promise.all(allPoolsPromises)
 
   initializedDexes.forEach((dex, index) => {
-    const pools = allPoolsResults[index];
+    const pools = allPoolsResults[index]
     if (dexesPools.has(dex)) {
-      dexesPools.get(dex)?.push(...pools);
+      dexesPools.get(dex)?.push(...pools)
     } else {
-      dexesPools.set(dex, pools);
+      dexesPools.set(dex, pools)
     }
-  });
+  })
 }
 
 async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools: number = 5, numTopPools: number = 5): Promise<Pool[]> {
   let pools: Pool[] = []
-  dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => { dexesPools.set(dex, []) });
+  dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => {
+    dexesPools.set(dex, [])
+  })
 
   if (!initialized) {
     await initializeDexes()
     initialized = true
   }
 
-  const promises: Promise<void>[] = [];
-  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools));
-  promises.push(getPoolIdsForToken(tokenTo, numFromToPools));
-  promises.push(getTopPools(numTopPools));
-  await Promise.all(promises);
+  const promises: Promise<void>[] = []
+  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools))
+  promises.push(getPoolIdsForToken(tokenTo, numFromToPools))
+  promises.push(getTopPools(numTopPools))
+  await Promise.all(promises)
 
   filterDuplicatePools()
 
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
-    dexPoolsPromises.push(dex.getPoolsData(poolInfos));
+    dexPoolsPromises.push(dex.getPoolsData(poolInfos))
   }
-  const allPoolsData = await Promise.all(dexPoolsPromises);
+  const allPoolsData = await Promise.all(dexPoolsPromises)
   allPoolsData.forEach((poolsData: Pool[]) => {
-    pools.push(...poolsData);
-  });
+    pools.push(...poolsData)
+  })
 
   return pools
 }
