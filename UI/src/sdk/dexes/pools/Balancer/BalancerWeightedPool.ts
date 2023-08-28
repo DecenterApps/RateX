@@ -34,15 +34,19 @@ function calculateOutputAmount(pool: BalancerWeightedPool, tokenA: string, token
     const i = pool.tokens.findIndex(token => token._address === tokenA)
     const j = pool.tokens.findIndex(token => token._address === tokenB)
 
-    const res = _calcOutGivenIn(
-        pool.reserves[i],
-        pool.weights[i],
-        pool.reserves[j],
-        pool.weights[j],
-        tokenAmountIn
-    )
-
-    return BigInt(res.toFixed())
+    try {
+        const res = _calcOutGivenIn(
+            pool.reserves[i],
+            pool.weights[i],
+            pool.reserves[j],
+            pool.weights[j],
+            tokenAmountIn
+        )
+        return BigInt(res.toFixed())
+    } catch (e) {
+        // console.log(e)
+        return BigInt(0)
+    }
 }
 
 // Computes how many tokens can be taken out of a pool if `amountIn` are sent, given the

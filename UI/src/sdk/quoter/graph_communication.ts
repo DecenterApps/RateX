@@ -1,3 +1,4 @@
+import { get } from 'http'
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
 
@@ -9,8 +10,7 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    // const files = ['SushiSwapV2.ts', "UniswapV3.ts", "BalancerV2.ts"]
-    const files = ["BalancerV2.ts"]
+    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -36,6 +36,8 @@ async function checkInitializedDexes() {
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
+  await checkInitializedDexes()
+
   for (const dex of initializedDexes) {
     const pools = await dex.getPoolsWithTokenPair(tokenA, tokenB, numPools)
     dexesPools.get(dex)?.push(...pools)
@@ -49,6 +51,8 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @returns: list of poolIds
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
+  await checkInitializedDexes()
+
   for (const dex of initializedDexes) {
     const pools = await dex.getPoolsWithToken(token, numPools)
     dexesPools.get(dex)?.push(...pools)
@@ -61,24 +65,26 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @returns: list of poolIds
  */
 async function getTopPools(numPools: number = 5): Promise<void> {
+  await checkInitializedDexes()
+
   for (const dex of initializedDexes) {
     const pools = await dex.getTopPools(numPools)
     dexesPools.get(dex)?.push(...pools)
   }
+
 }
 
 async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools: number = 5, numTopPools: number = 5): Promise<Pool[]> {
   let pools: Pool[] = []
   dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => { dexesPools.set(dex, []) });
 
-  if (!initialized) {
-    await initializeDexes()
-    initialized = true
-  }
+  await checkInitializedDexes()
 
   await getPoolIdsForToken(tokenFrom, numFromToPools)
   await getPoolIdsForToken(tokenTo, numFromToPools)
   await getTopPools(numTopPools)
+  await getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools)
+
 
   filterDuplicatePools()
 

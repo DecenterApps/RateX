@@ -20,10 +20,15 @@ function RouteComponent({ route }: { route: Route }) {
 }
 
 function SwapComponent({ swap }: { swap: Swap }) {
+  const tokenA = swap.tokenA.toLowerCase()
+  const tokenB = swap.tokenB.toLowerCase()
+  const tokenAImage = tokenAddressToImage.hasOwnProperty(tokenA) ? tokenAddressToImage[tokenA].img : 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+  const tokenBImage = tokenAddressToImage.hasOwnProperty(tokenB) ? tokenAddressToImage[tokenB].img : 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+
   return (
     <div className="routingDiagramPool">
-      {/*<img src={tokenAddressToImage[swap.tokenA.toLowerCase()].img} alt="assetFromLogo" />*/}
-      {/*<img src={tokenAddressToImage[swap.tokenB.toLowerCase()].img} alt="assetToLogo" />*/}
+      <img src={tokenAImage} alt="assetFromLogo" />
+      <img src={tokenBImage} alt="assetToLogo" />
     </div>
   )
 }

@@ -78,10 +78,10 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
   return parse(gql`{
       pools(first: ${numPools}, orderBy: totalLiquidity, where: {
           and: [
-              {tokens_: {address_contains: "${tokenA.toLowerCase()}"}},
-              {tokens_: {address_contains: "${tokenB.toLowerCase()}"}}
+              {tokens_: {address: "${tokenA.toLowerCase()}"}},
+              {tokens_: {address: "${tokenB.toLowerCase()}"}},
+              {totalLiquidity_not: "0"}
             ],
-            totalLiquidity_not: "0"
         }
         ) {
           id

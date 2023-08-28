@@ -89,5 +89,15 @@
             "42161": "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978"
         },
         "decimals": 18
+    },
+    {
+        "ticker": "RDNT",
+        "img": "https://s2.coinmarketcap.com/static/img/coins/200x200/21106.png",
+        "name": "Radiant",
+        "address": {
+            "1": "",
+            "42161": "0x3082cc23568ea640225c2467653db90e9250aaa0"
+        },
+        "decimals": 18
     }
 ]

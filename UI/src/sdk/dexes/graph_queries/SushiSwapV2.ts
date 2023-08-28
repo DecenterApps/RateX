@@ -59,11 +59,13 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
       const token1: Token = {
         _address: tokensRaw1[0],
         decimals: Number(tokensRaw1[1]),
+        name: tokensRaw1[2]
       }
 
       const token2: Token = {
         _address: tokensRaw2[0],
         decimals: Number(tokensRaw2[1]),
+        name: tokensRaw2[2]
       }
 
       pools.push(new SushiSwapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
@@ -75,7 +77,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pairs (first: ${numPools}, orderBy: reserveETH, orderDirection: desc, where: {volumeUSD_not: "0"}) {
+    pairs (first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {volumeUSD_not: "0"}) {
       id
       token0 {
         id
@@ -93,7 +95,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: reserveETH, where: {
+        pairs(first: ${numPools}, orderBy: reserveUSD, where: {
           or: [
             {and: [
               { token0: "${tokenA.toLowerCase()}" },
@@ -125,7 +127,7 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: reserveETH, where: {
+        pairs(first: ${numPools}, orderBy: reserveUSD, where: {
           or: [
             { token0: "${token.toLowerCase()}" },
             { token1: "${token.toLowerCase()}" }

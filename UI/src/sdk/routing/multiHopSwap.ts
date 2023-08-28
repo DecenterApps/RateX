@@ -27,9 +27,14 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
             return
           }
 
+          // console.log(hop, pool.poolId, tokenA, tokenB._address, dpInfo.amountOut)
           const amountOut: bigint = pool.calculateExpectedOutputAmount(tokenA, tokenB._address, dpInfo.amountOut)
+          if (amountOut <= 0) {
+            return
+          }
+
           const newPath: string[] = [...dpInfo.path, tokenB._address]
-          const currSwap: Swap = { poolId: pool.poolId, dexId: pool.dexId, tokenA: tokenA, tokenB: tokenB._address }
+          const currSwap: Swap = { poolId: pool.poolId, dexId: pool.dexId, tokenA: tokenA, tokenB: tokenB._address, tokenAName: tokenA, tokenBName: tokenB.name }
           const newSwaps: Swap[] = [...dpInfo.swaps, currSwap]
 
           if (!dp.has(hop + 1)) {

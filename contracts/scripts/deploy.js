@@ -24,13 +24,12 @@ async function main() {
     await sendWethTokensToUser(addr1, hre.ethers.parseEther("1000"));
     await saveRateXContract(rateX);
     await saveUniswapHelperContract(uniswapHelper);
-    await saveBalancerHelperContract(balancerHelper);
     await saveSushiSwapHelperContract(sushiHelper);
 }
 
 async function saveRateXContract(rateXContract) {
     const address = await rateXContract.getAddress();
-    console.log("RateX address:" + address);
+    console.log("RateX address: " + address);
     saveRateXAddressToFile(address);
 
     const RateX = await hre.artifacts.readArtifact("RateX");
@@ -40,7 +39,7 @@ async function saveRateXContract(rateXContract) {
 
 async function saveUniswapHelperContract(uniswapHelperContract) {
     const address = await uniswapHelperContract.getAddress();
-    console.log("UniswapHelper address:" + address);
+    console.log("UniswapHelper address: " + address);
     saveUniswapHelperAddressToFile(address);
 
     const UniswapHelper = await hre.artifacts.readArtifact("UniswapHelper");
@@ -50,7 +49,7 @@ async function saveUniswapHelperContract(uniswapHelperContract) {
 
 async function saveSushiSwapHelperContract(sushiHelper) {
     const addressSushiHelper = await sushiHelper.getAddress()
-    console.log('SushiSwapHelper address:' + addressSushiHelper)
+    console.log('SushiSwapHelper address: ' + addressSushiHelper)
     saveSushiSwapAddressToFile(addressSushiHelper)
 
     const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')

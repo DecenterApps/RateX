@@ -156,6 +156,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         if (callTime < lastCallTime.current) {
           return
         }
+
         setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
         setLoadingQuote(false)
         setQuote(quote)
@@ -238,7 +239,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             </div>
           ) : (
             <div className="inputs">
-              <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
+              <Input placeholder="0" value={tokenToAmount.toFixed(8)} disabled={true} />
               <div className="tokenToAmountUSD">
                 {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
                 <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
@@ -258,7 +259,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             {tokenTo.ticker}
             <DownOutlined />
           </div>
-          {quote && quote.amountOut > 0 ? <RoutingDiagram quote={quote}></RoutingDiagram> : <></>}
+          {quote && quote.amountOut > BigInt(0) ? <RoutingDiagram quote={quote}></RoutingDiagram> : <></>}
           {loadingSwap ? (
             <div className="lds-ellipsis">
               <div></div>
