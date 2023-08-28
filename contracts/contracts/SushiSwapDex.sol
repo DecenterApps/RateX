@@ -4,18 +4,15 @@ pragma solidity ^0.8.0;
 import "./interfaces/IDex.sol";
 import "./interfaces/sushiV2/ISushiSwapRouter.sol";
 import "./interfaces/sushiV2/ISushiSwapV2Factory.sol";
-import "./interfaces/sushiV2/ISushiSwapV2Pair.sol";
 import "./interfaces/IERC20.sol";
 import "./SushiSwapV2Library.sol";
 
 contract SushiSwapDex is IDex {
 
     ISushiSwapRouter private sushiRouter;
-    ISushiSwapV2Factory private sushiFactory;
 
-    constructor(address _sushiSwapRouter, address _sushiSwapFactory){
+    constructor(address _sushiSwapRouter){
         sushiRouter = ISushiSwapRouter(_sushiSwapRouter);
-        sushiFactory = ISushiSwapV2Factory(_sushiSwapFactory);
     }
 
     function swap(
@@ -46,17 +43,5 @@ contract SushiSwapDex is IDex {
         );
 
         return amounts[1];
-    }
-
-    function quote(address _tokenIn, address _tokenOut, uint _amountIn) external view override returns(uint amountOut){
-        address pairAddress = sushiFactory.getPair(_tokenIn, _tokenOut);
-        amountOut = SushiSwapV2Library.quote(pairAddress, _tokenIn, _tokenOut, _amountIn);
-    }
-
-    function quoteV2(address _poolAddress, address _tokenIn, address _tokenOut, uint _amountIn)
-        external
-        returns(uint reserveIn, uint reserveOut, uint amountOut)
-    {
-        return SushiSwapV2Library.quoteV2(_poolAddress, _tokenIn, _tokenOut, _amountIn);
     }
 }

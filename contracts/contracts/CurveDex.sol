@@ -23,15 +23,6 @@ contract CurveDex is IDex {
     address _to
   ) external override returns (uint amountOut) {}
 
-  function quote(address _tokenIn, address _tokenOut, uint _amountIn) external view override returns (uint amountOut) {}
-
-  function quoteV2(
-    address _poolAddress,
-    address _tokenIn,
-    address _tokenOut,
-    uint _amountIn
-  ) external override returns (uint reserveIn, uint reserveOut, uint amountOut) {}
-
   function printHelloWorld() pure public returns (string memory) {
       return "Hello World";
   }

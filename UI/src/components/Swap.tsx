@@ -5,13 +5,14 @@ import Web3 from 'web3'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
-import { initGetQuote, swap } from '../sdk/quoter/front_communication'
+import {getQuoteUniLike, initGetQuote, swap} from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
 import { Quote } from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import RoutingDiagram from './RoutingDiagram'
+import {TQuoteUniLike} from "../sdk/routing/uni_like_algo/types";
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -32,6 +33,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
+  const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -165,6 +167,21 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         setLoadingQuote(false)
         console.log(error)
       })
+
+    // setLoadingQuote(true)
+    // getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    //   .then((quote: TQuoteUniLike) => {
+    //     if (callTime < lastCallTime.current) {
+    //       return
+    //     }
+    //     setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+    //     setLoadingQuote(false)
+    //     setUniLikeQuote(quote)
+    //   })
+    //   .catch((error: string) => {
+    //     setLoadingQuote(false)
+    //     console.log(error)
+    //   })
   }
 
   function commitSwap() {

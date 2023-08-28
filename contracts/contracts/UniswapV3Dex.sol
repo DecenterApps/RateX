@@ -9,11 +9,9 @@ import "./interfaces/IERC20.sol";
 
 contract UniswapV3Dex is IDex {
 
-    IQuoter public quoter;
     ISwapRouter public swapRouter;
 
-    constructor(address _quoterAddress, address _swapRouterAddress) {
-        quoter = IQuoter(_quoterAddress);
+    constructor(address _swapRouterAddress) {
         swapRouter = ISwapRouter(_swapRouterAddress);
     }
 
@@ -41,26 +39,6 @@ contract UniswapV3Dex is IDex {
                 amountOutMinimum: _amountOutMin,
                 sqrtPriceLimitX96: 0
             })
-        );
-    }
-
-    // not used in milestone2
-    function quote(address _tokenIn, address _tokenOut, uint _amountIn) external view returns(uint amountOut) {
-        return 0;
-    }
-
-    function quoteV2(address _poolAddress, address _tokenIn, address _tokenOut, uint _amountIn)
-        external
-        returns(uint reserveIn, uint reserveOut, uint amountOut)
-    {
-        reserveIn = IERC20(_tokenIn).balanceOf(_poolAddress);
-        reserveOut = IERC20(_tokenOut).balanceOf(_poolAddress);
-        amountOut = quoter.quoteExactInputSingle(
-            _tokenIn,
-            _tokenOut,
-            IUniswapV3Pool(_poolAddress).fee(),
-            _amountIn,
-            0
         );
     }
 }

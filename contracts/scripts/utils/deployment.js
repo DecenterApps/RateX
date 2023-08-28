@@ -6,18 +6,8 @@ const addresses = config[hre.network.config.chainId]
 async function deploySushiDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
 
-  const Lib = await hre.ethers.getContractFactory('SushiSwapV2Library')
-  const lib = await Lib.deploy()
-  await lib.waitForDeployment()
-  const libAddr = await lib.getAddress()
-
-  const SushiSwap = await hre.ethers.getContractFactory('SushiSwapDex', {
-    signer: addr1,
-    libraries: {
-      SushiSwapV2Library: libAddr,
-    },
-  })
-  const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter, addresses.sushiFactory)
+  const SushiSwap = await hre.ethers.getContractFactory('SushiSwapDex')
+  const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter)
   await sushiSwap.waitForDeployment()
 
   return { sushiSwap, addr1, addr2, addr3 }
@@ -26,7 +16,7 @@ async function deploySushiDex() {
 async function deployUniswapDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const UniswapV3 = await hre.ethers.getContractFactory('UniswapV3Dex')
-  const uniswap = await UniswapV3.deploy(addresses.uniQuoter, addresses.uniRouter)
+  const uniswap = await UniswapV3.deploy(addresses.uniRouter)
   await uniswap.waitForDeployment()
   return { uniswap, addr1, addr2, addr3 }
 }

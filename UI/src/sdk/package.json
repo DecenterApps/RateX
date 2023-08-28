@@ -11,6 +11,7 @@
     "fs": "^0.0.1-security",
     "graphql": "^16.7.1",
     "graphql-request": "^6.1.0",
+    "mnemonist": "^0.39.5",
     "path": "^0.12.7",
     "ts-node": "^10.9.1",
     "tstl": "^2.5.13"
