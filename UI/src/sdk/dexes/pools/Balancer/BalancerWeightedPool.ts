@@ -14,11 +14,13 @@ export class BalancerWeightedPool extends Pool {
 
     reserves: BigNumber[]
     weights: BigNumber[]
+    swapFeePercentage: BigNumber
     
-    protected constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], weights: BigNumber[]) {
+    constructor(poolId: string, dexId: string, tokens: Token[], reserves: any[], weights: any[], swapFeePercentage: any) {
       	super(poolId, dexId, tokens)
-      	this.reserves = reserves
-      	this.weights = weights
+      	this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
+      	this.weights = weights.map((r: BigInt) => new BigNumber(r.toString()))
+        this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
     }
   
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {

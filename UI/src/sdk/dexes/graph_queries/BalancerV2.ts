@@ -4,6 +4,8 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import {dexIds, balancerStablePoolTypes} from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
+import { BalancerState } from '../pools/Balancer/BalancerState'
+import { BalancerStablePool } from '../pools/Balancer/BalancerStablePool'
 
 // test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
 
@@ -48,18 +50,17 @@ export default class BalancerV2 implements DEXGraphFunctionality {
   }
 
   async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
-    const pools: Pool[] = []
+     const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos)
 
-    poolInfos.forEach((poolInfo: PoolInfo) => {
-    })
     return pools
   }
 }
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pools(first: ${numPools}, orderDirection: desc, orderBy: totalLiquidity) {
+    pools(first: ${numPools}, orderDirection: desc, orderBy: totalLiquidity, where: {totalLiquidity_not: "0"}) {
       id
+      name
       address
       poolType
       poolTypeVersion
@@ -79,7 +80,8 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
           and: [
               {tokens_: {address: "${tokenA.toLowerCase()}"}},
               {tokens_: {address: "${tokenB.toLowerCase()}"}}
-            ]
+            ],
+            totalLiquidity_not: "0"
         }
         ) {
           id
@@ -99,7 +101,10 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
       pools(first: ${numPools}, orderBy: totalLiquidity, where: 
-          {tokens_: {address: "${token.toLowerCase()}"}}
+          {
+              tokens_: {address: "${token.toLowerCase()}"},
+              totalLiquidity_not: "0"
+          }
         ) {
           id
           address
@@ -118,6 +123,7 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 function createPoolFromGraph(jsonData: any, dexIdStable: string, dexIdWeighted: string): PoolInfo {
   const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
 
+  // console.log(jsonData)
   // always has 2 tokens in pool
   // TO_DO: IMPORTANT POOL TYPE 
   const pool: PoolInfo = {

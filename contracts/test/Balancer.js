@@ -22,6 +22,7 @@ describe("Tests for connecting with Balancer", async function () {
 
     it("Should get weighted pool info", async function () {
         const {balancer, addr1, addr2} = await loadFixture(deployBalancerFixture);
+        
 
         const [decimals, invariant, tokens, balances, weights, swapFeePercentage] = await balancer.getWeightedPoolInfo(examplePoolId);
 

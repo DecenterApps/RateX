@@ -6,6 +6,8 @@ import './interfaces/balancer/IVault.sol';
 import './interfaces/balancer/IWeightedPool.sol';
 import './interfaces/balancer/IStablePool.sol';
 
+import "hardhat/console.sol";
+
 contract BalancerDex is IDex {
   enum PoolType {
     Weighted,
@@ -16,7 +18,9 @@ contract BalancerDex is IDex {
   IVault private balancerVault;
 
   constructor(address _balancerVault) {
+    console.log("POZOVEMO KONSTRUKTOR ", _balancerVault);
     balancerVault = IVault(_balancerVault);
+    console.log("ZAVRSI SE KONSTRUKTOR ", _balancerVault);
   }
 
   function swap(
@@ -48,13 +52,21 @@ contract BalancerDex is IDex {
     view
     returns (uint8 decimals, uint256 invariant, address[] memory tokens, uint256[] memory balances, uint256[] memory weights, uint256 feePercentage)
   {
+    console.log("USAO U FUNKCIJU");
+    console.logBytes32(_poolId);
     IWeightedPool pool = IWeightedPool(this.getPool(_poolId));
+    console.log("ZAVRSIO SE GETPOOL");
     decimals = pool.decimals();
-    invariant = pool.getInvariant();
+    console.log("ZAVRSIO SE DECIMALS");
+    // invariant = pool.getInvariant();
+    // console.log("ZAVRSIO SE INVARIANT");
     weights = pool.getNormalizedWeights();
+    console.log("ZAVRSIO SE NORMALIZED");
     feePercentage = pool.getSwapFeePercentage();
+    console.log("ZAVRSIO SE SWAPFEE");
 
     (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
+    console.log("ZAVRSIO SE GETPOOLTOKEN");
   }
 
   function getStablePoolInfo(
@@ -64,11 +76,16 @@ contract BalancerDex is IDex {
     view
     returns (uint8 decimals, address[] memory tokens, uint256[] memory balances, uint256 aValue, uint256 aPrecision, uint256 feePercentage)
   {
+    console.log("USAO U FUNKCIJU");
     IStablePool pool = IStablePool(this.getPool(_poolId));
     decimals = pool.decimals();
+    console.log("ZAVRSIO SE DECIMALS");
     (aValue, , aPrecision) = pool.getAmplificationParameter();
+    console.log("ZAVRSIO SE amp");
     feePercentage = pool.getSwapFeePercentage();
+    console.log("ZAVRSIO SE fee");
 
     (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
+    console.log("ZAVRSIO SE gettokens");
   }
 }

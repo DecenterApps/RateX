@@ -57,6 +57,8 @@ const config = {
         sushiRouter: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
         sushiFactory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
 
+        balancerVault: "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+
         uniQuoter: "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6",
         uniRouter: "0xE592427A0AEce92De3Edee1F18E0157C05861564",
         univ3_wbtc_eth_pool_0_05: "0x2f5e87C9312fa29aed5c179E456625D79015299c", // 0.05 fee

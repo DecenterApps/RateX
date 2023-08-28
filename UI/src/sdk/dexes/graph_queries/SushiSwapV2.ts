@@ -75,7 +75,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pairs (first: ${numPools}, orderBy: volumeUSD, orderDirection: desc) {
+    pairs (first: ${numPools}, orderBy: reserveETH, orderDirection: desc, where: {volumeUSD_not: "0"}) {
       id
       token0 {
         id
@@ -91,7 +91,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: volumeUSD, where: {
+        pairs(first: ${numPools}, orderBy: reserveETH, where: {
           or: [
             {and: [
               { token0: "${tokenA.toLowerCase()}" },
@@ -121,7 +121,7 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: volumeUSD, where: {
+        pairs(first: ${numPools}, orderBy: reserveETH, where: {
           or: [
             { token0: "${token.toLowerCase()}" },
             { token1: "${token.toLowerCase()}" }

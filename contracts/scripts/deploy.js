@@ -1,7 +1,7 @@
 hre = require("hardhat");
 const {resolve, join} = require("path");
 const fs = require("fs");
-const {deployRateX, deployUniswapHelper, deploySushiSwapHelper} = require("./utils/deployment");
+const {deployRateX, deployUniswapHelper, deploySushiSwapHelper, deployBalancerHelper} = require("./utils/deployment");
 const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
 const {config} = require("../addresses.config");
 const {
@@ -18,11 +18,13 @@ const addresses = config[hre.network.config.chainId]
 async function main() {
     const {rateX, addr1} = await deployRateX();
     const {uniswapHelper} = await deployUniswapHelper();
+    const { balancerHelper } = await deployBalancerHelper()
     const { sushiHelper } = await deploySushiSwapHelper()
 
     await sendWethTokensToUser(addr1, hre.ethers.parseEther("1000"));
     await saveRateXContract(rateX);
     await saveUniswapHelperContract(uniswapHelper);
+    await saveBalancerHelperContract(balancerHelper);
     await saveSushiSwapHelperContract(sushiHelper);
 }
 

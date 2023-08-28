@@ -13,13 +13,15 @@ export class BalancerStablePool extends Pool {
     reserves: BigNumber[]
 	swapFeePercentage: BigNumber
 	amplificationCoeff: BigNumber
+	amplificationCoeffPrecision: BigNumber
 
-    constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], swapFeePercentage: BigNumber, A: string) {
+    constructor(poolId: string, dexId: string, tokens: Token[], reserves: any[], swapFeePercentage: any, A: BigInt, APrecision: any) {
       	super(poolId, dexId, tokens)
-      	this.reserves = reserves
-		this.swapFeePercentage = swapFeePercentage
-      	this.amplificationCoeff = new BigNumber(A)
-		this.swapFeePercentage = swapFeePercentage
+		this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
+		this.swapFeePercentage = new BigNumber(swapFeePercentage)
+      	this.amplificationCoeff = new BigNumber(A.toString()).div(APrecision)
+		this.amplificationCoeffPrecision = new BigNumber(APrecision.toString()).div(APrecision)
+		this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
     }
   
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
