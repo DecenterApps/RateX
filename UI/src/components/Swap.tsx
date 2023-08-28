@@ -12,6 +12,7 @@ import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import RoutingDiagram from './RoutingDiagram'
+import {TQuoteUniLike} from "../sdk/routing/uni_like_algo/types";
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -32,6 +33,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
+  const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -151,7 +153,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
-    setLoadingQuote(true)
+    // setLoadingQuote(true)
     // initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
     //   .then((quote: Quote) => {
     //     if (callTime < lastCallTime.current) {
@@ -166,7 +168,20 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     //     console.log(error)
     //   })
 
-    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount);
+    setLoadingQuote(true)
+    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+      .then((quote: TQuoteUniLike) => {
+        if (callTime < lastCallTime.current) {
+          return
+        }
+        setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+        setLoadingQuote(false)
+        setUniLikeQuote(quote)
+      })
+      .catch((error: string) => {
+        setLoadingQuote(false)
+        console.log(error)
+      })
   }
 
   function commitSwap() {
@@ -259,7 +274,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <DownOutlined />
           </div>
         </div>
-        <RoutingDiagram quote={quote}></RoutingDiagram>
+        {/*<RoutingDiagram quote={quote}></RoutingDiagram>*/}
         <>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>

@@ -1,5 +1,5 @@
 import {Pool} from "../../types";
-import {ComputeRoutesParams, TRoute} from "./uni_types";
+import {ComputeRoutesParams, TRoute} from "./types";
 
 
 export default function computeRoutes(
@@ -56,7 +56,7 @@ function _computeRoutes(
             continue;
         }
 
-        const currentTokenOut = curPool.getToken0()._address === previousTokenOut
+        const currentTokenOut = curPool.getToken0()._address.toLowerCase() === previousTokenOut.toLowerCase()
             ? curPool.getToken1()._address
             : curPool.getToken0()._address;
 

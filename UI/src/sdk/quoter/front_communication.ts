@@ -1,11 +1,12 @@
 import { Quote, ResponseType } from '../types'
 import {executeSwapMultiHop, getBestQuoteMultiHop, getBestQuoteUniLikeAlgo} from './solidity_communication'
+import {TQuoteUniLike} from "../routing/uni_like_algo/types";
 
 async function initGetQuote(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
   return getBestQuoteMultiHop(tokenA, tokenB, amountIn)
 }
 
-async function getQuoteUniLike(tokenA: string, tokenB: string, amountIn: bigint): Promise<void> {
+async function getQuoteUniLike(tokenA: string, tokenB: string, amountIn: bigint): Promise<TQuoteUniLike> {
   return getBestQuoteUniLikeAlgo(tokenA, tokenB, amountIn);
 }
 
