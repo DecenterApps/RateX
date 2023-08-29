@@ -28,12 +28,17 @@ contract RateX is Ownable {
         uint256 percentage;
     }
 
+    struct DexType {
+        string dexId;
+        address dexAddress;
+    }
+
     mapping(string => address) public dexes;
 
-    constructor(address _sushiSwapDexAddress, address _uniswapV3DexAddress, address _curveDexAddress){
-        dexes["SUSHI_V2"] = _sushiSwapDexAddress;
-        dexes["UNI_V3"] = _uniswapV3DexAddress;
-        dexes["CURVE"] = _curveDexAddress;
+    constructor(DexType[] memory _initialDexes) {
+        for (uint256 i = 0; i < _initialDexes.length; ++i) {
+            dexes[_initialDexes[i].dexId] = _initialDexes[i].dexAddress;
+        }
     }
 
     // swap function for multi hop, without spliting
