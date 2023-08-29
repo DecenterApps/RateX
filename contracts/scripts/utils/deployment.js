@@ -11,6 +11,14 @@ async function deploySushiDex() {
   return { sushiSwap, addr1, addr2, addr3 }
 }
 
+async function deployCamelotDex() {
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const Camelot = await hre.ethers.getContractFactory('CamelotDex')
+  const camelot = await Camelot.deploy()
+  await camelot.waitForDeployment()
+  return { camelot, addr1, addr2, addr3 }
+}
+
 async function deployUniswapDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const UniswapV3 = await hre.ethers.getContractFactory('UniswapV3Dex')
@@ -89,6 +97,7 @@ module.exports = {
   deploySushiDex,
   deployUniswapDex,
   deployCurveDex,
+  deployCamelotDex,
   deployUniswapHelper,
   deploySushiSwapHelper,
   deployCurveHelper,

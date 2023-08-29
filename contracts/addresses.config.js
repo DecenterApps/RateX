@@ -20,6 +20,10 @@ const ARBITRUM_ADDRESSES = {
         wbtc_eth_pool: "0x515e252b2b5c22b4b2b6Df66c2eBeeA871AA4d69",
     },
 
+    camelot: {
+        eth_arb_pool: "0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f"
+    },
+
     curve: {
         curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDCE USDT pool,
 
