@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IDex.sol";
+import "./interfaces/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract RateX is Ownable {

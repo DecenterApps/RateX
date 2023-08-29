@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "../rateX/interfaces/IDex.sol";
-import "./interfaces/ICurveStableSwap.sol";
+import "../rateX/interfaces/IERC20.sol";
+import "./interfaces/ICurvePool.sol";
 import "./interfaces/ICurvePoolRegistry.sol";
 
 contract CurveDex is IDex {
@@ -24,7 +25,7 @@ contract CurveDex is IDex {
         IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
         IERC20(_tokenIn).approve(address(_poolAddress), _amountIn);
 
-        ICurveStableSwap curveStableSwap = ICurveStableSwap(_poolAddress);
+        ICurvePool curveStableSwap = ICurvePool(_poolAddress);
 
         (int128 i, int128 j) = findTokenIndexes(_poolAddress, _tokenIn, _tokenOut);
         require(i >= 0 && j >= 0, "Tokens not found in pool");
@@ -45,17 +46,17 @@ contract CurveDex is IDex {
     )
     internal view returns (int128 i, int128 j)
     {
-        address[8] coins = curvePoolRegistry.get_coins(_poolAddress);
+        address[8] memory coins = curvePoolRegistry.get_coins(_poolAddress);
 
         i = -1;
         j = -1;
 
-        for (int128 k = 0; k < 8; ++k) {
+        for (uint256 k = 0; k < 8; ++k) {
             if (coins[k] == _tokenIn) {
-                i = k;
+                i = int128(int256(k));
             }
             if (coins[k] == _tokenOut) {
-                j = k;
+                j = int128(int256(k));
             }
         }
     }
