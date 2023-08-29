@@ -1,5 +1,5 @@
 import { PoolData } from './types'
-import { UniswapHelperContract } from '../../../../contracts/UniswapHelper'
+import { UniswapHelperContract } from '../../../../contracts/rateX/UniswapHelper'
 import { convertRowPoolData } from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
 

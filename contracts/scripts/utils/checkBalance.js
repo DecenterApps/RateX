@@ -5,11 +5,11 @@ const addresses = config[hre.network.config.chainId];
 
 async function main() {
     const [addr1] = await hre.ethers.getSigners()
-    const WETH = await hre.ethers.getContractAt("IERC20", addresses.wethToken);
-    const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
-    const DAI = await  hre.ethers.getContractAt("IERC20", addresses.daiToken);
-    const USDC = await hre.ethers.getContractAt("IERC20", addresses.usdcToken);
-    const LINK = await hre.ethers.getContractAt("IERC20", addresses.linkToken);
+    const WETH = await hre.ethers.getContractAt("IERC20", addresses.tokens.WETH);
+    const WBTC = await hre.ethers.getContractAt("IERC20", addresses.tokens.WBTC);
+    const DAI = await  hre.ethers.getContractAt("IERC20", addresses.tokens.DAI);
+    const USDC = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDC);
+    const LINK = await hre.ethers.getContractAt("IERC20", addresses.tokens.LINK);
 
     const WETHBalance = await WETH.balanceOf(addr1);
     const WBTCBalance = await WBTC.balanceOf(addr1);

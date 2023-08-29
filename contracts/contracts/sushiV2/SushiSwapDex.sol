@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/IDex.sol";
-import "./interfaces/sushiV2/ISushiSwapRouter.sol";
-import "./interfaces/sushiV2/ISushiSwapV2Factory.sol";
-import "./interfaces/IERC20.sol";
+import "./interfaces/ISushiSwapRouter.sol";
+import "./interfaces/ISushiSwapV2Factory.sol";
 import "./SushiSwapV2Library.sol";
+import "../rateX/interfaces/IDex.sol";
+import "../rateX/interfaces/IERC20.sol";
 
 contract SushiSwapDex is IDex {
 
