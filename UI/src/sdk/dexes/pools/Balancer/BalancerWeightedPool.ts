@@ -1,14 +1,13 @@
-// Ported from Solidity:
-// https://github.com/balancer/balancer-v2-monorepo/blob/master/pkg/pool-weighted/contracts/WeightedMath.sol
+// Ported from Solidity: https://github.com/balancer/balancer-v2-monorepo/blob/master/pkg/pool-weighted/contracts/WeightedMath.sol
 
 import { Token, Pool } from '../../../types'
 import BigNumber from "bignumber.js"
 import * as fp from "../../../utils/math/fixed-points"
 import * as math from "../../../utils/math/math"
 
-// Swap limits: amounts swapped may not be larger than this percentage of total balance.
+// Swap limits: amounts swapped may not be larger than this percentage of total balance of the token being swapped
+// Example - if the pool has 100 WETH, we can swap a maximum od 30 WETH
 const _MAX_IN_RATIO = new BigNumber(0.3e18)
-const _MAX_OUT_RATIO = new BigNumber(0.3e18)
 
 export class BalancerWeightedPool extends Pool {
 
@@ -16,7 +15,7 @@ export class BalancerWeightedPool extends Pool {
     weights: BigNumber[]
     swapFeePercentage: BigNumber
     
-    constructor(poolId: string, dexId: string, tokens: Token[], reserves: any[], weights: any[], swapFeePercentage: any) {
+    constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigInt[], weights: BigInt[], swapFeePercentage: BigInt) {
       	super(poolId, dexId, tokens)
       	this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
       	this.weights = weights.map((r: BigInt) => new BigNumber(r.toString()))
@@ -29,6 +28,10 @@ export class BalancerWeightedPool extends Pool {
 }
 
 function calculateOutputAmount(pool: BalancerWeightedPool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {
+
+    // Subtract the fee from the amount in if requested
+	if (swapFeePercentage) 
+        tokenAmountIn = fp.sub(tokenAmountIn, fp.mulUp(tokenAmountIn, swapFeePercentage))
 
 	// Get the index of the token we are swapping from and to
     const i = pool.tokens.findIndex(token => token._address === tokenA)
@@ -44,37 +47,28 @@ function calculateOutputAmount(pool: BalancerWeightedPool, tokenA: string, token
         )
         return BigInt(res.toFixed())
     } catch (e) {
-        // console.log(e)
+        //console.log(e)
         return BigInt(0)
     }
 }
 
-// Computes how many tokens can be taken out of a pool if `amountIn` are sent, given the
-// current balances and weights.
-function _calcOutGivenIn(
-    balanceIn: BigNumber,
-    weightIn: BigNumber,
-    balanceOut: BigNumber,
-    weightOut: BigNumber,
-    amountIn: BigNumber
-): BigNumber {
-    /**********************************************************************************************
-    // outGivenIn                                                                                //
-    // aO = amountOut                                                                            //
-    // bO = balanceOut                                                                           //
-    // bI = balanceIn              /      /            bI             \    (wI / wO) \           //
-    // aI = amountIn    aO = bO * |  1 - | --------------------------  | ^            |          //
-    // wI = weightIn               \      \       ( bI + aI )         /              /           //
-    // wO = weightOut                                                                            //
-    **********************************************************************************************/
+/* Computes how many tokens can be taken out of a pool if `amountIn` are sent, given the current balances and weights.
+    Amount out, so we round down overall:
+**********************************************************************************************
+// outGivenIn                                                                                //
+// aO = amountOut                                                                            //
+// bO = balanceOut                                                                           //
+// bI = balanceIn              /      /            bI             \    (wI / wO) \           //
+// aI = amountIn    aO = bO * |  1 - | --------------------------  | ^            |          //
+// wI = weightIn               \      \       ( bI + aI )         /              /           //
+// wO = weightOut                                                                            //
+**********************************************************************************************
+The multiplication rounds down, and the subtrahend (power) runds up (so the base rounds up too).
+Because bI / (bI + aI) <= 1, the exponent rounds down.  */
+function _calcOutGivenIn(balanceIn: BigNumber, weightIn: BigNumber, balanceOut: BigNumber, weightOut: BigNumber, amountIn: BigNumber): BigNumber {
 
-    // Amount out, so we round down overall.
-
-    // The multiplication rounds down, and the subtrahend (power) rounds up (so the base rounds up too).
-    // Because bI / (bI + aI) <= 1, the exponent rounds down.
-
-    // Cannot exceed maximum in ratio
-    if(amountIn > fp.mulDown(balanceIn, _MAX_IN_RATIO)) {
+    // Cannot exceed maximum in ratio (30% of tokenIn balance)
+    if(amountIn.gte(fp.mulDown(balanceIn, _MAX_IN_RATIO))) {
         throw new Error("MAX_IN_RATIO")
     }
 
@@ -85,24 +79,3 @@ function _calcOutGivenIn(
 
     return fp.mulDown(balanceOut, fp.complement(power))
 }
-
-// // Invariant is used to collect protocol swap fees by comparing its value between two times.
-// // So we can round always to the same direction. It is also used to initiate the BPT amount
-// // and, because there is a minimum BPT, we round down the invariant.
-// function _calculateInvariant(normalizedWeights: BigNumber[], balances: BigNumber[]): BigNumber
-// {
-//     /**********************************************************************************************
-//     // invariant               _____                                                             //
-//     // wi = weight index i      | |      wi                                                      //
-//     // bi = balance index i     | |  bi ^   = i                                                  //
-//     // i = invariant                                                                             //
-//     **********************************************************************************************/
-
-//     let invariant = BigNumber(1)
-//     for (let i = 0; i < normalizedWeights.length; i++) {
-//         invariant = fp.mulDown(invariant, fp.powDown(balances[i], normalizedWeights[i]));
-//     }
-
-//     // _require(invariant > 0, Errors.ZERO_INVARIANT);
-//     return invariant
-// }

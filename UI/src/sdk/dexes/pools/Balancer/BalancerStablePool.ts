@@ -1,10 +1,20 @@
-// Ported from Solidity:
-// https://github.com/balancer-labs/balancer-core-v2/blob/70843e6a61ad11208c1cfabf5cfe15be216ca8d3/pkg/pool-stable/contracts/StableMath.sol
-
 import { Token, Pool } from '../../../types'
 import BigNumber from "bignumber.js"
 import * as fp from "../../../utils/math/fixed-points"
 import * as math from "../../../utils/math/math"
+
+/*  --------- THIS CODE IS NOT IN USE -------------
+	Official documentation: https://docs.balancer.fi/reference/math/stable-math.html
+	Typescript implementation: https://github.com/balancer/balancer-sor/blob/john/v2-package-linear/src/pools/stablePool/stableMath.ts
+	Solidity code: https://github.com/balancer/balancer-v2-monorepo/blob/70843e6a61ad11208c1cfabf5cfe15be216ca8d3/pkg/pool-stable/contracts/StableMath.sol
+
+	The _calculateInvariant function calculated invariant correctly.
+	The _getTokenBalanceGivenInvariantAndAllOtherBalances gets a wildly incorrect number and we do not know how to solve this at the moment (
+		stack traces are not helpful - tried on a Tenderly fork
+	)
+
+	If someone can figure out what is wrong with the _getTokenBalanceGivenInvariantAndAllOtherBalances function, please let us know.
+*/
 
 export class BalancerStablePool extends Pool {
 
@@ -17,8 +27,7 @@ export class BalancerStablePool extends Pool {
       	super(poolId, dexId, tokens)
 		this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
 		this.swapFeePercentage = new BigNumber(swapFeePercentage)
-      	this.amplificationCoeff = new BigNumber(A.toString()).div(APrecision)
-		this.amplificationCoeffPrecision = new BigNumber(APrecision.toString()).div(APrecision)
+      	this.amplificationCoeff = new BigNumber(A.toString())
 		this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
     }
   
@@ -77,7 +86,6 @@ export class BalancerStablePool extends Pool {
 }
 
 // This function calculates the balance of a given token (tokenIndex) given all the other balances and the invariant
-// Rounds result up overall
 function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParameter: BigNumber, amplificationCoeffPrecision: BigNumber,  balances: BigNumber[], invariant: BigNumber, tokenIndex: number): BigNumber {
 	
 	const numTokens = new BigNumber(balances.length)
@@ -123,7 +131,7 @@ function _getTokenBalanceGivenInvariantAndAllOtherBalances(amplificationParamete
 			break
 	}
 
-	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE")
+	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE - acceptable")
 	return tokenBalance
 }
 
@@ -184,6 +192,6 @@ function _calculateInvariant(amplificationParameter: BigNumber, amplificationCoe
 			break
 	}
   
-	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE - acceptable?")
+	// console.log("STABLE_GET_BALANCE_DIDNT_CONVERGE - acceptable")
 	return invariant
 }
