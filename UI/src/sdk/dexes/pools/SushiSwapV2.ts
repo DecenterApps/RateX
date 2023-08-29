@@ -5,7 +5,7 @@ export class SushiSwapV2Pool extends Pool {
 
   constructor(poolId: string, dexId: string, tokens: Token[], reserves: bigint[]) {
     super(poolId, dexId, tokens)
-    this.reserves = reserves
+    this.reserves = reserves.slice()
   }
 
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
@@ -18,8 +18,7 @@ export class SushiSwapV2Pool extends Pool {
     return (amountIn * BigInt(997) * reserveOut) / (reserveIn * BigInt(1000) + amountIn * BigInt(997))
   }
 
-  update(tokenIn: string, tokenOut: string, amountIn: bigint): void {
-    const amountOut: bigint = this.calculateExpectedOutputAmount(tokenIn, tokenOut, amountIn)
+  update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
     if (tokenIn.toLowerCase() === this.tokens[0]._address.toLowerCase()) {
       this.reserves[0] += amountIn
       this.reserves[1] -= amountOut

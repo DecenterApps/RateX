@@ -53,7 +53,7 @@ export abstract class Pool {
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint
-  abstract update(tokenIn: string, tokenOut: string, amountIn: bigint): void
+  abstract update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void
 
   containsToken(token: string): boolean {
     return this.tokens.some((t) => t._address.toLowerCase() === token.toLowerCase())

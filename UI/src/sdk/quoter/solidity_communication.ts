@@ -6,6 +6,7 @@ import Web3 from 'web3'
 import { RateXContract } from '../../contracts/RateX'
 import { createGraph, multiHopSwap } from '../routing/multiHopSwap'
 import { findRoute } from '../routing/uni_like_algo/main'
+import objectHash from 'object-hash'
 
 async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
   console.log('tokenIn: ', tokenA)
@@ -17,23 +18,33 @@ async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bi
   console.log('Graph: ', graph)
 
   const poolMap: Map<string, Pool> = new Map<string, Pool>(pools.map((pool: Pool) => [pool.poolId, pool]))
-  const routes: Map<Route, number> = new Map<Route, number>()
+  const routes: Map<string, Route> = new Map<string, Route>()
   let amountOut: bigint = BigInt(0)
   const step: number = 5
   const splitAmountIn: bigint = (amountIn * BigInt(step)) / BigInt(100)
 
   for (let i = 0; i < 100; i += step) {
     const route: Route = multiHopSwap(splitAmountIn, tokenA, tokenB, graph)
-    routes.set(route, (routes.get(route) || 0) + step)
+    const routeHash = objectHash(route.swaps)
+
+    let existingRoute: Route | undefined = routes.get(routeHash)
+    if (!existingRoute) {
+      route.percentage = step
+      routes.set(routeHash, route)
+    } else {
+      existingRoute.percentage += step
+    }
+
     amountOut += route.amountOut
     updatePoolsInRoute(poolMap, route, splitAmountIn)
   }
 
-  console.log(routes)
+  let quote: Quote = { routes: [], amountOut: amountOut }
+  for (let route of routes.values()) {
+    quote.routes.push(route)
+  }
 
-  const route: Route = multiHopSwap(amountIn, tokenA, tokenB, graph)
-  console.log('Route: ', route)
-  return { routes: [route], amountOut: route.amountOut }
+  return quote
 }
 
 async function executeSwapMultiHop(
@@ -82,7 +93,7 @@ async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn:
   return findRoute(tokenA, tokenB, amountIn, pools)
 }
 
-function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amount: bigint): void {
+function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amountIn: bigint): void {
   for (let swap of route.swaps) {
     const pool: Pool | undefined = poolMap.get(swap.poolId)
     if (!pool) {
@@ -90,8 +101,9 @@ function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amount: bi
       continue
     }
 
-    pool.update(swap.tokenA, swap.tokenB, amount)
-    amount = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amount)
+    const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amountIn)
+    pool.update(swap.tokenA, swap.tokenB, amountIn, amountOut)
+    amountIn = amountOut
   }
 }
 
