@@ -1,92 +1,72 @@
 hre = require('hardhat')
 const {
-  deployRateX,
-  deployUniswapHelper,
-  deploySushiSwapHelper,
-  deployCurveHelper
+    deployRateX,
+    deployUniswapHelper,
+    deploySushiSwapHelper,
+    deployCurveHelper
 } = require('./utils/deployment')
 
-const {
-  saveRateXAddressToFile,
-  saveRateXAbiToFile,
-  saveUniswapHelperAddressToFile,
-  saveUniswapHelperAbiToFile,
-  saveSushiSwapAddressToFile,
-  saveSushiSwapAbiToFile,
-  saveCurveAddressToFile,
-  saveCurveAbiToFile,
-} = require('./utils/saveABIAndAddresses')
-
-const { config } = require('../addresses.config')
+const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
+const {config} = require('../addresses.config')
 const {resolve, join} = require("path");
 const fs = require("fs");
-const addresses = config[hre.network.config.chainId]
 
 async function main() {
-  const { rateX, addr1 } = await deployRateX()
-  const { uniswapHelper } = await deployUniswapHelper()
-  const { sushiHelper } = await deploySushiSwapHelper()
-  const { curveHelper } = await deployCurveHelper()
+    const {rateX, addr1} = await deployRateX()
+    const {uniswapHelper} = await deployUniswapHelper()
+    const {sushiHelper} = await deploySushiSwapHelper()
+    const {curveHelper} = await deployCurveHelper()
 
-  saveRateXAddress(await rateX.getAddress());
+    const rateXAddress = await rateX.getAddress();
+    console.log('RateX address:' + rateXAddress);
 
-  await saveRateXContract(rateX)
-  await saveUniswapHelperContract(uniswapHelper)
-  await saveSushiSwapHelperContract(sushiHelper)
-  await saveCurveHelperContract(curveHelper)
+    const uniswapHelperAddress = await uniswapHelper.getAddress();
+    console.log("UniswapHelper address:" + uniswapHelperAddress);
+
+    const sushiSwapHelperAddress = await sushiHelper.getAddress();
+    console.log("SushiSwapHelper address:" + sushiSwapHelperAddress);
+
+    const curveHelperAddress = await curveHelper.getAddress();
+    console.log("CurveHelper address:" + curveHelperAddress);
+
+    await saveRateXContractAbi(rateX);
+    await saveUniswapHelperContractAbi(uniswapHelper);
+    await saveSushiSwapHelperContractAbi(sushiHelper);
+    await saveCurveHelperContractAbi(curveHelper);
+
+    saveAddresses(
+        rateXAddress,
+        uniswapHelperAddress,
+        sushiSwapHelperAddress,
+        curveHelperAddress
+    );
 }
 
-async function saveRateXContract(rateXContract) {
-  const address = await rateXContract.getAddress()
-  console.log('RateX address:' + address)
-  saveRateXAddressToFile(address)
-
-  const RateX = await hre.artifacts.readArtifact('RateX')
-  const rateXAbi = RateX.abi
-  saveRateXAbiToFile(rateXAbi)
+async function saveRateXContractAbi(rateXContract) {
+    const RateX = await hre.artifacts.readArtifact('RateX')
+    const rateXAbi = RateX.abi
+    saveAbiToFile(rateXAbi, 'RateX');
 }
 
-async function saveUniswapHelperContract(uniswapHelperContract) {
-  const address = await uniswapHelperContract.getAddress()
-  console.log('UniswapHelper address:' + address)
-  saveUniswapHelperAddressToFile(address)
-
-  const UniswapHelper = await hre.artifacts.readArtifact('UniswapHelper')
-  const uniswapHelperAbi = UniswapHelper.abi
-  saveUniswapHelperAbiToFile(uniswapHelperAbi)
+async function saveUniswapHelperContractAbi(uniswapHelperContract) {
+    const UniswapHelper = await hre.artifacts.readArtifact('UniswapHelper')
+    const uniswapHelperAbi = UniswapHelper.abi
+    saveAbiToFile(uniswapHelperAbi, 'UniswapHelper');
 }
 
-async function saveSushiSwapHelperContract(sushiHelper) {
-  const addressSushiHelper = await sushiHelper.getAddress()
-  console.log('SushiSwapHelper address:' + addressSushiHelper)
-  saveSushiSwapAddressToFile(addressSushiHelper)
-
-  const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
-  const sushiSwapAbi = SushiSwapHelper.abi
-  saveSushiSwapAbiToFile(sushiSwapAbi)
+async function saveSushiSwapHelperContractAbi(sushiHelper) {
+    const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
+    const sushiSwapAbi = SushiSwapHelper.abi
+    saveAbiToFile(sushiSwapAbi, 'SushiSwapHelper');
 }
 
-async function saveCurveHelperContract(curveHelper) {
-  const addressCurveHelper = await curveHelper.getAddress()
-  console.log('CurveHelper address:' + addressCurveHelper)
-  saveCurveAddressToFile(addressCurveHelper)
-
-  const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
-  const curveAbi = CurveHelper.abi
-  saveCurveAbiToFile(curveAbi)
-}
-
-function saveRateXAddress(rateXAddress) {
-  const content = `
-chainId: ${hre.network.config.chainId}  
-rateXAddress: ${rateXAddress}`;
-
-  const dirPath = resolve(__dirname, './');
-  const filePath = join(dirPath, 'rateXAddress.txt');
-  fs.writeFileSync(filePath, content);
+async function saveCurveHelperContractAbi(curveHelper) {
+    const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
+    const curveAbi = CurveHelper.abi
+    saveAbiToFile(curveAbi, 'CurveHelper');
 }
 
 main().catch((error) => {
-  console.error(error)
-  process.exitCode = 1
+    console.error(error)
+    process.exitCode = 1
 })

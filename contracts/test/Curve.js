@@ -2,7 +2,7 @@ hre = require("hardhat");
 const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
-const {sendWethTokensToUser, approveToContract, sendERCTokensToUser, getSymbolAndDecimalsOfERC20Token} = require("../scripts/utils/contract");
+const {approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
 const {deployCurveDex} = require("../scripts/utils/deployment");
 
 const addresses = config[hre.network.config.chainId];
@@ -14,29 +14,33 @@ describe("Tests for connecting with Curve", async function () {
         return (await deployCurveDex());
     }
 
-    it("Should connect with curve pool", async function () {
-        const {curve, addr1, addr2} = await loadFixture(deployCurveFixture);
-        console.log(await curve.printHelloWorld());
-    });
-
-    it("Should get expected amount", async function () {
+    it("Should swap with curve2pool", async function () {
         const {curve, addr1, addr2} = await loadFixture(deployCurveFixture);
 
-        const usdtToken = addresses.usdtToken;
-        const usdceToken = addresses.usdceToken;
-        const amountOut = await curve.getAmountOut(usdtToken, usdceToken, 1000000);
+        const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
+        const USDCE = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDCE);
 
-        console.log("Expected amount out: ", BigInt(amountOut).toString());
-    });
+        const balanceUSDTBefore = await USDT.balanceOf(addr1);
+        const balanceUSDCEBefore = await USDCE.balanceOf(addr1);
+        console.log(`Balance in USDT before: ${balanceUSDTBefore}`);
+        console.log(`Balance in USDCE before: ${balanceUSDCEBefore}`);
 
-    it("Should get pool info", async function () {
-        const {curve, addr1, addr2} = await loadFixture(deployCurveFixture);
+        await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, addr1, "2000000000"); // 2000 USDT
+        await approveToContract(addr1, await curve.getAddress(), addresses.tokens.USDT, "10000000000");
 
-        const [decimals, A, fee, balances] = await curve.getPoolInfo();
+        const amountOut = await curve.swap(
+            addresses.curve.curve2Pool,
+            addresses.tokens.USDT,
+            addresses.tokens.USDCE,
+            "1000000000", // sending 1000 USDT
+            0,
+            addr1
+        );
+        console.log(`Amount out: ${amountOut}`);
 
-        console.log("Decimals: ", decimals);
-        console.log("A: ", A);
-        console.log("Fee: ", fee);
-        console.log("Balances: ", balances);
+        const balanceUSDTAfter = await USDT.balanceOf(addr1);
+        const balanceUSDCEAfter = await USDCE.balanceOf(addr1);
+        console.log(`Balance in USDT after: ${balanceUSDTAfter}`);
+        console.log(`Balance in USDCE after: ${balanceUSDCEAfter}`);
     });
 });

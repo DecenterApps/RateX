@@ -9,7 +9,7 @@ async function main() {
   await sendWethTokensToUser(addr1, hre.ethers.parseEther('1000'));
 
   // add more tokens here and check if impersonate address has enough tokens
-  await sendERCTokensToUser(addresses.impersonate_dai, addresses.daiToken, addr1, hre.ethers.parseEther('10000'));
+  await sendERCTokensToUser(addresses.impersonate.DAI, addresses.tokens.DAI, addr1, hre.ethers.parseEther('10000'));
 }
 
 main().catch((error) => {

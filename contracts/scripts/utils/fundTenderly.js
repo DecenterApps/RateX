@@ -1,8 +1,5 @@
 hre = require('hardhat')
-const { config } = require('../../addresses.config')
 const {sendWethTokensToUser} = require("./contract");
-
-const addresses = config[hre.network.config.chainId]
 
 async function main() {
     const [addr1] = await hre.ethers.getSigners();
