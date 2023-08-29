@@ -4,7 +4,7 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { SushiSwapHelperContract } from '../../../contracts/SushiSwapHelper'
+import { SushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {

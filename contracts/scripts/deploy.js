@@ -6,17 +6,7 @@ const {
     deployCurveHelper
 } = require('./utils/deployment')
 
-const {
-    saveRateXAddressToFile,
-    saveRateXAbiToFile,
-    saveUniswapHelperAddressToFile,
-    saveUniswapHelperAbiToFile,
-    saveSushiSwapAddressToFile,
-    saveSushiSwapAbiToFile,
-    saveCurveAddressToFile,
-    saveCurveAbiToFile,
-} = require('./utils/saveABIAndAddresses')
-
+const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
 const {config} = require('../addresses.config')
 const {resolve, join} = require("path");
 const fs = require("fs");
@@ -27,62 +17,53 @@ async function main() {
     const {sushiHelper} = await deploySushiSwapHelper()
     const {curveHelper} = await deployCurveHelper()
 
-    saveRateXAddress(await rateX.getAddress());
+    const rateXAddress = await rateX.getAddress();
+    console.log('RateX address:' + rateXAddress);
 
-    await saveRateXContract(rateX)
-    await saveUniswapHelperContract(uniswapHelper)
-    await saveSushiSwapHelperContract(sushiHelper)
-    await saveCurveHelperContract(curveHelper)
+    const uniswapHelperAddress = await uniswapHelper.getAddress();
+    console.log("UniswapHelper address:" + uniswapHelperAddress);
+
+    const sushiSwapHelperAddress = await sushiHelper.getAddress();
+    console.log("SushiSwapHelper address:" + sushiSwapHelperAddress);
+
+    const curveHelperAddress = await curveHelper.getAddress();
+    console.log("CurveHelper address:" + curveHelperAddress);
+
+    await saveRateXContractAbi(rateX);
+    await saveUniswapHelperContractAbi(uniswapHelper);
+    await saveSushiSwapHelperContractAbi(sushiHelper);
+    await saveCurveHelperContractAbi(curveHelper);
+
+    saveAddresses(
+        rateXAddress,
+        uniswapHelperAddress,
+        sushiSwapHelperAddress,
+        curveHelperAddress
+    );
 }
 
-async function saveRateXContract(rateXContract) {
-    const address = await rateXContract.getAddress()
-    console.log('RateX address:' + address)
-    saveRateXAddressToFile(address)
-
+async function saveRateXContractAbi(rateXContract) {
     const RateX = await hre.artifacts.readArtifact('RateX')
     const rateXAbi = RateX.abi
-    saveRateXAbiToFile(rateXAbi)
+    saveAbiToFile(rateXAbi, 'RateX');
 }
 
-async function saveUniswapHelperContract(uniswapHelperContract) {
-    const address = await uniswapHelperContract.getAddress()
-    console.log('UniswapHelper address:' + address)
-    saveUniswapHelperAddressToFile(address)
-
+async function saveUniswapHelperContractAbi(uniswapHelperContract) {
     const UniswapHelper = await hre.artifacts.readArtifact('UniswapHelper')
     const uniswapHelperAbi = UniswapHelper.abi
-    saveUniswapHelperAbiToFile(uniswapHelperAbi)
+    saveAbiToFile(uniswapHelperAbi, 'UniswapHelper');
 }
 
-async function saveSushiSwapHelperContract(sushiHelper) {
-    const addressSushiHelper = await sushiHelper.getAddress()
-    console.log('SushiSwapHelper address:' + addressSushiHelper)
-    saveSushiSwapAddressToFile(addressSushiHelper)
-
+async function saveSushiSwapHelperContractAbi(sushiHelper) {
     const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
     const sushiSwapAbi = SushiSwapHelper.abi
-    saveSushiSwapAbiToFile(sushiSwapAbi)
+    saveAbiToFile(sushiSwapAbi, 'SushiSwapHelper');
 }
 
-async function saveCurveHelperContract(curveHelper) {
-    const addressCurveHelper = await curveHelper.getAddress()
-    console.log('CurveHelper address:' + addressCurveHelper)
-    saveCurveAddressToFile(addressCurveHelper)
-
+async function saveCurveHelperContractAbi(curveHelper) {
     const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
     const curveAbi = CurveHelper.abi
-    saveCurveAbiToFile(curveAbi)
-}
-
-function saveRateXAddress(rateXAddress) {
-    const content = `
-chainId: ${hre.network.config.chainId}  
-rateXAddress: ${rateXAddress}`;
-
-    const dirPath = resolve(__dirname, './');
-    const filePath = join(dirPath, 'rateXAddress.txt');
-    fs.writeFileSync(filePath, content);
+    saveAbiToFile(curveAbi, 'CurveHelper');
 }
 
 main().catch((error) => {

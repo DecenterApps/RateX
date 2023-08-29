@@ -4,7 +4,7 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CurveHelperContract } from '../../../contracts/CurveHelper'
+import { CurveHelperContract } from '../../../contracts/rateX/CurveHelper'
 import { CurvePool } from '../pools/Curve'
 import BigNumber from 'bignumber.js'
 
