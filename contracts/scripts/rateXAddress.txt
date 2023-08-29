@@ -1,0 +1,3 @@
+
+chainId: 42161  
+rateXAddress: 0xd1Ac2155D1dC2eecfDF4b11e7912Ae7Fd8ddA8B8
