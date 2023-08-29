@@ -9,7 +9,7 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    const files = ['SushiSwapV2.ts', 'Curve.ts']
+    const files = ['UniswapV3.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -28,10 +28,17 @@ async function initializeDexes(): Promise<void> {
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
-  for (const dex of initializedDexes) {
-    const pools = await dex.getPoolsWithTokenPair(tokenA, tokenB, numPools)
-    dexesPools.get(dex)?.push(...pools)
-  }
+  const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
+  const allPoolsResults = await Promise.all(allPoolsPromises)
+
+  initializedDexes.forEach((dex, index) => {
+    const pools = allPoolsResults[index]
+    if (dexesPools.has(dex)) {
+      dexesPools.get(dex)?.push(...pools)
+    } else {
+      dexesPools.set(dex, pools)
+    }
+  })
 }
 
 /* Get pools from each dex in initializedDexes list that have token as one of the tokens in the pool
@@ -88,6 +95,7 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools
   promises.push(getPoolIdsForToken(tokenFrom, numFromToPools))
   promises.push(getPoolIdsForToken(tokenTo, numFromToPools))
   promises.push(getTopPools(numTopPools))
+  promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools))
   await Promise.all(promises)
 
   filterDuplicatePools()
