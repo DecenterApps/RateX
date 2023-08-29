@@ -54,7 +54,7 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
     }
   }
 
-  return { swaps: res.swaps, amountOut: res.amountOut, percentage: 100 }
+  return { swaps: res.swaps, amountOut: res.amountOut, percentage: 0 }
 }
 
 function createGraph(pools: Pool[]): Map<string, Pool[]> {
