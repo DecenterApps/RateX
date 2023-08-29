@@ -24,7 +24,7 @@ export class CurvePool extends Pool {
     const j = this.tokens.findIndex((token) => token._address === tokenOut)
 
     this.reserves[i] = this.reserves[i].plus(BigNumber(amountIn.toString()))
-    this.reserves[j] = this.reserves[j].plus(BigNumber(amountOut.toString()))
+    this.reserves[j] = this.reserves[j].minus(BigNumber(amountOut.toString()))
   }
 }
 
