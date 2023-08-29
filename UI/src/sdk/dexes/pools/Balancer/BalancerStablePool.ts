@@ -28,6 +28,7 @@ export class BalancerStablePool extends Pool {
 		this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
 		this.swapFeePercentage = new BigNumber(swapFeePercentage)
       	this.amplificationCoeff = new BigNumber(A.toString())
+		this.amplificationCoeffPrecision = new BigNumber(APrecision.toString())
 		this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
     }
   
