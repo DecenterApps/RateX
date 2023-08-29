@@ -16,12 +16,12 @@ describe("Tests for swaping with uniswap v3", async function () {
     it("Should swap eth for wbtc", async function () {
 
         const {uniswap, addr1, addr2} = await loadFixture(deployUniswapFixture);
-        const quoterContract = await hre.ethers.getContractAt("IQuoter", addresses.uniQuoter);
-        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
-        const WETH = await hre.ethers.getContractAt("IWeth", addresses.wethToken);
+        const quoterContract = await hre.ethers.getContractAt("IQuoter", addresses.uniV3.quoter);
+        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.tokens.WBTC);
+        const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
 
         await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.wethToken, hre.ethers.parseEther("10000"));
+        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10000"));
 
         const wethBalanceBefore = await WETH.balanceOf(addr1);
         console.log(`Balance in weth before: ${wethBalanceBefore}`);
@@ -32,17 +32,17 @@ describe("Tests for swaping with uniswap v3", async function () {
         const amountIn = hre.ethers.parseEther("1");
 
         const quotedResult = await quoterContract.quoteExactInputSingle.staticCall(
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             3000,
             amountIn,
             0
         );
 
         await uniswap.swap(
-            addresses.univ3_wbtc_eth_pool_0_3,
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.uniV3.wbtc_eth_pool_0_3,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             amountIn,
             0,
             addr1
@@ -61,14 +61,14 @@ describe("Tests for swaping with uniswap v3", async function () {
         const {uniswap, addr1, addr2} = await loadFixture(deployUniswapFixture);
 
         await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.wethToken, hre.ethers.parseEther("10000"));
+        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10000"));
 
         const amountIn = hre.ethers.parseEther("1");
 
         await expect(uniswap.swap(
-            addresses.univ3_wbtc_eth_pool_0_05,
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.uniV3.wbtc_eth_pool_0_05,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             amountIn,
             hre.ethers.parseEther("2"),
             addr1

@@ -14,7 +14,7 @@ import {addresses} from "../../../utils/addresses";
 import {UniswapState} from "./uniswapState";
 import {UniswapV3Pool} from "./UniswapV3";
 import Web3 from "web3";
-import {IQuoterV2_ABI} from "../../../../contracts/IQuoterV2_ABI";
+import {IQuoterV2_ABI} from "../../../../contracts/abi/common/IQuoterV2_ABI";
 import {initLocalHardhatProvider} from "../../../../providers/RPCProvider";
 
 const web3: Web3 = initLocalHardhatProvider();
