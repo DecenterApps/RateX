@@ -62,6 +62,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
         inputTokens {
           id
           decimals
+          name
         }
       }
     }
@@ -82,6 +83,7 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
       inputTokens {
         id
         decimals
+        name
       }
     }
   }`)
@@ -98,6 +100,7 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
       inputTokens {
         id
         decimals
+        name
       }
     }
   }`)
@@ -111,6 +114,7 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       return {
         _address: token.id,
         decimals: token.decimals,
+        name: token.name
       }
     }),
   }

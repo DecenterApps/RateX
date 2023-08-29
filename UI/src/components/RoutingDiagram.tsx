@@ -22,8 +22,8 @@ function RouteComponent({ route }: { route: Route }) {
 function SwapComponent({ swap }: { swap: Swap }) {
   const tokenA = swap.tokenA.toLowerCase()
   const tokenB = swap.tokenB.toLowerCase()
-  const tokenAImage = tokenAddressToImage.hasOwnProperty(tokenA) ? tokenAddressToImage[tokenA].img : 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-  const tokenBImage = tokenAddressToImage.hasOwnProperty(tokenB) ? tokenAddressToImage[tokenB].img : 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+  const tokenAImage = tokenAddressToImage.hasOwnProperty(tokenA) ? tokenAddressToImage[tokenA].img : 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png'
+  const tokenBImage = tokenAddressToImage.hasOwnProperty(tokenB) ? tokenAddressToImage[tokenB].img : 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png'
 
   return (
     <div className="routingDiagramPool">

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
 import Web3 from 'web3'
+import {ERC20_ABI} from '../contracts/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
@@ -32,6 +33,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
+  const [tempToken, setTempToken] = useState('')
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -74,7 +76,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const numberRegex = /^\d*\.?\d*$/
     let isValid = numberRegex.test(val)
     if (isValid) {
-      setTokenFromAmount(val)
+      setTokenFromAmount(Number(val))
     }
   }
 
@@ -92,12 +94,54 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     setTokenToAmount(tokenToAmount)
   }
 
+  function changeTempToken(e: any) {
+    setTempToken(e.target.value)
+  }
+  async function checkTempToken() {
+    if (tempToken === '') return setIsOpenModal(false)
+
+    try {
+      const contract = new web3.eth.Contract(ERC20_ABI, tempToken)
+
+      const token: Token = {
+        'ticker': '',
+        'img': 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png',
+        'name': '',
+        'address': {
+            '1': '',
+            '42161': tempToken
+        },
+        'decimals': 18
+      }
+      await contract.methods.name().call().then((name: any) => {
+        token.name = name
+      })
+
+      await contract.methods.symbol().call().then((symbol: any) => {
+        token.ticker = symbol
+      })
+
+      await contract.methods.decimals().call().then((decimals: any) => {
+        token.decimals = Number(decimals)
+      })
+      
+      // console.log(token)
+      if (token.name !== '' || token.ticker !=='' || token.decimals !== 0) {
+        await modifyToken(0, [token])
+        return setIsOpenModal(false)
+      }
+    } catch (error: any) {
+      notification.error({ message: "Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!" })
+      // alert(error)
+    }
+  }
+
   function openModal(token: number) {
     setChangeToken(token)
     setIsOpenModal(true)
   }
 
-  async function modifyToken(index: number) {
+  async function modifyToken(index: number, tokenList: Token[]) {
     if (changeToken === 1) {
       setTokenFrom(tokenList[index])
       const _tokenFromPrice = await getTokenPrice(tokenList[index].ticker, chainId)
@@ -148,6 +192,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       return
     }
 
+    console.log(typeof tokenFromAmount, tokenFromAmount, typeof tokenFrom.decimals, tokenFrom.decimals)
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
@@ -172,7 +217,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     setLoadingSwap(true)
 
-    const amountIn = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
+    const amountIn = web3.utils.toBigInt(tokenFromAmount * 10 ** Number(tokenFrom.decimals))
 
     swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
       .then((res) => {
@@ -205,19 +250,22 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   return (
     <>
-      <Modal open={isOpenModal} footer={null} onCancel={() => setIsOpenModal(false)} title="Select a token">
+      <Modal open={isOpenModal} footer={null} onCancel={() => checkTempToken()} title="Select a token">
         <div className="modalContent">
           {tokenList.map((token, index) => {
             return (
-              <div className="tokenChoice" key={index} onClick={() => modifyToken(index)}>
+              <>
+              <div className="tokenChoice" key={index} onClick={() => modifyToken(index, tokenList)}>
                 <img src={token.img} alt={token.ticker} className="tokenLogo" />
                 <div className="tokenChoiceNames">
                   <div className="tokenName"> {token.name} </div>
                   <div className="tokenTicker"> {token.ticker} </div>
                 </div>
               </div>
+              </>
             )
           })}
+        <Input className='tokenAddress' placeholder='Or enter token address' onChange={changeTempToken} />
         </div>
       </Modal>
       <div className="tradeBox">
