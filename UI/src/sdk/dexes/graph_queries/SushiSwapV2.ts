@@ -8,6 +8,7 @@ import { SushiSwapHelperContract } from '../../../contracts/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
+  
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
   dexId = dexIds.SUSHISWAP_V2
 
