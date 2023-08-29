@@ -4,7 +4,7 @@ const {config} = require("../addresses.config");
 const addresses = config[hre.network.config.chainId];
 
 async function deployUniswapQuoter() {
-    const quoterUni = await hre.ethers.getContractAt("IQuoterV2", addresses.uniQuoterV2);
+    const quoterUni = await hre.ethers.getContractAt("IQuoterV2", addresses.uniV3.quoterV2);
     return {quoterUni};
 }
 
@@ -28,16 +28,16 @@ describe("Examples with uniswap helper", function () {
         console.log("=============================================");
 
         const params1 = {
-            tokenIn: addresses.wethToken,
-            tokenOut: addresses.wbtcToken,
+            tokenIn: addresses.tokens.WETH,
+            tokenOut: addresses.tokens.WBTC,
             amountIn: hre.ethers.parseEther("100"),
             fee: 3000,
             sqrtPriceLimitX96: 0
         }
 
         const params2 = {
-            tokenIn: addresses.usdcToken,
-            tokenOut: addresses.gmxToken,
+            tokenIn: addresses.tokens.USDC,
+            tokenOut: addresses.tokens.GMX,
             amountIn: hre.ethers.parseEther("200"),
             fee: 10000,
             sqrtPriceLimitX96: 0
@@ -54,15 +54,15 @@ describe("Examples with uniswap helper", function () {
         console.log("=============================================");
 
         const rez = await uniswapHelper.estimateAmountOut(
-            addresses.univ3_wbtc_eth_pool_0_3,
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.uniV3.wbtc_eth_pool_0_3,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             hre.ethers.parseEther("100"),
         );
         const rez2 = await uniswapHelper.estimateAmountOut(
-            addresses.gmx_usdc_pool_0_1,
-            addresses.usdcToken,
-            addresses.gmxToken,
+            addresses.uniV3.gmx_usdc_pool_0_1,
+            addresses.tokens.USDC,
+            addresses.tokens.GMX,
             hre.ethers.parseEther("200"),
         );
 

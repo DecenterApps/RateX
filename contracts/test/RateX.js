@@ -15,37 +15,37 @@ describe("RateX tests", async function () {
 
     it("Should perform swap with multihop", async function () {
         // route: weth -> usdce -> usdt -> weth -> wbtc. Last pool will go through sushiV2
-        const tokenIn = addresses.wethToken;
-        const tokenOut = addresses.wbtcToken;
+        const tokenIn = addresses.tokens.WETH;
+        const tokenOut = addresses.tokens.WBTC;
 
         const amountIn = hre.ethers.parseEther("1");
 
         const {rateX, addr1, addr2} = await loadFixture(deployRateXFixture);
-        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
+        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.tokens.WBTC);
 
         const swapStep1 = {
-            poolId: addresses.weth_usdce_pool_0_3,
+            poolId: addresses.uniV3.weth_usdce_pool_0_3,
             dexId: "UNI_V3",
             tokenA: tokenIn,
-            tokenB: addresses.usdceToken
+            tokenB: addresses.tokens.USDCE
         };
         const swapStep2 = {
-            poolId: addresses.usdt_usdce_pool_0_0_1,
+            poolId: addresses.uniV3.usdt_usdce_pool_0_0_1,
             dexId: "UNI_V3",
-            tokenA: addresses.usdceToken,
-            tokenB: addresses.usdtToken
+            tokenA: addresses.tokens.USDCE,
+            tokenB: addresses.tokens.USDT
         };
         const swapStep3 = {
-            poolId: addresses.weth_usdt_pool_0_3,
+            poolId: addresses.uniV3.weth_usdt_pool_0_3,
             dexId: "UNI_V3",
-            tokenA: addresses.usdtToken,
-            tokenB: addresses.wethToken
+            tokenA: addresses.tokens.USDT,
+            tokenB: addresses.tokens.WETH
         };
 
         const swapStep4 = {
-            poolId: addresses.sushi_wbtc_eth_pool,
+            poolId: addresses.sushi.wbtc_eth_pool,
             dexId: "SUSHI_V2",
-            tokenA: addresses.wethToken,
+            tokenA: addresses.tokens.WETH,
             tokenB: tokenOut
         };
 
@@ -59,7 +59,7 @@ describe("RateX tests", async function () {
         await approveToContract(
             addr1,
             await rateX.getAddress(),
-            addresses.wethToken,
+            addresses.tokens.WETH,
             hre.ethers.parseEther("10000")
         );
 

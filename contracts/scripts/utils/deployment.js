@@ -88,6 +88,7 @@ module.exports = {
   deployRateX,
   deploySushiDex,
   deployUniswapDex,
+  deployCurveDex,
   deployUniswapHelper,
   deploySushiSwapHelper,
   deployCurveHelper,

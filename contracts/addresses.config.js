@@ -21,7 +21,7 @@ const ARBITRUM_ADDRESSES = {
     },
 
     curve: {
-        curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDC USDT pool,
+        curve2Pool: "0x7f90122BF0700F9E7e1F688fe926940E8839F353", // USDCE USDT pool,
 
         poolRegistry: "0x445FE580eF8d70FF569aB36e80c647af338db351",
         stableSwapFactory: "0xb17b674D9c5CB2e441F8e196a2f048A81355d031"
@@ -45,7 +45,8 @@ const ARBITRUM_ADDRESSES = {
 
     impersonate: {
         WETH: "0x0df5dfd95966753f01cb80e76dc20ea958238c46",
-        DAI: "0xd85e038593d7a098614721eae955ec2022b9b91b"
+        DAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
+        USDT: "0x62383739d68dd0f844103db8dfb05a7eded5bbe6"
     }
 }
 
