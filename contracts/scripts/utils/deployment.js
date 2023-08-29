@@ -5,11 +5,9 @@ const addresses = config[hre.network.config.chainId]
 
 async function deploySushiDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
-
   const SushiSwap = await hre.ethers.getContractFactory('SushiSwapDex')
   const sushiSwap = await SushiSwap.deploy(addresses.sushiRouter)
   await sushiSwap.waitForDeployment()
-
   return { sushiSwap, addr1, addr2, addr3 }
 }
 

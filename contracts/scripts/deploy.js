@@ -1,9 +1,11 @@
 hre = require('hardhat')
-const { resolve, join } = require('path')
-const fs = require('fs')
-const { deployRateX, deployUniswapHelper, deploySushiSwapHelper, deployCurveHelper } = require('./utils/deployment')
-const { sendWethTokensToUser, sendERCTokensToUser } = require('./utils/contract')
-const { config } = require('../addresses.config')
+const {
+  deployRateX,
+  deployUniswapHelper,
+  deploySushiSwapHelper,
+  deployCurveHelper
+} = require('./utils/deployment')
+
 const {
   saveRateXAddressToFile,
   saveRateXAbiToFile,
@@ -15,6 +17,9 @@ const {
   saveCurveAbiToFile,
 } = require('./utils/saveABIAndAddresses')
 
+const { config } = require('../addresses.config')
+const {resolve, join} = require("path");
+const fs = require("fs");
 const addresses = config[hre.network.config.chainId]
 
 async function main() {
@@ -23,7 +28,8 @@ async function main() {
   const { sushiHelper } = await deploySushiSwapHelper()
   const { curveHelper } = await deployCurveHelper()
 
-  await sendWethTokensToUser(addr1, hre.ethers.parseEther('1000'))
+  saveRateXAddress(await rateX.getAddress());
+
   await saveRateXContract(rateX)
   await saveUniswapHelperContract(uniswapHelper)
   await saveSushiSwapHelperContract(sushiHelper)
@@ -68,6 +74,16 @@ async function saveCurveHelperContract(curveHelper) {
   const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
   const curveAbi = CurveHelper.abi
   saveCurveAbiToFile(curveAbi)
+}
+
+function saveRateXAddress(rateXAddress) {
+  const content = `
+chainId: ${hre.network.config.chainId}  
+rateXAddress: ${rateXAddress}`;
+
+  const dirPath = resolve(__dirname, './');
+  const filePath = join(dirPath, 'rateXAddress.txt');
+  fs.writeFileSync(filePath, content);
 }
 
 main().catch((error) => {
