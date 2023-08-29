@@ -3,8 +3,6 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IDex.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./SushiSwapDex.sol";
-import "hardhat/console.sol";
 
 contract RateX is Ownable {
 
@@ -31,9 +29,10 @@ contract RateX is Ownable {
 
     mapping(string => address) public dexes;
 
-    constructor(address _sushiSwapDexAddress, address _uniswapV3DexAddress){
+    constructor(address _sushiSwapDexAddress, address _uniswapV3DexAddress, address _curveDexAddress){
         dexes["SUSHI_V2"] = _sushiSwapDexAddress;
         dexes["UNI_V3"] = _uniswapV3DexAddress;
+        dexes["CURVE"] = _curveDexAddress;
     }
 
     // swap function for multi hop, without spliting

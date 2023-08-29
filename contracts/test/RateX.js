@@ -14,7 +14,7 @@ describe("RateX tests", async function () {
     }
 
     it("Should perform swap with multihop", async function () {
-        // route: weth -> usdce -> usdt -> weth -> wbtc. Last pool will go through sushi
+        // route: weth -> usdce -> usdt -> weth -> wbtc. Last pool will go through sushiV2
         const tokenIn = addresses.wethToken;
         const tokenOut = addresses.wbtcToken;
 

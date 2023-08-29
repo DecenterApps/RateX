@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/curve/ICurveDEX.sol";
-
 contract CurveHelper {
     struct Token {
         address _address;
