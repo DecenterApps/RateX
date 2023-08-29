@@ -16,4 +16,8 @@ export class UniswapV3Pool extends Pool {
 
     return UniswapState.quoter.quote(poolData, tokenIn, tokenOut, amountIn)[0]
   }
+
+  update(tokenIn: string, tokenOut: string, amountIn: bigint) {
+    // TODO for Rajko
+  }
 }

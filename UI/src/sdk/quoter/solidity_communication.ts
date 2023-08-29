@@ -15,6 +15,22 @@ async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bi
   console.log('Fetched pools:', pools)
   const graph = createGraph(pools)
   console.log('Graph: ', graph)
+
+  const poolMap: Map<string, Pool> = new Map<string, Pool>(pools.map((pool: Pool) => [pool.poolId, pool]))
+  const routes: Map<Route, number> = new Map<Route, number>()
+  let amountOut: bigint = BigInt(0)
+  const step: number = 5
+  const splitAmountIn: bigint = (amountIn * BigInt(step)) / BigInt(100)
+
+  for (let i = 0; i < 100; i += step) {
+    const route: Route = multiHopSwap(splitAmountIn, tokenA, tokenB, graph)
+    routes.set(route, (routes.get(route) || 0) + step)
+    amountOut += route.amountOut
+    updatePoolsInRoute(poolMap, route, splitAmountIn)
+  }
+
+  console.log(routes)
+
   const route: Route = multiHopSwap(amountIn, tokenA, tokenB, graph)
   console.log('Route: ', route)
   return { routes: [route], amountOut: route.amountOut }
@@ -64,6 +80,19 @@ async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn:
   console.log('Fetched pools:', pools)
   console.log('Pool size: ', pools.length)
   return findRoute(tokenA, tokenB, amountIn, pools)
+}
+
+function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amount: bigint): void {
+  for (let swap of route.swaps) {
+    const pool: Pool | undefined = poolMap.get(swap.poolId)
+    if (!pool) {
+      console.log('Pool ', swap.poolId, " doesn't exist!")
+      continue
+    }
+
+    pool.update(swap.tokenA, swap.tokenB, amount)
+    amount = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amount)
+  }
 }
 
 export { getBestQuoteMultiHop, executeSwapMultiHop, getBestQuoteUniLikeAlgo }

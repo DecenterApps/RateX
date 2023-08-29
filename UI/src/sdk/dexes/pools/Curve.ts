@@ -18,6 +18,15 @@ export class CurvePool extends Pool {
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
     return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
   }
+
+  update(tokenIn: string, tokenOut: string, amountIn: bigint): void {
+    const i = this.tokens.findIndex((token) => token._address === tokenIn)
+    const j = this.tokens.findIndex((token) => token._address === tokenOut)
+
+    const amountOut: bigint = calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
+    this.reserves[i] = this.reserves[i].plus(BigNumber(amountIn.toString()))
+    this.reserves[j] = this.reserves[j].plus(BigNumber(amountOut.toString()))
+  }
 }
 
 /*
