@@ -51,11 +51,14 @@ async function deployRateX() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const { sushiSwap } = await deploySushiDex()
   const { uniswap } = await deployUniswapDex()
+  const { balancer } = await deployBalancerDex()
+  
   const sushiSwapAddress = await sushiSwap.getAddress()
   const uniswapAddress = await uniswap.getAddress()
+  const balancerAddress = await balancer.getAddress()
 
   const RateX = await hre.ethers.getContractFactory('RateX')
-  const rateX = await RateX.deploy(sushiSwapAddress, uniswapAddress)
+  const rateX = await RateX.deploy(sushiSwapAddress, uniswapAddress, balancerAddress)
   await rateX.waitForDeployment()
 
   return { rateX, addr1, addr2, addr3 }

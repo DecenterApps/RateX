@@ -92,6 +92,22 @@ async function executeSwap(
 }
 
 
+function transformQuoteForSolidty(quote: Quote): Quote {
+  quote.routes[0].swaps.map((swap) => {
+    // console.log(swap.poolId)
+    if (swap.poolId.length === 66) {
+      // convert to address
+      swap.poolId = swap.poolId.slice(0, 42)
+    }
+    // console.log(swap.poolId)
+    delete swap.tokenAName
+    delete swap.tokenBName
+    return swap
+  })
+
+  return quote
+}
+
 async function executeSwapMultiHop(
     tokenIn: string,
     tokenOut: string,
@@ -106,7 +122,6 @@ async function executeSwapMultiHop(
 
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
-
   if (balance < amountIn) {
     return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
   }
@@ -116,8 +131,9 @@ async function executeSwapMultiHop(
     await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
 
     let transactionHash: string = ''
-
-    console.log("usao u swap");
+    quote = transformQuoteForSolidty(quote)
+    console.log("Quote: ", quote)
+    console.log(quote.routes[0], amountIn, minAmountOut, signer)
 
     // @ts-ignore
     await RateXContract.methods //@ts-ignore

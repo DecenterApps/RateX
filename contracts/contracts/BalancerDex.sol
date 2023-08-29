@@ -5,6 +5,7 @@ import './interfaces/IDex.sol';
 import './interfaces/balancer/IVault.sol';
 import './interfaces/balancer/IWeightedPool.sol';
 import './interfaces/balancer/IStablePool.sol';
+import './interfaces/IERC20.sol';
 
 import "hardhat/console.sol";
 
@@ -30,7 +31,45 @@ contract BalancerDex is IDex {
     uint _amountIn,
     uint _amountOutMin,
     address _to
-  ) external override returns (uint amountOut) {}
+  ) external override returns (uint amountOut) {
+    console.log("POZOVEMO SWAP ! GAS ");
+    // remove approval in separate contract later
+    IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+    IERC20(_tokenIn).approve(address(balancerVault), _amountIn);
+
+    IWeightedPool pool = IWeightedPool(_poolAddress);
+    bytes32 _poolId = pool.getPoolId();
+
+    IVault.SingleSwap memory singleSwap;
+    singleSwap.poolId = _poolId;
+    singleSwap.kind = IVault.SwapKind.GIVEN_IN;
+    singleSwap.assetIn = _tokenIn;
+    singleSwap.assetOut = _tokenOut;
+    singleSwap.amount = _amountIn;
+
+    IVault.FundManagement memory fundManagement;
+    fundManagement.sender = msg.sender;
+    fundManagement.fromInternalBalance = true;
+    fundManagement.recipient = payable(_to);
+    fundManagement.toInternalBalance = true;
+
+    console.log("POZOVEMO SWAP ? ");
+    console.logBytes32(_poolId);
+    console.logAddress(_tokenIn);
+    console.logAddress(_tokenOut);
+    console.logUint(_amountIn);
+    console.logUint(_amountOutMin);
+    console.logAddress(_to);
+    console.logAddress(msg.sender);
+    console.logAddress(address(balancerVault));
+
+    amountOut = balancerVault.swap(
+      singleSwap,
+      fundManagement,
+      0,
+      9999999999999999999999999999999999999
+    );
+  }
 
   function quote(address _tokenIn, address _tokenOut, uint _amountIn) external view override returns (uint amountOut) {}
 
@@ -52,22 +91,14 @@ contract BalancerDex is IDex {
     view
     returns (uint8 decimals, uint256 invariant, address[] memory tokens, uint256[] memory balances, uint256[] memory weights, uint256 feePercentage)
   {
-    console.log("USAO U FUNKCIJU");
     console.logBytes32(_poolId);
     IWeightedPool pool = IWeightedPool(this.getPool(_poolId));
-    console.log("ZAVRSIO SE GETPOOL");
     decimals = pool.decimals();
-    console.log("ZAVRSIO SE DECIMALS");
-    // invariant = pool.getInvariant();
-    // console.log("ZAVRSIO SE INVARIANT");
     weights = pool.getNormalizedWeights();
     require(weights.length > 0, "Weights are empty");
-    console.log("ZAVRSIO SE NORMALIZED");
     feePercentage = pool.getSwapFeePercentage();
-    console.log("ZAVRSIO SE SWAPFEE");
 
     (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
-    console.log("ZAVRSIO SE GETPOOLTOKEN");
   }
 
   function getStablePoolInfo(
@@ -77,16 +108,34 @@ contract BalancerDex is IDex {
     view
     returns (uint8 decimals, address[] memory tokens, uint256[] memory balances, uint256 aValue, uint256 aPrecision, uint256 feePercentage)
   {
-    console.log("USAO U FUNKCIJU");
     IStablePool pool = IStablePool(this.getPool(_poolId));
     decimals = pool.decimals();
-    console.log("ZAVRSIO SE DECIMALS");
     (aValue, , aPrecision) = pool.getAmplificationParameter();
-    console.log("ZAVRSIO SE amp");
     feePercentage = pool.getSwapFeePercentage();
-    console.log("ZAVRSIO SE fee");
 
     (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
-    console.log("ZAVRSIO SE gettokens");
+  }
+
+  function swapWeightedToken(
+    bytes32 _poolId, 
+    address tokenA, 
+    address tokenB, 
+    uint256 amountA
+  ) 
+    external
+    payable 
+    returns (uint256 amountB) 
+  {
+    IWeightedPool pool = IWeightedPool(this.getPool(_poolId));
+    address poolAddress = pool.getPool();
+    
+    this.swap(
+      poolAddress,
+      tokenA,
+      tokenB,
+      amountA,
+      0,
+      msg.sender
+    );
   }
 }

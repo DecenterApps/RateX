@@ -192,7 +192,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       return
     }
 
-    console.log(typeof tokenFromAmount, tokenFromAmount, typeof tokenFrom.decimals, tokenFrom.decimals)
+    // console.log(typeof tokenFromAmount, tokenFromAmount, typeof tokenFrom.decimals, tokenFrom.decimals)
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)

@@ -46,9 +46,10 @@ contract RateX is Ownable {
 
     mapping(string => address) public dexes;
 
-    constructor(address _sushiSwapDexAddress, address _uniswapV3DexAddress){
+    constructor(address _sushiSwapDexAddress, address _uniswapV3DexAddress, address _balancerV2DexAddress){
         dexes["SUSHI_V2"] = _sushiSwapDexAddress;
         dexes["UNI_V3"] = _uniswapV3DexAddress;
+        dexes["BALANCER_V2_WEIGHTED"] = _balancerV2DexAddress;
     }
 
     // swap function for multi hop, without spliting
@@ -60,7 +61,7 @@ contract RateX is Ownable {
         uint256 _quotedAmountWithSlippage,
         address _recipient
     ) external returns(uint256 amountOut) {
-
+        console.log("swapMultiHop");
         require(_route.swaps.length > 0, "No swaps in route");
 
         address tokenIn = _route.swaps[0].tokenA;
@@ -71,6 +72,11 @@ contract RateX is Ownable {
 
         for (uint256 i = 0; i < _route.swaps.length; ++i) {
             SwapStep memory swapStep = _route.swaps[i];
+            console.log(swapStep.dexId);
+            console.log(swapStep.tokenA);
+            console.log(swapStep.tokenB);
+            console.log(swapStep.poolId);
+
             amountOut = _executeSwapStep(swapStep, amountOut, _recipient);
         }
 
