@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
+    "@types/object-hash": "^3.0.3",
     "@uniswap/sdk-core": "^4.0.6",
     "@uniswap/v3-sdk": "^3.10.0",
     "ethers": "^6.7.0",

@@ -106,6 +106,7 @@ module.exports = {
   deployCamelotDex,
   deployUniswapDex,
   deployCurveDex,
+  deployUniswapHelper,
   deploySushiSwapHelper,
   deployCamelotHelper,
   deployUniswapHelper,
