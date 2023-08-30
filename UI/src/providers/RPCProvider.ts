@@ -31,7 +31,7 @@ function initOptimismProvider(): Web3 {
 }
 
 // when testing locally and only running sdk (without running frontend) we should comment out this function because
-// window object won't be avaialble in node
+// window object won't be available
 function initRPCProvider(chainId: number): Web3 {
   // check if metamask is connected
   if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) return new Web3(window.ethereum)

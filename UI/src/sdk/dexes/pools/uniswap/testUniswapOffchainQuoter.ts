@@ -6,6 +6,8 @@
  * And remove rpc function in RPC provider because window object is available only in browser
  *
  * Later if you want to run things in browser, add "type": "module" back to sdk package.json
+ *
+ * This examples assumes that you have localhost hardhat node running with deployed contracts
  * */
 
 import {TradeInfo} from "./types";
@@ -110,7 +112,7 @@ function getTestTrades(): TradeInfo[] {
         BigInt(100)
     ));
 
-    /// ZERO FOR ONE
+    // ZERO FOR ONE
 
     trades.push(new TradeInfo(
         addresses.univ3_wbtc_eth_pool_0_3,

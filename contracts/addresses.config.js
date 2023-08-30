@@ -46,7 +46,9 @@ const ARBITRUM_ADDRESSES = {
     impersonate: {
         WETH: "0x0df5dfd95966753f01cb80e76dc20ea958238c46",
         DAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
-        USDT: "0x62383739d68dd0f844103db8dfb05a7eded5bbe6"
+        USDT: "0x62383739d68dd0f844103db8dfb05a7eded5bbe6",
+        WBTC: "0x7546966122e636a601a3ea4497d3509f160771d8",
+        USDC: "0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2"
     }
 }
 
