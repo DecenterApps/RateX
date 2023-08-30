@@ -3,7 +3,8 @@ const {
     deployRateX,
     deployUniswapHelper,
     deploySushiSwapHelper,
-    deployCurveHelper
+    deployCurveHelper,
+    deployCamelotHelper
 } = require('./utils/deployment')
 
 const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
@@ -16,6 +17,7 @@ async function main() {
     const {uniswapHelper} = await deployUniswapHelper()
     const {sushiHelper} = await deploySushiSwapHelper()
     const {curveHelper} = await deployCurveHelper()
+    const {camelotHelper} = await deployCamelotHelper()
 
     const rateXAddress = await rateX.getAddress();
     console.log('RateX address:' + rateXAddress);
@@ -29,16 +31,21 @@ async function main() {
     const curveHelperAddress = await curveHelper.getAddress();
     console.log("CurveHelper address:" + curveHelperAddress);
 
+    const camelotHelperAddress = await camelotHelper.getAddress();
+    console.log("CamelotHelper address:" + camelotHelperAddress);
+
     await saveRateXContractAbi(rateX);
     await saveUniswapHelperContractAbi(uniswapHelper);
     await saveSushiSwapHelperContractAbi(sushiHelper);
     await saveCurveHelperContractAbi(curveHelper);
+    await saveCamelotHelperContractAbi(camelotHelper);
 
     saveAddresses(
         rateXAddress,
         uniswapHelperAddress,
         sushiSwapHelperAddress,
-        curveHelperAddress
+        curveHelperAddress,
+        camelotHelperAddress
     );
 }
 
@@ -64,6 +71,12 @@ async function saveCurveHelperContractAbi(curveHelper) {
     const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
     const curveAbi = CurveHelper.abi
     saveAbiToFile(curveAbi, 'CurveHelper');
+}
+
+async function saveCamelotHelperContractAbi(camelotHelper) {
+    const CamelotHelper = await hre.artifacts.readArtifact('CamelotHelper')
+    const camelotAbi = CamelotHelper.abi
+    saveAbiToFile(camelotAbi, 'CamelotHelper');
 }
 
 main().catch((error) => {
