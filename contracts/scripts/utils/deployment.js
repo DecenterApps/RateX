@@ -11,6 +11,14 @@ async function deploySushiDex() {
   return { sushiSwap, addr1, addr2, addr3 }
 }
 
+async function deployCamelotDex() {
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const Camelot = await hre.ethers.getContractFactory('CamelotDex')
+  const camelot = await Camelot.deploy()
+  await camelot.waitForDeployment()
+  return { camelot, addr1, addr2, addr3 }
+}
+
 async function deployUniswapDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const UniswapV3 = await hre.ethers.getContractFactory('UniswapV3Dex')
@@ -62,10 +70,18 @@ async function deployRateX() {
 
 async function deploySushiSwapHelper() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
-  const Sushi = await hre.ethers.getContractFactory('SushiSwapHelper')
-  const sushiHelper = await Sushi.deploy()
+  const SushiHelper = await hre.ethers.getContractFactory('SushiSwapHelper')
+  const sushiHelper = await SushiHelper.deploy()
   await sushiHelper.waitForDeployment()
   return { sushiHelper, addr1, addr2, addr3 }
+}
+
+async function deployCamelotHelper() {
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const CamelotHelper = await hre.ethers.getContractFactory('CamelotHelper')
+  const camelotHelper = await CamelotHelper.deploy()
+  await camelotHelper.waitForDeployment()
+  return { camelotHelper, addr1, addr2, addr3 }
 }
 
 async function deployUniswapHelper() {
@@ -87,9 +103,12 @@ async function deployCurveHelper() {
 module.exports = {
   deployRateX,
   deploySushiDex,
+  deployCamelotDex,
   deployUniswapDex,
   deployCurveDex,
   deployUniswapHelper,
   deploySushiSwapHelper,
+  deployCamelotHelper,
+  deployUniswapHelper,
   deployCurveHelper,
 }

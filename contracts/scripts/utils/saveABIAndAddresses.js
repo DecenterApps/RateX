@@ -20,7 +20,8 @@ function saveAddresses(
     rateXAddress,
     uniswapHelperAddress,
     sushiSwapHelperAddress,
-    curveHelperAddress
+    curveHelperAddress,
+    camelotHelperAddress
 ) {
 
     const content = `
@@ -28,7 +29,8 @@ function saveAddresses(
 export const RATE_X_ADDRESS = "${rateXAddress}"
 export const UNISWAP_HELPER_ADDRESS = "${uniswapHelperAddress}"
 export const SUSHISWAP_HELPER_ADDRESS = "${sushiSwapHelperAddress}"
-export const CURVE_HELPER_ADDRESS = "${curveHelperAddress}"`;
+export const CURVE_HELPER_ADDRESS = "${curveHelperAddress}"
+export const CAMELOT_HELPER_ADDRESS = "${camelotHelperAddress}"`;
 
     const dir_path = resolve(__dirname, '../../../UI/src/contracts')
     const filePath = join(dir_path, `addresses.ts`)
