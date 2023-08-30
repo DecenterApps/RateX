@@ -19,11 +19,11 @@ addRadiant = async function (addr1) {
 }
 
 addDai = async function (addr1) {
-    const daiAddress = "0x6b175474e89094c44da98b954eedeac495271d0f";
+    const daiAddress = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
     const DAI = await hre.ethers.getContractAt("IERC20", daiAddress);
     const balanceBefore = await DAI.balanceOf(addr1);
     await sendERCTokensToUser(
-        "0xf977814e90da44bfa03b6295a0616a897441acec",
+        "0x5ec6abff9bb4c673f63d077a962a29945f744857",
         daiAddress,
         addr1,
         hre.ethers.parseEther("10000")
@@ -40,7 +40,7 @@ async function main() {
     await sendWethTokensToUser(addr1, hre.ethers.parseEther("100"));
 
     addRadiant(addr1);
-
+    addDai(addr1);
 }
 
 main().catch((error) => {
