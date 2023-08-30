@@ -22,4 +22,9 @@ contract CamelotDex is IDex {
         ICamelotPair pair = ICamelotPair(id);
         return pair.getReserves();
     }
+
+    function getStableSwap(address id) external view returns (bool) {
+        ICamelotPair pair = ICamelotPair(id);
+        return pair.stableSwap();
+    }
 }
