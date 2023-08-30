@@ -44,12 +44,15 @@ contract UniswapHelper is UniViewQuoter, IUniswapHelper {
         IUniswapV3Pool pool = IUniswapV3Pool(_pool);
         IUniswapV3PoolImmutables immutables = IUniswapV3PoolImmutables(_pool);
         (uint160 sqrtPriceX96,int24 tick, , , , ,) = pool.slot0();
+        (, int128 liquidityNet,,,,,,) = pool.ticks(tick);
+
 
         PoolInfo memory info = PoolInfo({
             pool: _pool,
             token0: immutables.token0(),
             token1: immutables.token1(),
             tick: tick,
+            tickLiquidityNet: liquidityNet,
             tickSpacing: immutables.tickSpacing(),
             fee: immutables.fee(),
             sqrtPriceX96: sqrtPriceX96,

@@ -1,50 +1,60 @@
 import {FeeAmount, LiquidityMath, SwapMath, TickMath} from "@uniswap/v3-sdk";
 import JSBI from "jsbi";
-import {PoolData, StepComputations, SwapState, TickData} from "./types";
+import {PoolState, StepComputations, SwapState, TickData} from "./types";
 
 export class UniswapOffchainQuoter {
 
     public quote(
-        poolData: PoolData,
+        poolState: PoolState,
         tokenIn: string,
         tokenOut: string,
         amountIn: bigint
     ): [bigint, bigint] {
+
         const zeroForOne: boolean = tokenIn < tokenOut;
         const sqrtPriceLimitX96 = this.getSqrtPriceLimitX96(zeroForOne);
 
         if (amountIn <= BigInt(0)) throw new Error("Amount specified must be greater than 0");
 
-        const ticksData = zeroForOne ? poolData.zeroForOneTicks : poolData.oneForZeroTicks;
-        let state: SwapState = this.initSwapState(poolData, amountIn);
-        let tickDataIndex = 0;
+        let state: SwapState = this.initSwapState(poolState, amountIn);
+
+        let tickDataIndex = zeroForOne
+            ? poolState.data.currentTickIndex - 1
+            : poolState.data.currentTickIndex + 1;
 
         while (
             state.amountSpecifiedRemaining !== BigInt(0) &&
             state.sqrtPriceX96 !== sqrtPriceLimitX96 &&
-            tickDataIndex < ticksData.length)
-        {
-            const tickData = ticksData[tickDataIndex];
+            tickDataIndex >= 0 &&
+            tickDataIndex < poolState.data.ticks.length
+        ) {
+            const tickData = poolState.data.ticks[tickDataIndex];
 
             let step: StepComputations = this.initStepComputations(state, tickData);
 
-            this.updateSwapIteration(state, step, tickData, poolData.info.fee, sqrtPriceLimitX96, zeroForOne);
+            this.updateSwapIteration(state, step, tickData, poolState.data.fee, sqrtPriceLimitX96, zeroForOne);
 
-            tickDataIndex++;
+            tickDataIndex = zeroForOne ? tickDataIndex - 1 : tickDataIndex + 1;
+        }
+
+        // remember where we left off, so we can update pool later
+        poolState.lastQuote = {
+            newLiquidity: state.liquidity,
+            newSqrtPriceX96: state.sqrtPriceX96,
+            newTickIndex: zeroForOne ? tickDataIndex + 2 : tickDataIndex - 2
         }
 
         const amountOut = state.amountCalculated > BigInt(0) ? state.amountCalculated : -state.amountCalculated;
         return [amountOut, state.amountSpecifiedRemaining];
     }
 
-
-    private initSwapState(poolData: PoolData, amountIn: bigint): SwapState {
+    private initSwapState(poolState: PoolState, amountIn: bigint): SwapState {
         return  {
             amountSpecifiedRemaining: amountIn,
             amountCalculated: BigInt(0),
-            sqrtPriceX96: poolData.info.sqrtPriceX96,
-            tick: poolData.info.tick,
-            liquidity: poolData.info.liquidity
+            sqrtPriceX96: poolState.data.currentSqrtPriceX96,
+            tick: poolState.data.getCurrTickData().tick,
+            liquidity: poolState.data.currentLiquidity
         };
     }
 

@@ -1,38 +1,17 @@
-import { PoolData } from './types'
+import {PoolData, PoolState} from './types'
 import { UniswapHelperContract } from '../../../../contracts/rateX/UniswapHelper'
-import { convertRowPoolData } from './utils'
+import {convertInitialPoolDataToPoolState, convertRowPoolData} from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
 
 export class UniswapState {
-  private static poolDataMap: Map<string, PoolData> = new Map<string, PoolData>()
+  private static poolStateMap: Map<string, PoolState> = new Map<string, PoolState>()
   public static quoter: UniswapOffchainQuoter = new UniswapOffchainQuoter()
   private static batch_size = 3;
 
   private constructor() {}
 
-  public static async getPoolData(poolAddress: string): Promise<PoolData> {
-    poolAddress = poolAddress.toLowerCase()
-
-    if (!this.poolDataMap.has(poolAddress)) {
-      console.log('Pool data not found in cache, fetching from contract')
-      const p = await this.getPoolDataFromContract(poolAddress)
-      this.poolDataMap.set(poolAddress, p)
-      return p
-    } else {
-      // check how old data is, if older than 10 seconds for example, refetch it
-      console.log('Pool data found in cache')
-      return this.poolDataMap.get(poolAddress) as PoolData
-    }
-  }
-
-  public static getPoolDataSync(poolAddress: string): PoolData | undefined {
-    return this.poolDataMap.get(poolAddress) as PoolData
-  }
-
-  private static async getPoolDataFromContract(poolAddress: string): Promise<PoolData> {
-    //@ts-ignore
-    const rawPoolData: any = await UniswapHelperContract.methods.fetchPoolData(poolAddress, 15).call()
-    return convertRowPoolData(rawPoolData)
+  public static getPoolState(poolAddress: string): PoolState | undefined {
+    return this.poolStateMap.get(poolAddress.toLowerCase());
   }
 
   private static async getPoolsDataFromContract(pools: string[]): Promise<PoolData[]> {
@@ -56,7 +35,9 @@ export class UniswapState {
     const allPoolsData = await Promise.all(promises);
 
     allPoolsData.flat().forEach((poolData: PoolData) => {
-      this.poolDataMap.set(poolData.info.pool.toLowerCase(), poolData);
+      let poolState = convertInitialPoolDataToPoolState(poolData);
+      // we will store keys as lowercase addresses
+      this.poolStateMap.set(poolData.info.pool.toLowerCase(), poolState);
     });
   }
 }

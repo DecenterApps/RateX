@@ -5,7 +5,7 @@ import Web3 from 'web3'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
-import { getQuoteUniLike, initGetQuote, swap } from '../sdk/quoter/front_communication'
+import { getQuoteUniLike, getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
 import { Quote } from '../sdk/types'
 import { notification } from './notifications'
@@ -154,7 +154,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
-    initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
       .then((quote: Quote) => {
         if (callTime < lastCallTime.current) {
           return
