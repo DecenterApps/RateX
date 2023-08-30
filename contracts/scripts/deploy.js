@@ -48,6 +48,9 @@ async function main() {
     const camelotHelperAddress = await camelotHelper.getAddress();
     console.log("CamelotHelper address:" + camelotHelperAddress);
 
+    const balancerHelperAddress = await balancerHelper.getAddress();
+    console.log("BalancerHelper address:" + balancerHelperAddress);
+
     await saveRateXContractAbi(rateX);
     await saveUniswapHelperContractAbi(uniswapHelper);
     await saveSushiSwapHelperContractAbi(sushiHelper);
@@ -59,7 +62,8 @@ async function main() {
         uniswapHelperAddress,
         sushiSwapHelperAddress,
         curveHelperAddress,
-        camelotHelperAddress
+        camelotHelperAddress,
+        balancerHelperAddress
     );
 }
 
@@ -67,35 +71,15 @@ async function saveRateXContractAbi(rateXContract) {
     const RateX = await hre.artifacts.readArtifact('RateX')
     const rateXAbi = RateX.abi
     saveAbiToFile(rateXAbi, 'RateX');
-async function saveRateXContract(rateXContract) {
-    const address = await rateXContract.getAddress();
-    console.log("RateX address: " + address);
-    saveRateXAddressToFile(address);
-
-    const RateX = await hre.artifacts.readArtifact("RateX");
-    const rateXAbi = RateX.abi;
-    saveRateXAbiToFile(rateXAbi);
 }
 
-async function saveUniswapHelperContract(uniswapHelperContract) {
-    const address = await uniswapHelperContract.getAddress();
-    console.log("UniswapHelper address: " + address);
-    saveUniswapHelperAddressToFile(address);
-
-    const UniswapHelper = await hre.artifacts.readArtifact("UniswapHelper");
-    const uniswapHelperAbi = UniswapHelper.abi;
-    saveUniswapHelperAbiToFile(uniswapHelperAbi);
 async function saveUniswapHelperContractAbi(uniswapHelperContract) {
     const UniswapHelper = await hre.artifacts.readArtifact('UniswapHelper')
     const uniswapHelperAbi = UniswapHelper.abi
     saveAbiToFile(uniswapHelperAbi, 'UniswapHelper');
 }
 
-async function saveSushiSwapHelperContract(sushiHelper) {
-    const addressSushiHelper = await sushiHelper.getAddress()
-    console.log('SushiSwapHelper address: ' + addressSushiHelper)
-    saveSushiSwapAddressToFile(addressSushiHelper)
-
+async function saveSushiSwapHelperContractAbi(sushiHelper) {
     const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
     const sushiSwapAbi = SushiSwapHelper.abi
     saveAbiToFile(sushiSwapAbi, 'SushiSwapHelper');
