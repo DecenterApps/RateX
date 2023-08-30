@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
 import Web3 from 'web3'
-import {ERC20_ABI} from '../contracts/ERC20_ABI'
+import {ERC20_ABI} from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
@@ -34,6 +34,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
+  const [tempToken, setTempToken] = useState('')
   const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
 
   const [isOpenModal, setIsOpenModal] = useState(false)

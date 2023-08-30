@@ -25,6 +25,15 @@ export class BalancerWeightedPool extends Pool {
     calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
       	return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
     }
+
+    update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
+        // CHECK ???
+        const i = this.tokens.findIndex(token => token._address === tokenIn)
+        const j = this.tokens.findIndex(token => token._address === tokenOut)
+
+        this.reserves[i] = fp.add(this.reserves[i], BigNumber(amountIn.toString()))
+        this.reserves[j] = fp.sub(this.reserves[j], BigNumber(amountOut.toString()))
+    }
 }
 
 function calculateOutputAmount(pool: BalancerWeightedPool, tokenA: string, tokenB: string, tokenAmountIn: BigNumber, swapFeePercentage?: BigNumber): bigint {

@@ -29,6 +29,10 @@ const ARBITRUM_ADDRESSES = {
     poolRegistry: '0x445FE580eF8d70FF569aB36e80c647af338db351',
     stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
   },
+  
+  balancer: {
+    vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
+  },
 
   uniV3: {
     quoter: '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6',
