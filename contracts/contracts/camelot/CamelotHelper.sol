@@ -22,8 +22,8 @@ contract CamelotHelper {
         address poolId;
         string dexId;
         Token[] tokens;
-        uint16[2] fees;
         uint112[2] reserves;
+        uint16[2] fees;
         bool stableSwap;
     }
 
@@ -45,8 +45,8 @@ contract CamelotHelper {
                 poolInfo.poolId,
                 poolInfo.dexId,
                 poolInfo.tokens,
-                fees,
                 reserves,
+                fees,
                 stableSwap
             );
         }

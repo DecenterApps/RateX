@@ -70,10 +70,18 @@ async function deployRateX() {
 
 async function deploySushiSwapHelper() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
-  const Sushi = await hre.ethers.getContractFactory('SushiSwapHelper')
-  const sushiHelper = await Sushi.deploy()
+  const SushiHelper = await hre.ethers.getContractFactory('SushiSwapHelper')
+  const sushiHelper = await SushiHelper.deploy()
   await sushiHelper.waitForDeployment()
   return { sushiHelper, addr1, addr2, addr3 }
+}
+
+async function deployCamelotHelper() {
+  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
+  const CamelotHelper = await hre.ethers.getContractFactory('CamelotHelper')
+  const camelotHelper = await CamelotHelper.deploy()
+  await camelotHelper.waitForDeployment()
+  return { camelotHelper, addr1, addr2, addr3 }
 }
 
 async function deployUniswapHelper() {
@@ -95,10 +103,11 @@ async function deployCurveHelper() {
 module.exports = {
   deployRateX,
   deploySushiDex,
+  deployCamelotDex,
   deployUniswapDex,
   deployCurveDex,
-  deployCamelotDex,
-  deployUniswapHelper,
   deploySushiSwapHelper,
+  deployCamelotHelper,
+  deployUniswapHelper,
   deployCurveHelper,
 }
