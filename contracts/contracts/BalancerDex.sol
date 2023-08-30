@@ -32,10 +32,15 @@ contract BalancerDex is IDex {
     uint _amountOutMin,
     address _to
   ) external override returns (uint amountOut) {
-    console.log("POZOVEMO SWAP ! GAS ");
+    console.log("POZOVEMO SWAP ! GAS LASKcnASNKJ ");
+    console.log(msg.sender, address(this)); 
     // remove approval in separate contract later
     IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+    IERC20(_tokenIn).approve(address(this), _amountIn);
     IERC20(_tokenIn).approve(address(balancerVault), _amountIn);
+    IERC20(_tokenIn).approve(_poolAddress, _amountIn);
+    console.log("!");
+    console.log(IERC20(_tokenIn).balanceOf(address(this)), _tokenIn);
 
     IWeightedPool pool = IWeightedPool(_poolAddress);
     bytes32 _poolId = pool.getPoolId();
@@ -48,7 +53,7 @@ contract BalancerDex is IDex {
     singleSwap.amount = _amountIn;
 
     IVault.FundManagement memory fundManagement;
-    fundManagement.sender = msg.sender;
+    fundManagement.sender = address(this);
     fundManagement.fromInternalBalance = true;
     fundManagement.recipient = payable(_to);
     fundManagement.toInternalBalance = true;
@@ -62,6 +67,12 @@ contract BalancerDex is IDex {
     console.logAddress(_to);
     console.logAddress(msg.sender);
     console.logAddress(address(balancerVault));
+
+    console.log("PROVERA Br. 2");
+    
+    // IVault(balancerVault).setRelayerApproval(msg.sender, msg.sender, true); console.log("setRelayerApproval 0s"); // ne radi
+    // IVault(balancerVault).setRelayerApproval(msg.sender, _poolAddress, true); console.log("setRelayerApproval 1s"); // ne radi
+    // IVault(balancerVault).setRelayerApproval(msg.sender, address(this), true); console.log("setRelayerApproval 2s"); // ne radi
 
     amountOut = balancerVault.swap(
       singleSwap,

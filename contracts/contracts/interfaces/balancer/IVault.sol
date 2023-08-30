@@ -22,6 +22,8 @@ interface IVault {
     bool toInternalBalance;
   }
 
+  function setRelayerApproval(address relayer, address spender, bool approved) external;
+
   function getPool(bytes32 poolId) external view returns (address addr, uint8 something);
   function getPoolTokenInfo(bytes32 poolId, address token) external view returns (uint256 cash, uint256 managed, uint256 lastChangeBlock, address assetManager);
   function getPoolTokens(bytes32 poolId) external view returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock);
