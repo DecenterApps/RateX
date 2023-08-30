@@ -3,6 +3,7 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo } from '../../types'
+import { CamelotDex } from '../../../contracts/rateX/CurveHelper'
 import dexIds from '../dexIdsList'
 
 // Camelot is a silly place
@@ -47,7 +48,10 @@ export default class CamelotV2 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
+  // call to Solidity for additional data
   async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+
+    const rawData: any[][] = await CurveHelperContract.methods.getPoolsData(poolInfos).call()
     return []
   }
 }

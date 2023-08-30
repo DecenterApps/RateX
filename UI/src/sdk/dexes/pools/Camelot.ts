@@ -4,18 +4,18 @@ import BigNumber from "bignumber.js"
 // Camelot V2 pools have 2 tokens in the pool, and a fee
 // Example contracts of one Camelot V2 pool: https://arbiscan.io/address/0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f#readContract
 
+const feeDenominator = new BigNumber(100000)
+
 export class CamelotPool extends Pool {
 
     fees: BigNumber[]
     reserves: BigNumber[]
-    feeDenominator: BigNumber
     stableSwap: boolean
 
-    constructor(poolId: string, dexId: string, tokens: Token[], reserves: bigint[], fees: bigint[], feeDenominator: bigint, stableSwap: boolean) {
+    constructor(poolId: string, dexId: string, tokens: Token[], reserves: bigint[], fees: bigint[], stableSwap: boolean) {
         super(poolId, dexId, tokens)
         this.reserves = reserves.map((r) => BigNumber(r.toString()))
         this.fees = fees.map((f) => BigNumber(f.toString()))
-        this.feeDenominator = BigNumber(feeDenominator.toString())
         this.stableSwap = stableSwap
     }
 
@@ -34,7 +34,6 @@ export class CamelotPool extends Pool {
 function calculateStableSwap(pool: CamelotPool, tokenIn: string, tokenOut: string, amountIn: BigNumber): bigint {
 
     const feePercent = tokenIn.toLowerCase() === pool.tokens[0]._address.toLowerCase() ? pool.fees[0] : pool.fees[1];
-    const feeDenominator = pool.feeDenominator
 
     let reserve0 = pool.reserves[0]
     let reserve1 = pool.reserves[1]
@@ -130,7 +129,6 @@ function _d(x0: BigNumber, y: BigNumber): BigNumber {
 function calculateRegularSwap(pool: CamelotPool, tokenIn: string, tokenOut: string, amountIn: BigNumber): bigint {
 
     const feePercent = tokenIn.toLowerCase() === pool.tokens[0]._address.toLowerCase() ? pool.fees[0] : pool.fees[1];
-    const feeDenominator = pool.feeDenominator
 
     const [reserveA, reserveB] = tokenIn.toLowerCase() === pool.tokens[0]._address.toLowerCase()
         ? [pool.reserves[0], pool.reserves[1]]
