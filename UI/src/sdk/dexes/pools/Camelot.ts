@@ -29,6 +29,14 @@ export class CamelotPool extends Pool {
         else
             return calculateRegularSwap(this, tokenIn, tokenOut, amountInBN)
     }
+
+    update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
+        const i = this.tokens.findIndex((token) => token._address === tokenIn)
+        const j = this.tokens.findIndex((token) => token._address === tokenOut)
+    
+        this.reserves[i] = this.reserves[i].plus(BigNumber(amountIn.toString()))
+        this.reserves[j] = this.reserves[j].minus(BigNumber(amountOut.toString()))
+      }
 }
 
 function calculateStableSwap(pool: CamelotPool, tokenIn: string, tokenOut: string, amountIn: BigNumber): bigint {
