@@ -3,7 +3,7 @@ const {config} = require("../../addresses.config");
 
 async function sendWethTokensToUser(toAddress, amount) {
     const iWeth = await hre.ethers.getContractAt(
-        "IWeth", config[hre.network.config.chainId].wethToken, toAddress);
+        "IWeth", config[hre.network.config.chainId].tokens.WETH, toAddress);
 
     const txResponse = await iWeth.deposit({value: amount,});
     await txResponse.wait();

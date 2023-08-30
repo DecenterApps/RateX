@@ -14,11 +14,14 @@
   padding-right: 30px;
 }
 
+.tradeBox > * {
+  width: 100%;
+}
+
 .tradeBoxHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 98%;
 }
 
 .switchButton {
@@ -53,11 +56,12 @@
   align-self: flex-start;
 }
 
-.inputs {
+.input {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  // align-items: center;
+  height: 128px;
 }
 
 .assetFrom,
@@ -66,6 +70,7 @@
   min-width: 50px;
   height: 32px;
   background-color: $color-light;
+  transition: 0.3s;
   right: 20px;
   border-radius: 100px;
   display: flex;
@@ -75,6 +80,7 @@
   font-weight: bold;
   font-size: 17px;
   padding-right: 8px;
+  top: 32px;
 }
 
 .assetFrom:hover,
@@ -83,28 +89,19 @@
   cursor: pointer;
 }
 
-.assetFrom {
-  top: 32px;
-}
-
-.assetTo {
-  top: 156px;
-}
-
 .swapButton {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: $color-light;
-  width: calc(100%);
   height: 55px;
   font-size: 20px;
   border-radius: 12px;
   color: $color-text-primary;
   font-weight: bold;
   transition: 0.3s;
-  margin-bottom: 30px;
-  margin-top: 8px;
+  margin-bottom: 20px;
+  margin-top: 20px;
   border: none;
 }
 
@@ -116,10 +113,12 @@
 .swapButton[disabled] {
   background-color: $color-neutral;
   opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.swapButton[disabled]:hover {
-  cursor: not-allowed;
+.input .lds-ellipsis {
+  left: calc(50% - 38px);
+  top: calc(32px + 32px / 2 - 6px);
 }
 
 .tokenAddress {
@@ -136,12 +135,11 @@
 .lds-ellipsis {
   display: inline-block;
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 77px;
+  height: 13px;
 }
 .lds-ellipsis div {
   position: absolute;
-  top: 33px;
   width: 13px;
   height: 13px;
   border-radius: 50%;

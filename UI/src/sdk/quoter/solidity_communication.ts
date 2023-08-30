@@ -1,68 +1,63 @@
-import { Pool, PoolEntry, PoolInfo, Quote, QuoteResultEntry, ResponseType, Route } from '../types'
+import { Pool, Quote, ResponseType, Route } from '../types'
 import { fetchPoolsData } from './graph_communication'
-import { ERC20_ABI } from '../../contracts/ERC20_ABI'
+import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
-import { RateXContract } from '../../contracts/RateX'
+import { RateXContract } from '../../contracts/rateX/RateX'
 import { createGraph, multiHopSwap } from '../routing/multiHopSwap'
-
-// In future will have chainId
-export type AdditionalPoolInfo = {
-  poolId: string
-  dexId: string
-  tokenA: string // address
-  tokenB: string // address
-  reserveA: bigint // in wei
-  reserveB: bigint // in wei
-  fee: number
-}
-
-async function getAdditionalPoolInfo(poolsInfo: PoolInfo[]): Promise<AdditionalPoolInfo[]> {
-  const additionalPoolsInfo: AdditionalPoolInfo[] = []
-
-  // TO-DO: calls to Solidity
-
-  return additionalPoolsInfo
-}
-
-async function getBestQuote(token1: string, token2: string, tokenOneAmount: bigint): Promise<QuoteResultEntry> {
-  const pools: PoolInfo[] = await fetchPoolsData(token1, token2, 5)
-  const poolEntries: PoolEntry[] = pools.map((p: PoolInfo) => new PoolEntry(p.poolId, p.dexId))
-
-  //@ts-ignore
-  const result: QuoteResultEntry[] = await RateXContract.methods //@ts-ignore
-    .quoteV2(poolEntries, token1, token2, tokenOneAmount)
-    .call()
-    .catch((err: any) => {
-      console.log('error: ', err)
-    })
-
-  // just do a simple max for now, no need to check for liquidity of the pool
-  return result.reduce((prev, current) => {
-    return prev.amountOut > current.amountOut ? prev : current
-  })
-}
+import { findRoute } from '../routing/uni_like_algo/main'
+import objectHash from 'object-hash'
 
 async function getBestQuoteMultiHop(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 2, 2)
-  console.log("Fetched pools:", pools);
+  console.log('tokenIn: ', tokenA)
+  console.log('tokenOut: ', tokenB)
+
+  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
+  console.log('Fetched pools:', pools)
   const graph = createGraph(pools)
-  const route: Route = multiHopSwap(amountIn, tokenA, tokenB, graph)
-  console.log("Route: ", route);
-  return { routes: [route], amountOut: route.amountOut }
+  console.log('Graph: ', graph)
+
+  const poolMap: Map<string, Pool> = new Map<string, Pool>(pools.map((pool: Pool) => [pool.poolId, pool]))
+  const routes: Map<string, Route> = new Map<string, Route>()
+  let amountOut: bigint = BigInt(0)
+  const step: number = 5
+  const splitAmountIn: bigint = (amountIn * BigInt(step)) / BigInt(100)
+
+  for (let i = 0; i < 100; i += step) {
+    const route: Route = multiHopSwap(splitAmountIn, tokenA, tokenB, graph)
+    const routeHash = objectHash(route.swaps)
+
+    let existingRoute: Route | undefined = routes.get(routeHash)
+    if (!existingRoute) {
+      route.percentage = step
+      routes.set(routeHash, route)
+    } else {
+      existingRoute.percentage += step
+    }
+
+    amountOut += route.amountOut
+    updatePoolsInRoute(poolMap, route, splitAmountIn)
+  }
+
+  let quote: Quote = { routes: [], amountOut: amountOut }
+  for (let route of routes.values()) {
+    quote.routes.push(route)
+  }
+
+  return quote
 }
 
-async function executeSwap(
-  token1: string,
-  token2: string,
-  quote: QuoteResultEntry,
+async function executeSwapMultiHop(
+  tokenIn: string,
+  tokenOut: string,
+  quote: Quote,
   amountIn: bigint,
   minAmountOut: bigint,
   signer: string,
   chainId: number
-): Promise<ResponseType> {
+) {
   const web3: Web3 = initRPCProvider(42161)
-  const tokenInContract = new web3.eth.Contract(ERC20_ABI, token1)
+  const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
 
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
@@ -77,9 +72,11 @@ async function executeSwap(
 
     let transactionHash: string = ''
 
+    quote = transformQuoteForSolidity(quote)
+
     // @ts-ignore
     await RateXContract.methods //@ts-ignore
-      .swap(quote.poolAddress, token1, token2, amountIn, minAmountOut, signer, quote.dexId)
+      .swapMultiHop(quote.routes[0], amountIn, minAmountOut, signer)
       .send({ from: signer })
       .on('transactionHash', function (hash: string) {
         transactionHash = hash
@@ -91,8 +88,9 @@ async function executeSwap(
   }
 }
 
-
-function transformQuoteForSolidty(quote: Quote): Quote {
+// change poolId to address if bytes32 and remove token names if they exist
+// If the address is lengths of 66 (byte32) then convert to address
+function transformQuoteForSolidity(quote: Quote): Quote {
   quote.routes[0].swaps.map((swap) => {
     // console.log(swap.poolId)
     if (swap.poolId.length === 66) {
@@ -108,52 +106,27 @@ function transformQuoteForSolidty(quote: Quote): Quote {
   return quote
 }
 
-async function executeSwapMultiHop(
-    tokenIn: string,
-    tokenOut: string,
-    quote: Quote,
-    amountIn: bigint,
-    minAmountOut: bigint,
-    signer: string,
-    chainId: number
-) {
-  const web3: Web3 = initRPCProvider(42161)
-  const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
 
-  //@ts-ignore
-  const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
-  if (balance < amountIn) {
-    return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
-  }
 
-  try {
-    // @ts-ignore
-    await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
+async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn: bigint) {
+  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
+  console.log('Fetched pools:', pools)
+  console.log('Pool size: ', pools.length)
+  return findRoute(tokenA, tokenB, amountIn, pools)
+}
 
-    let transactionHash: string = ''
-    quote = transformQuoteForSolidty(quote)
-    console.log("Quote: ", quote)
-    console.log(quote.routes[0], amountIn, minAmountOut, signer)
+function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amountIn: bigint): void {
+  for (let swap of route.swaps) {
+    const pool: Pool | undefined = poolMap.get(swap.poolId)
+    if (!pool) {
+      console.log('Pool ', swap.poolId, " doesn't exist!")
+      continue
+    }
 
-    // @ts-ignore
-    await RateXContract.methods //@ts-ignore
-        .swapMultiHop(quote.routes[0], amountIn, minAmountOut, signer)
-        .send({ from: signer })
-        .on('transactionHash', function (hash: string) {
-          transactionHash = hash
-        })
-
-    return { isSuccess: true, txHash: transactionHash } as ResponseType
-  } catch (err: any) {
-    return { isSuccess: false, errorMessage: err.message } as ResponseType
+    const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amountIn)
+    pool.update(swap.tokenA, swap.tokenB, amountIn, amountOut)
+    amountIn = amountOut
   }
 }
 
-
-export {
-  getAdditionalPoolInfo,
-  getBestQuote,
-  executeSwap,
-  getBestQuoteMultiHop,
-  executeSwapMultiHop
-}
+export { getBestQuoteMultiHop, executeSwapMultiHop, getBestQuoteUniLikeAlgo }

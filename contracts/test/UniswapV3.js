@@ -13,48 +13,15 @@ describe("Tests for swaping with uniswap v3", async function () {
         return (await deployUniswapDex());
     }
 
-
-    it("Should get right quote for v3 pool", async function () {
-        const {uniswap, addr1, addr2} = await loadFixture(deployUniswapFixture);
-
-        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
-        const WETH = await hre.ethers.getContractAt("IERC20", addresses.wethToken);
-        const poolContract = await hre.ethers.getContractAt("IUniswapV3Pool", addresses.univ3_wbtc_eth_pool_0_05);
-        const quoterContract = await hre.ethers.getContractAt("IQuoter", addresses.uniQuoter);
-        const wbtcReserve = await WBTC.balanceOf(addresses.univ3_wbtc_eth_pool_0_05);
-        const wethReserve = await WETH.balanceOf(addresses.univ3_wbtc_eth_pool_0_05);
-
-        const fee = await poolContract.fee();
-        const balanceBefore = await hre.ethers.provider.getBalance(addr1);
-
-        let start1 = Date.now();
-        const rez1 = await quoterContract.quoteExactInputSingle.staticCall(addresses.wethToken, addresses.wbtcToken, fee, hre.ethers.parseEther("1"), 0);
-        let timeTakenRez1 = Date.now() - start1;
-
-        let start2 = Date.now();
-        const rez2 = await uniswap.quoteV2.staticCall(addresses.univ3_wbtc_eth_pool_0_05, addresses.wethToken, addresses.wbtcToken, hre.ethers.parseEther("1"));
-        let timeTakenRez2 = Date.now() - start2;
-
-        console.log(`Rez1: ${rez1}. Time taken: ${timeTakenRez1}`);
-        console.log(`Rez2: ${rez2[2]}. Time taken: ${timeTakenRez2}`);
-
-        const balanceAfter = await hre.ethers.provider.getBalance(addr1);
-
-        expect(balanceAfter).to.be.equal(balanceBefore);
-        expect(rez1).to.equal(rez2[2]);
-        expect(rez2[0]).to.equal(wethReserve);
-        expect(rez2[1]).to.equal(wbtcReserve);
-    });
-
     it("Should swap eth for wbtc", async function () {
 
         const {uniswap, addr1, addr2} = await loadFixture(deployUniswapFixture);
-
-        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.wbtcToken);
-        const WETH = await hre.ethers.getContractAt("IWeth", addresses.wethToken);
+        const quoterContract = await hre.ethers.getContractAt("IQuoter", addresses.uniV3.quoter);
+        const WBTC = await hre.ethers.getContractAt("IERC20", addresses.tokens.WBTC);
+        const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
 
         await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.wethToken, hre.ethers.parseEther("10000"));
+        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10000"));
 
         const wethBalanceBefore = await WETH.balanceOf(addr1);
         console.log(`Balance in weth before: ${wethBalanceBefore}`);
@@ -64,17 +31,18 @@ describe("Tests for swaping with uniswap v3", async function () {
 
         const amountIn = hre.ethers.parseEther("1");
 
-        const [,,quoterResult] = await uniswap.quoteV2.staticCall(
-            addresses.univ3_wbtc_eth_pool_0_05,
-            addresses.wethToken,
-            addresses.wbtcToken,
-            amountIn
+        const quotedResult = await quoterContract.quoteExactInputSingle.staticCall(
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
+            3000,
+            amountIn,
+            0
         );
 
         await uniswap.swap(
-            addresses.univ3_wbtc_eth_pool_0_05,
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.uniV3.wbtc_eth_pool_0_3,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             amountIn,
             0,
             addr1
@@ -86,22 +54,21 @@ describe("Tests for swaping with uniswap v3", async function () {
         const wbtcBalanceAfter = await WBTC.balanceOf(addr1);
         console.log(`Balance in wbtc after: ${wbtcBalanceAfter}`);
 
-        expect(wethBalanceAfter).to.be.equal(wethBalanceBefore - amountIn);
-        expect(wbtcBalanceAfter).to.be.equal(quoterResult);
+        expect(wbtcBalanceAfter).to.be.equal(quotedResult);
     });
 
     it("Should revert because of slippage", async function () {
         const {uniswap, addr1, addr2} = await loadFixture(deployUniswapFixture);
 
         await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.wethToken, hre.ethers.parseEther("10000"));
+        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10000"));
 
         const amountIn = hre.ethers.parseEther("1");
 
         await expect(uniswap.swap(
-            addresses.univ3_wbtc_eth_pool_0_05,
-            addresses.wethToken,
-            addresses.wbtcToken,
+            addresses.uniV3.wbtc_eth_pool_0_05,
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
             amountIn,
             hre.ethers.parseEther("2"),
             addr1

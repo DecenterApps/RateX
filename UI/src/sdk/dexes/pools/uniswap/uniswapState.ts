@@ -1,11 +1,12 @@
 import { PoolData } from './types'
-import { UniswapHelperContract } from '../../../../contracts/UniswapHelper'
+import { UniswapHelperContract } from '../../../../contracts/rateX/UniswapHelper'
 import { convertRowPoolData } from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
 
 export class UniswapState {
   private static poolDataMap: Map<string, PoolData> = new Map<string, PoolData>()
   public static quoter: UniswapOffchainQuoter = new UniswapOffchainQuoter()
+  private static batch_size = 3;
 
   private constructor() {}
 
@@ -40,8 +41,22 @@ export class UniswapState {
     return rawPoolsData.map((rawPoolData: any) => convertRowPoolData(rawPoolData))
   }
 
+
   public static async initializeFreshPoolsData(pools: string[]) {
-    const poolsData: PoolData[] = await this.getPoolsDataFromContract(pools)
-    poolsData.forEach((poolData: PoolData) => this.poolDataMap.set(poolData.info.pool.toLowerCase(), poolData))
+    const poolsSize = pools.length;
+    const numberOfBatches = Math.ceil(poolsSize / this.batch_size);
+
+    const promises: Promise<PoolData[]>[] = [];
+
+    for (let i = 0; i < numberOfBatches; i++) {
+      const batch = pools.slice(i * this.batch_size, (i + 1) * this.batch_size);
+      promises.push(this.getPoolsDataFromContract(batch));
+    }
+
+    const allPoolsData = await Promise.all(promises);
+
+    allPoolsData.flat().forEach((poolData: PoolData) => {
+      this.poolDataMap.set(poolData.info.pool.toLowerCase(), poolData);
+    });
   }
 }
