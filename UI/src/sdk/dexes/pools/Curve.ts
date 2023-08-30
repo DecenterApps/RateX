@@ -18,6 +18,14 @@ export class CurvePool extends Pool {
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
     return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
   }
+
+  update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
+    const i = this.tokens.findIndex((token) => token._address === tokenIn)
+    const j = this.tokens.findIndex((token) => token._address === tokenOut)
+
+    this.reserves[i] = this.reserves[i].plus(BigNumber(amountIn.toString()))
+    this.reserves[j] = this.reserves[j].minus(BigNumber(amountOut.toString()))
+  }
 }
 
 /*
@@ -38,7 +46,9 @@ function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, 
 
   // token.amounts: convert so it is to the same precision
   dx = dx.times(precisions[i])
-  for (let k = 0; k < pool.tokens.length; k++) pool.reserves[k] = pool.reserves[k].times(precisions[k])
+  for (let k = 0; k < pool.tokens.length; k++) {
+    pool.reserves[k] = pool.reserves[k].times(precisions[k])
+  }
 
   // x = total amount of the i-th token in the pool with the additional amount dx
   const x = pool.reserves[i].plus(dx) //(pool.tokens[i].amount + dx) / precisions[i]
@@ -89,7 +99,7 @@ function getYAfterSwap(pool: CurvePool, i: number, j: number, x: BigNumber, amp:
 
   coeff = coeff.times(D).div(Ann.times(N_COINS)) // coeff * D / (Ann * N_COINS)
   const b = sum.plus(D.div(Ann)) // sum + D / Ann
-  let y = D
+  let y = new BigNumber(D)
 
   // solve a quadratic equation for the value of y
   for (let k = 0; k < 255; k++) {
@@ -103,7 +113,6 @@ function getYAfterSwap(pool: CurvePool, i: number, j: number, x: BigNumber, amp:
     if (diff.lte(1)) break
   }
 
-  console.error('Calculation did not converge')
   return floor(y)
 }
 
@@ -119,7 +128,9 @@ function getYAfterSwap(pool: CurvePool, i: number, j: number, x: BigNumber, amp:
 function calculateDInvariant(pool: CurvePool, amp: BigNumber): BigNumber {
   // let sum: Decimal = tokens.reduce((sum, token) => sum.plus(token.amount), DecimalZero)
   let sum: BigNumber = new BigNumber(0)
-  for (let res of pool.reserves) sum = sum.plus(res)
+  for (let res of pool.reserves) {
+    sum = sum.plus(res)
+  }
 
   let D: BigNumber = sum
   let prevD: BigNumber = new BigNumber(0)

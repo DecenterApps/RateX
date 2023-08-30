@@ -4,10 +4,11 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import dexIds from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { SushiSwapHelperContract } from '../../../contracts/SushiSwapHelper'
+import { SushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
+  
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
   dexId = dexIds.SUSHISWAP_V2
 
@@ -75,8 +76,11 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pairs (first: ${numPools}, orderBy: volumeUSD, orderDirection: desc) {
+    pairs (first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {
+      volumeUSD_not: "0" }
+    ) {
       id
+      volumeUSD
       token0 {
         id
         decimals
@@ -91,22 +95,25 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: volumeUSD, where: {
+        pairs(first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {
           or: [
             {and: [
               { token0: "${tokenA.toLowerCase()}" },
-              { token1: "${tokenB.toLowerCase()}" }
+              { token1: "${tokenB.toLowerCase()}" },
+              { volumeUSD_not: "0" }
               ]},
             {
               and: [
               { token0: "${tokenB.toLowerCase()}" },
-              { token1: "${tokenA.toLowerCase()}" }
+              { token1: "${tokenA.toLowerCase()}" },
+              { volumeUSD_not: "0" }
               ]
             }
           ]
         }
         ) {
           id
+          volumeUSD
           token0 {
             id
             decimals
@@ -121,14 +128,18 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-        pairs(first: ${numPools}, orderBy: volumeUSD, where: {
-          or: [
-            { token0: "${token.toLowerCase()}" },
-            { token1: "${token.toLowerCase()}" }
-          ]
+        pairs(first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {
+          and: [
+            {or: [
+              { token0: "${token.toLowerCase()}" },
+              { token1: "${token.toLowerCase()}" }
+            ]},
+            { volumeUSD_not: "0" }
+          ] 
         }
         ) {
           id
+          volumeUSD
           token0 {
             id
             decimals

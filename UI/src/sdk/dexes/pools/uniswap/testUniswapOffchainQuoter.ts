@@ -6,6 +6,8 @@
  * And remove rpc function in RPC provider because window object is available only in browser
  *
  * Later if you want to run things in browser, add "type": "module" back to sdk package.json
+ *
+ * This examples assumes that you have localhost hardhat node running with deployed contracts
  * */
 
 import {TradeInfo} from "./types";
@@ -14,7 +16,7 @@ import {addresses} from "../../../utils/addresses";
 import {UniswapState} from "./uniswapState";
 import {UniswapV3Pool} from "./UniswapV3";
 import Web3 from "web3";
-import {IQuoterV2_ABI} from "../../../../contracts/IQuoterV2_ABI";
+import {IQuoterV2_ABI} from "../../../../contracts/abi/common/IQuoterV2_ABI";
 import {initLocalHardhatProvider} from "../../../../providers/RPCProvider";
 
 const web3: Web3 = initLocalHardhatProvider();
@@ -110,7 +112,7 @@ function getTestTrades(): TradeInfo[] {
         BigInt(100)
     ));
 
-    /// ZERO FOR ONE
+    // ZERO FOR ONE
 
     trades.push(new TradeInfo(
         addresses.univ3_wbtc_eth_pool_0_3,

@@ -9,7 +9,7 @@ import {getRoutesWithQuotes} from "./routes_quoter";
 import {SwapFinder} from "./swap_finder";
 import {algoParams} from "./algo_config";
 
-export function findRoute(
+export function findRouteUniLikeAlgo(
     tokenIn: string,
     tokenOut: string,
     amountIn: bigint,

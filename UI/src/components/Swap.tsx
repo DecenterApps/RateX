@@ -5,14 +5,14 @@ import Web3 from 'web3'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
-import {getQuoteUniLike, initGetQuote, swap, swapWithSplitting} from '../sdk/quoter/front_communication'
+import {getQuoteUniLike, swapWithSplitting} from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
 import { Quote } from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import RoutingDiagram from './RoutingDiagram'
-import {TQuoteUniLike} from "../sdk/routing/uni_like_algo/types";
+import { TQuoteUniLike } from '../sdk/routing/uni_like_algo/types'
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -26,7 +26,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [wallet, setWallet] = walletState
 
   const [slippage, setSlippage] = useState(0.5)
-  const [tokenFromAmount, setTokenFromAmount] = useState<number>(0)
+  const [tokenFromAmount, setTokenFromAmount] = useState<number>(-1)
   const [tokenFromPrice, setTokenFromPrice] = useState(0)
   const [tokenToAmount, setTokenToAmount] = useState(0)
   const [tokenToPrice, setTokenToPrice] = useState(0)
@@ -50,14 +50,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     }
     getPrices()
   }, [])
-
-  // for now commented, to reduce quote contracts calls
-  // useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       getQuote()
-  //     }, 5000)
-  //     return () => clearInterval(interval)
-  // }, [tokenOneAmount, tokenOne, tokenTwo])
 
   useDebouncedEffect(
     () => {
@@ -122,7 +114,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function calculatePriceImpact(): number {
-    let tokenFromMarketPrice = tokenFromAmount * tokenFromPrice
+    let tokenFromMarketPrice = Math.max(tokenFromAmount * tokenFromPrice, 0)
     let tokenToMarketPrice = tokenToAmount * tokenToPrice
     let percentage = (100.0 * tokenToMarketPrice) / tokenFromMarketPrice
     if (isNaN(percentage)) return 0
@@ -153,8 +145,22 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
+    setLoadingQuote(true)
+    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+      .then((quote: TQuoteUniLike) => {
+          if (callTime < lastCallTime.current) {
+              return
+          }
+          setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+          setLoadingQuote(false)
+          setUniLikeQuote(quote)
+      }).catch((error: string) => {
+        setLoadingQuote(false)
+        console.log(error)
+    })
+
     // setLoadingQuote(true)
-    // initGetQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    // getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
     //   .then((quote: Quote) => {
     //     if (callTime < lastCallTime.current) {
     //       return
@@ -167,21 +173,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     //     setLoadingQuote(false)
     //     console.log(error)
     //   })
-
-    setLoadingQuote(true)
-    getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-      .then((quote: TQuoteUniLike) => {
-        if (callTime < lastCallTime.current) {
-          return
-        }
-        setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
-        setLoadingQuote(false)
-        setUniLikeQuote(quote)
-      })
-      .catch((error: string) => {
-        setLoadingQuote(false)
-        console.log(error)
-      })
   }
 
   function commitSwap() {
@@ -270,8 +261,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           </Popover>
         </div>
         <div className="input">
-          <Input placeholder="0" value={tokenFromAmount} onChange={changeAmount} />
-          <div className="tokenFromAmountUSD">{`$${(tokenFromAmount * tokenFromPrice).toFixed(4)}`}</div>
+          <Input placeholder="0" value={tokenFromAmount == -1 ? '' : tokenFromAmount} onChange={changeAmount} />
+          <div className="tokenFromAmountUSD">{`$${Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4)}`}</div>
           <div className="assetFrom" onClick={() => openModal(1)}>
             <img src={tokenFrom.img} alt="assetFromLogo" className="assetLogo" />
             {tokenFrom.ticker}
@@ -283,7 +274,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         </div>
         <div className="input">
           {loadingQuote ? (
-            <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+            <div className="lds-ellipsis">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           ) : (
             <>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
@@ -303,7 +299,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         <>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
-              <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+              <div className="lds-ellipsis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
             </button>
           ) : (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
