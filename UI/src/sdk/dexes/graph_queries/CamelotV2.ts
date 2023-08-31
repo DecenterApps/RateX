@@ -13,7 +13,7 @@ import { CamelotPool } from '../pools/Camelot'
 export default class CamelotV2 implements DEXGraphFunctionality {
     
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
-  dexId = dexIds.CAMELOT_V2
+  dexId = dexIds.CAMELOT
 
   static initialize(): DEXGraphFunctionality {
     return new CamelotV2()

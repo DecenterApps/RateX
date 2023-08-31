@@ -1,9 +1,9 @@
-import { Pool, Route, Swap, Token } from '../../types'
+import {Route, SwapStep, Pool, Token} from '../../types'
 
 type DpInfo = {
   amountOut: bigint
   path: string[]
-  swaps: Swap[]
+  swaps: SwapStep[]
 }
 
 const max_hops = 4
@@ -41,8 +41,8 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
           }
 
           const newPath: string[] = [...dpInfo.path, tokenB._address]
-          const currSwap: Swap = { poolId: pool.poolId, dexId: pool.dexId, tokenA: tokenA, tokenB: tokenB._address, tokenAName: tokenA, tokenBName: tokenB.name }
-          const newSwaps: Swap[] = [...dpInfo.swaps, currSwap]
+          const currSwap: SwapStep = { poolId: pool.poolId, dexId: pool.dexId, tokenIn: tokenA, tokenOut: tokenB._address }
+          const newSwaps: SwapStep[] = [...dpInfo.swaps, currSwap]
 
           if (!dp.has(hop + 1)) {
             dp.set(hop + 1, new Map<string, DpInfo>())
@@ -66,7 +66,12 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
     }
   }
 
-  return { swaps: res.swaps, amountOut: res.amountOut, percentage: 0 }
+  return {
+    swaps: res.swaps,
+    quote: res.amountOut,
+    percentage: 0,
+    amountIn: BigInt(0) // will be set in iterative splitting when we know percentage
+  }
 }
 
 /* Function to create a graph from all the fetched pools

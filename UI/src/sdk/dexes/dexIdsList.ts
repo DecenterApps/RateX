@@ -1,10 +1,9 @@
 export const dexIds = {
-  CURVE: 'Curve',
-  SUSHISWAP_V2: 'Sushi V2',
-  UNISWAP_V3: 'Uni V3',
-  CAMELOT_V2: 'Camelot V2',
-  TRADERJOE_V2: 'Trader Joe V2',
-  BALANCER_V2: 'Balancer V2',
+  CURVE: 'CURVE',
+  SUSHI_V2: 'SUSHI_V2',
+  UNI_V3: 'UNI_V3',
+  CAMELOT: 'CAMELOT',
+  BALANCER_V2: 'BALANCER_V2',
 }
 
 export const balancerWeightedPoolTypes = ['Weighted', 'Managed', 'LiquidityBootstrapping']

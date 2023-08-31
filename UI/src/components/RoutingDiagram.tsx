@@ -3,24 +3,24 @@ import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { dexIdToUrl } from '../constants/dexIdToUrl'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
-import { Quote, Route, Swap } from '../sdk/types'
+import {Quote, Route, SwapStep} from '../sdk/types'
 
 function RouteComponent({ route }: { route: Route }) {
   return (
     <div className="routingDiagramRoute">
       <div className="percentage">{route.percentage}%</div>
-      <TokenComponent token={route.swaps[0].tokenA}></TokenComponent>
+      <TokenComponent token={route.swaps[0].tokenIn}></TokenComponent>
       {route.swaps.map((swap, index) => (
         <Fragment key={index}>
           <TokenArrow swap={swap}></TokenArrow>
-          <TokenComponent token={swap.tokenB}></TokenComponent>
+          <TokenComponent token={swap.tokenOut}></TokenComponent>
         </Fragment>
       ))}
     </div>
   )
 }
 
-function TokenArrow({ swap }: { swap: Swap }) {
+function TokenArrow({ swap }: { swap: SwapStep }) {
   return (
     <div className="routingDiagramArrow">
       <a href={dexIdToUrl[swap.dexId].replace('ADDRESS', swap.poolId)} target="_blank">
@@ -51,8 +51,8 @@ function TokenComponent({ token }: { token: string }) {
 }
 
 function RoutingDiagram({ quote }: { quote: Quote | undefined }) {
-  if (!quote || quote.amountOut <= 0) {
-    return <></>
+  if (!quote || quote.quote <= 0) {
+    return (<></>)
   }
   quote.routes.sort((a, b) => b.percentage - a.percentage)
   return (

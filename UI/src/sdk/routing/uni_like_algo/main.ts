@@ -1,4 +1,4 @@
-import {Pool} from "../../types";
+import {Quote, Route, SwapStep, Pool} from "../../types";
 import {
     TQuoteUniLike,
     TRoute,
@@ -14,10 +14,11 @@ export function findRouteUniLikeAlgo(
     tokenOut: string,
     amountIn: bigint,
     pools: Pool[]
-): TQuoteUniLike {
+): Quote {
 
     const routes: TRoute[] = computeRoutes(tokenIn, tokenOut, pools, algoParams.maxHops);
     const amounts = calculateAmountDistribution(amountIn, algoParams.distributionPercentage);
+    console.log("Amounts:", amounts);
     const routesWithQuotes = getRoutesWithQuotes(routes, amounts);
 
     const swapFinder = new SwapFinder(
@@ -27,6 +28,44 @@ export function findRouteUniLikeAlgo(
         amountIn
     );
     const quote = swapFinder.findBestRoute();
-    console.log("Quote:", quote);
-    return quote;
+    console.log("UniLikeQuote:", quote);
+
+    const convertedQuote = convertResponseToFoundQuoteType(quote);
+    return convertedQuote;
+}
+
+function convertResponseToFoundQuoteType(q: TQuoteUniLike): Quote {
+    const routes = q.routes.map(r => {
+        const route = r.route;
+        let tokenIn = route.tokenIn;
+        let swaps: SwapStep[] = [];
+
+        route.pools.forEach(pool => {
+
+            const tokenOut = pool.tokens[0]._address == tokenIn
+                ? pool.tokens[1]._address
+                : pool.tokens[0]._address;
+
+            swaps.push({
+                poolId: pool.poolId,
+                dexId: pool.dexId,
+                tokenIn: tokenIn,
+                tokenOut: tokenOut
+            });
+
+            tokenIn = tokenOut;
+        });
+
+        return {
+            swaps: swaps,
+            amountIn: r.amount.amountIn,
+            percentage: r.amount.percentage,
+            quote: r.quote
+        } as Route;
+    });
+
+    return {
+        routes: routes,
+        quote: q.quote
+    };
 }

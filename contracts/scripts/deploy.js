@@ -13,14 +13,7 @@ const {config} = require('../addresses.config')
 const {resolve, join} = require("path");
 const fs = require("fs");
 const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
-const {
-    saveRateXAddressToFile,
-    saveRateXAbiToFile,
-    saveUniswapHelperAddressToFile,
-    saveUniswapHelperAbiToFile,
-    saveSushiSwapAddressToFile,
-    saveSushiSwapAbiToFile
-} = require("./utils/saveABIAndAddresses");
+
 
 const addresses = config[hre.network.config.chainId]
 

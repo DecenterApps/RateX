@@ -45,10 +45,20 @@ export class SwapFinder {
             this.processLayer(layer);
         }
 
+        this.addMissingAmountIn();
+
         return {
             quote: this.bestQuote,
             routes: this.bestSwap
         };
+    }
+
+    private addMissingAmountIn() {
+        const totalAmountIn = this.bestSwap.reduce((acc, route) => acc + route.amount.amountIn, BigInt(0));
+        const diff = this.amountIn - totalAmountIn;
+        if (diff > BigInt(0)) {
+            this.bestSwap[this.bestSwap.length - 1].amount.amountIn += diff;
+        }
     }
 
     private processLayer(layer: number) {

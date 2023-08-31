@@ -9,7 +9,7 @@ import { UniswapV3Pool } from '../pools/uniswap/UniswapV3'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
-  dexId = dexIds.UNISWAP_V3
+  dexId = dexIds.UNI_V3
 
   static initialize(): DEXGraphFunctionality {
     return new UniswapV3()

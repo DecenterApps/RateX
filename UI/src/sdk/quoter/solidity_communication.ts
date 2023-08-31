@@ -3,33 +3,30 @@ import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
+import {TQuoteUniLike} from "../routing/uni_like_algo/types";
 import { RateXContract } from '../../contracts/rateX/RateX'
-import { findRouteUniLikeAlgo } from '../routing/uni_like_algo/main'
-import { findRouteWithIterativeSplitting, updateAlgoStartTime } from '../routing/iterative_spliting/main'
+import {findRoute} from "../routing/main";
 
-// First we call Solidity to get additional Pools data
-async function getQuoteIterativeSplittingAlgo(tokenA: string, tokenB: string, amountIn: bigint, startTime: number): Promise<Quote> {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
-  updateAlgoStartTime(startTime)
-  return findRouteWithIterativeSplitting(tokenA, tokenB, amountIn, pools, startTime)
-}
+async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint): Promise<Quote> {
+  console.log('tokenIn: ', tokenIn)
+  console.log('tokenOut: ', tokenOut)
 
-async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn: bigint) {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
+  const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5)
   console.log('Fetched pools:', pools)
-  console.log('Pool size: ', pools.length)
-  return findRouteUniLikeAlgo(tokenA, tokenB, amountIn, pools)
+  console.log("Pool size: ", pools.length)
+
+  return findRoute(tokenIn, tokenOut, amountIn, pools);
 }
 
-async function executeSwapMultiHop(
-  tokenIn: string,
-  tokenOut: string,
-  quote: Quote,
-  amountIn: bigint,
-  minAmountOut: bigint,
-  signer: string,
-  chainId: number
-) {
+async function executeSwap(
+    tokenIn: string,
+    tokenOut: string,
+    quote: Quote,
+    amountIn: bigint,
+    minAmountOut: bigint,
+    signer: string,
+    chainId: number
+): Promise<ResponseType> {
 
   const web3: Web3 = initRPCProvider(42161)
   const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
@@ -44,15 +41,17 @@ async function executeSwapMultiHop(
     // @ts-ignore
     await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
     let transactionHash: string = ''
-    quote = transformQuoteForSolidity(quote)
+    //quote = transformQuoteForSolidity(quote)
+
+    console.log("usao u swap");
 
     // @ts-ignore
-    await RateXContract.methods .swapMultiHop(quote.routes[0], amountIn, minAmountOut, signer)
-      .send({ from: signer })
-      .on('transactionHash', function (hash: string) {
-        transactionHash = hash
-      })
-
+    await RateXContract.methods //@ts-ignore
+        .swapWithSplit(quote.routes, tokenIn, tokenOut, amountIn, minAmountOut, signer)
+        .send({ from: signer })
+        .on('transactionHash', function (hash: string) {
+          transactionHash = hash
+        })
     return { isSuccess: true, txHash: transactionHash } as ResponseType
   } catch (err: any) {
     return { isSuccess: false, errorMessage: err.message } as ResponseType
@@ -70,12 +69,10 @@ function transformQuoteForSolidity(quote: Quote): Quote {
     if (swap.poolId.length === 66) {
       swap.poolId = swap.poolId.slice(0, 42)      // convert to address
     }
-    delete swap.tokenAName
-    delete swap.tokenBName
     return swap
   })
 
   return quote
 }
 
-export { getQuoteIterativeSplittingAlgo, getBestQuoteUniLikeAlgo, executeSwapMultiHop }
+export {getQuote, executeSwap}

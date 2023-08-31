@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState, Fragment } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
-import { notification } from './notifications'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
-import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import {ERC20_ABI} from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
+import { notification } from './notifications'
+import { useDebouncedEffect } from '../utils/useDebouncedEffect'
+import {findQuote, swap} from '../sdk/quoter/front_communication'
+import {Quote} from '../sdk/types'
+import './Swap.scss'
 import RoutingDiagram from './RoutingDiagram'
-// providers
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
-// sdk
-import { getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
-import { Quote } from '../sdk/types'
 import Web3 from 'web3'
-import './Swap.scss'
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -34,8 +32,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenToPrice, setTokenToPrice] = useState(0)
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
-  const [quote, setQuote] = useState<Quote>()
-  const [tempToken, setTempToken] = useState('')
+  const [quote, setQuote] = useState<Quote>();
+  const [customToken, setCustomToken] = useState('')
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -52,14 +50,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     }
     getPrices()
   }, [chainId, tokenFrom.ticker, tokenTo.ticker])
-
-  // for now commented, to reduce quote contracts calls
-  // useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       getQuote()
-  //     }, 5000)
-  //     return () => clearInterval(interval)
-  // }, [tokenOneAmount, tokenOne, tokenTwo])
 
   useDebouncedEffect(
     () => {
@@ -97,14 +87,14 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function changeTempToken(e: any) {
-    setTempToken(e.target.value)
+    setCustomToken(e.target.value)
   }
 
-  async function checkTempToken() {
-    if (tempToken === '') return setIsOpenModal(false)
+  async function checkCustomAddedToken() {
+    if (customToken === '') return setIsOpenModal(false)
 
     try {
-      const contract = new web3.eth.Contract(ERC20_ABI, tempToken)
+      const contract = new web3.eth.Contract(ERC20_ABI, customToken)
 
       const token: Token = {
         ticker: '',
@@ -112,7 +102,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         name: '',
         address: {
           '1': '',
-          '42161': tempToken,
+          '42161': customToken,
         },
         decimals: 18,
       }
@@ -137,7 +127,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           token.decimals = Number(decimals)
         })
 
-      // console.log(token)
       if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
         await modifyToken(0, [token])
         return setIsOpenModal(false)
@@ -146,7 +135,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       notification.error({
         message: 'Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!',
       })
-      // alert(error)
     }
   }
 
@@ -207,24 +195,21 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       return
     }
 
-    // console.log(typeof tokenFromAmount, tokenFromAmount, typeof tokenFrom.decimals, tokenFrom.decimals)
     const amount = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
-    getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount, callTime)
+    findQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
       .then((quote: Quote) => {
-        if (callTime < lastCallTime.current) {
-          return
-        }
-
-        setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
-        setLoadingQuote(false)
-        setQuote(quote)
-      })
-      .catch((error: string) => {
+          if (callTime < lastCallTime.current) {
+              return
+          }
+          setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+          setLoadingQuote(false)
+          setQuote(quote)
+      }).catch((error: string) => {
         setLoadingQuote(false)
         console.log(error)
-      })
+    })
   }
 
   function commitSwap() {
@@ -234,20 +219,29 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amountIn = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** Number(tokenFrom.decimals))
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
-      .then((res) => {
-        setLoadingSwap(false)
-        // for now hardcode it for testing purposes
-        res.isSuccess
-          ? notification.success({
-              message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
-            })
-          : notification.error({ message: res.errorMessage })
-      })
-      .catch((error: string) => {
-        setLoadingSwap(false)
-        notification.open({ message: error })
-      })
+    swap(
+        tokenFrom.address[chainId],
+        tokenTo.address[chainId],
+        quote,
+        amountIn,
+        slippage,
+        wallet,
+        chainId
+    )
+        .then((res) => {
+          setLoadingSwap(false)
+          // for now hardcode it for testing purposes
+          res.isSuccess
+              ? notification.success({
+                message: `<a  href="https://dashboard.tenderly.co/shared/fork/e4b74728-c29f-4b93-b6b6-97c90d9dbf48/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+              })
+              : notification.error({ message: res.errorMessage })
+        })
+        .catch((error: string) => {
+          console.log("Error on swap: ", error);
+          setLoadingSwap(false)
+          notification.open({ message: error })
+        })
   }
 
   const settings = (
@@ -265,7 +259,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   return (
     <Fragment>
-      <Modal open={isOpenModal} footer={null} onCancel={() => checkTempToken()} title="Select a token">
+      <Modal open={isOpenModal} footer={null} onCancel={() => checkCustomAddedToken()} title="Select a token">
         <div className="modalContent">
           {tokenList.map((token, index) => {
             return (

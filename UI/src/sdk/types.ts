@@ -1,27 +1,3 @@
-export class PoolEntry {
-  poolAddress: string
-  dexId: string
-  constructor(poolAddress: string, dexId: string) {
-    this.poolAddress = poolAddress
-    this.dexId = dexId
-  }
-}
-
-export class QuoteResultEntry {
-  dexId: string
-  poolAddress: string
-  reserveA: bigint
-  reserveB: bigint
-  amountOut: bigint
-  constructor(dexId: string, poolAddress: string, reserveA: bigint, reserveB: bigint, amountOut: bigint) {
-    this.dexId = dexId
-    this.poolAddress = poolAddress
-    this.reserveA = reserveA
-    this.reserveB = reserveB
-    this.amountOut = amountOut
-  }
-}
-
 export interface ResponseType {
   isSuccess: boolean
   txHash: string
@@ -69,22 +45,21 @@ export abstract class Pool {
   }
 }
 
-export type Swap = {
+export type SwapStep = {
   poolId: string
   dexId: string
-  tokenA: string
-  tokenB: string
-  tokenAName?: string
-  tokenBName?: string
+  tokenIn: string
+  tokenOut: string
 }
 
 export type Route = {
-  swaps: Swap[]
-  amountOut: bigint
+  swaps: SwapStep[]
+  amountIn: bigint
   percentage: number
+  quote: bigint
 }
 
 export type Quote = {
-  routes: Route[]
-  amountOut: bigint
+  routes: Route[],
+  quote: bigint
 }

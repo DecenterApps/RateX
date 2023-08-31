@@ -1,15 +1,13 @@
-import {Pool, Quote, Route} from "../../types";
+import {Quote, Route, Pool} from "../../types";
 import {createGraph, multiHopSwap} from "./multiHopSwap";
 import objectHash from "object-hash";
-
-let algoStartTime = 0
 
 /*  Simple algorithm that splits the input amount into (100/step) parts of step% each and finds the best route for each split.
     The algorithm to find the best route for each iteration finds the route with the highest output amount.
     (code is seen in ./multiHopSwap.ts)
     After each iteration, the pools are updated with the amounts that passed through them.
 */
-function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[], startTime: number): Quote {
+function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[]): Quote {
     const graph = createGraph(pools)
 
     // percentage of the amountIn that we split into
@@ -20,13 +18,6 @@ function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountI
     const splitAmountIn: bigint = (amountIn * BigInt(step)) / BigInt(100)
 
     for (let i = 0; i < 100; i += step) {
-        console.log("iteration ", i, " for amount ", amountIn)
-        // check if this calculation is for an outdated amount
-        if(startTime !== algoStartTime) {
-            console.log('Outdated amount, returning')
-            return {routes: [], amountOut: BigInt(0)}
-        }
-
         const route: Route = multiHopSwap(splitAmountIn, tokenA, tokenB, graph)
         const routeHash = objectHash(route.swaps)
 
@@ -38,18 +29,22 @@ function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountI
             existingRoute.percentage += step
         }
 
-        amountOut += route.amountOut
+        amountOut += route.quote
         updatePoolsInRoute(poolMap, route, splitAmountIn)
     }
 
-    let quote: Quote = {routes: [], amountOut: amountOut}
-    for (let route of routes.values()) {
-        quote.routes.push(route)
-    }
+    const foundRoutes: Route[] = [];
 
-    console.log("Quote found: ")
-    console.log(quote)
-    return quote
+    for (let route of routes.values()) {
+        route.amountIn = (BigInt(route.percentage) * amountIn) / BigInt(100);
+        foundRoutes.push(route);
+    }
+    const missingAmount = amountIn - foundRoutes.reduce((acc, route) => acc + route.amountIn, BigInt(0));
+    foundRoutes[0].amountIn += missingAmount;
+
+    const quote: Quote = { routes: foundRoutes, quote: amountOut };
+    console.log("IterativeQuote: ", quote);
+    return quote;
 }
 
 // Function to update all the pools in a route with the amounts that passed through them
@@ -61,14 +56,10 @@ function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amountIn: 
             continue
         }
 
-        const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amountIn)
-        pool.update(swap.tokenA, swap.tokenB, amountIn, amountOut)
+        const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, amountIn)
+        pool.update(swap.tokenIn, swap.tokenOut, amountIn, amountOut)
         amountIn = amountOut
     }
 }
 
-function updateAlgoStartTime(newTimestamp: number): void {
-    algoStartTime = newTimestamp
-}
-
-export { findRouteWithIterativeSplitting, updateAlgoStartTime }
+export { findRouteWithIterativeSplitting }

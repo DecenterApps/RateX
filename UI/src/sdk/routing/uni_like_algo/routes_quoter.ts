@@ -50,6 +50,11 @@ export function getSingleRouteWithSingleQuote(route: TRoute, amount: AmountPerce
             : pool.getToken0()._address;
 
         amountOut = pool.calculateExpectedOutputAmount(tokenIn, tokenOut, amountOut);
+
+        if (amountOut === BigInt(0)) {
+            break;
+        }
+
         tokenIn = tokenOut;
     }
     return {

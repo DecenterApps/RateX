@@ -7,7 +7,13 @@ let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctio
 
 async function initializeDexes(): Promise<void> {
   try {
-    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts', 'Curve.ts', 'CamelotV2.ts']
+    const files = [
+      'SushiSwapV2.ts',
+      'UniswapV3.ts',
+      //'BalancerV2.ts',
+      //'Curve.ts',
+      // 'CamelotV2.ts'
+    ]
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
