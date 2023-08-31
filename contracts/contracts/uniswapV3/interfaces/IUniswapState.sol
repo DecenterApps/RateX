@@ -39,6 +39,7 @@ interface IUniswapState {
         address token0;
         address token1;
         int24 tick;
+        int128 tickLiquidityNet;
         int24 tickSpacing;
         uint24 fee;
         uint160 sqrtPriceX96;
