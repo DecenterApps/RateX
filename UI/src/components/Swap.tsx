@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
+import { notification } from './notifications'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
-import Web3 from 'web3'
+import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import {ERC20_ABI} from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
-import { getTokenPrice } from '../providers/OracleProvider'
-import { getQuoteUniLike, getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
-import initRPCProvider from '../providers/RPCProvider'
-import { Quote } from '../sdk/types'
-import { notification } from './notifications'
-import './Swap.scss'
-import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import RoutingDiagram from './RoutingDiagram'
+// providers
+import { getTokenPrice } from '../providers/OracleProvider'
+import initRPCProvider from '../providers/RPCProvider'
+// sdk
+import { getQuoteUniLike, getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
 import { TQuoteUniLike } from '../sdk/routing/uni_like_algo/types'
+import { Quote } from '../sdk/types'
+import Web3 from 'web3'
+import './Swap.scss'
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -34,7 +36,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
-  const [tempToken, setTempToken] = useState('')
+  const [tempToken, setTempToken] = useState('')                      // for custom token address
   const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
 
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -99,6 +101,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   function changeTempToken(e: any) {
     setTempToken(e.target.value)
   }
+
   async function checkTempToken() {
     if (tempToken === '') return setIsOpenModal(false)
 

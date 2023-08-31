@@ -8,6 +8,13 @@ type DpInfo = {
 
 const max_hops = 4
 
+/*  The algorithm to find the best route for each iteration (highest output amount) is seen below.
+*   It is based on dynamic programming.
+*   @param amountIn: The amount of tokenIn that we want to swap (in wei)
+*   @param tokenIn: The address of the token we want to swap (address on Arbitrum)
+*   @param tokenOut: The address of the token we want to receive (address on Arbitrum)
+*   @param graph: The graph of all the fetched pools
+*/
 function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph: Map<string, Pool[]>): Route {
   tokenIn = tokenIn.toLowerCase()
   tokenOut = tokenOut.toLowerCase()
@@ -62,6 +69,11 @@ function multiHopSwap(amountIn: bigint, tokenIn: string, tokenOut: string, graph
   return { swaps: res.swaps, amountOut: res.amountOut, percentage: 0 }
 }
 
+/* Function to create a graph from all the fetched pools
+*  Graph maps every token to a list of pools that token is in
+*  @param pools: The fetched pools
+*  @returns The graph
+*/  
 function createGraph(pools: Pool[]): Map<string, Pool[]> {
   const graph: Map<string, Pool[]> = new Map<string, Pool[]>()
   for (let pool of pools) {
