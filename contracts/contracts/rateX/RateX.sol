@@ -15,22 +15,21 @@ contract RateX is Ownable {
         address recipient
     );
 
-    struct SwapStep {
-        address poolId;
-        string dexId;
-        address tokenA;
-        address tokenB;
-    }
-
-    struct Route {
-        SwapStep[] swaps;
-        uint256 amountOut;
-        uint256 percentage;
-    }
-
     struct DexType {
         string dexId;
         address dexAddress;
+    }
+
+    struct FoundSwap {
+        address poolId;
+        address tokenIn;
+        address tokenOut;
+        string dexId;
+    }
+
+    struct FoundRoute {
+        FoundSwap[] swaps;
+        uint256 amountIn;
     }
 
     mapping(string => address) public dexes;
@@ -41,94 +40,8 @@ contract RateX is Ownable {
         }
     }
 
-    // swap function for multi hop, without spliting
-    // basic version for now to test
-    // implement and test full logic later when we have splits
-    function swapMultiHop(
-        Route calldata _route,
-        uint256 _amountIn,
-        uint256 _quotedAmountWithSlippage,
-        address _recipient
-    ) external returns(uint256 amountOut) {
-
-        require(_route.swaps.length > 0, "No swaps in route");
-
-        address tokenIn = _route.swaps[0].tokenA;
-        address tokenOut = _route.swaps[_route.swaps.length - 1].tokenB;
-
-        IERC20(tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        amountOut = _amountIn;
-
-        for (uint256 i = 0; i < _route.swaps.length; ++i) {
-            SwapStep memory swapStep = _route.swaps[i];
-            amountOut = _executeSwapStep(swapStep, amountOut, _recipient);
-        }
-
-        require(amountOut >= _quotedAmountWithSlippage, "Amount lesser than min amount");
-
-        IERC20(tokenOut).transfer(_recipient, amountOut);
-
-        emit SwapEvent(tokenIn, tokenOut, _amountIn, amountOut, _recipient);
-    }
-
-    function _executeSwapStep(
-        SwapStep memory _swapStep,
-        uint256 _amountIn,
-        address _recipient
-    )
-    private returns(uint256 amountOut)
-    {
-        IERC20(_swapStep.tokenA).approve(dexes[_swapStep.dexId], _amountIn);
-
-        amountOut = IDex(dexes[_swapStep.dexId]).swap(
-            _swapStep.poolId,
-            _swapStep.tokenA,
-            _swapStep.tokenB,
-            _amountIn,
-            0,
-            address(this)
-        );
-    }
-
-
-    /////////////// code for route with split //////////////////////
-
-    struct Token {
-        address _address;
-        uint256 decimals;
-    }
-
-    struct Pool {
-        address poolId;
-        string dexId;
-        Token[] tokens;
-    }
-
-    struct TRoute {
-        Pool[] pools;
-        address tokenIn;
-        address tokenOut;
-    }
-
-    struct AmountPercentage {
-        uint256 amountIn;
-        uint256 percentage;
-    }
-
-    struct TRouteWithQuote {
-        TRoute route;
-        uint256 quote;
-        AmountPercentage amount;
-    }
-
-    struct SplitRoute {
-        TRouteWithQuote[] routes;
-        uint256 quote;
-    }
-
-
     function swapWithSplit(
-        SplitRoute calldata _splitRoute,
+        FoundRoute[] calldata _foundRoutes,
         address _tokenIn,
         address _tokenOut,
         uint256 _amountIn,
@@ -137,108 +50,89 @@ contract RateX is Ownable {
     )
     external returns(uint256 amountOut)
     {
-        require(_splitRoute.routes.length > 0, "No routes in split route");
-        checkAmountIn(_splitRoute, _amountIn);
-        checkInputToken(_splitRoute, _tokenIn);
-        checkOutputToken(_splitRoute, _tokenOut);
+        // use errors instead later
+        require(_foundRoutes.length > 0, "No routes in split route");
 
-        // send funds from user to main contract
+        // check if all routes are valid
+        checkRoutesStructure(_foundRoutes, _amountIn, _tokenIn, _tokenOut);
+
+        // use safeERC and helper contract for this later
         IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
 
         uint256 balanceBefore = IERC20(_tokenOut).balanceOf(address(this));
-        amountOut = swapForTotalAmountOut(_splitRoute);
+        amountOut = swapForTotalAmountOut(_foundRoutes);
         uint256 balanceAfter = IERC20(_tokenOut).balanceOf(address(this));
 
+        // make sure that we have exact new amountOut tokens to send to user
         require(balanceAfter - balanceBefore == amountOut, "Amount out does not match");
+
+        // protect user to not get less than min amount
         require(amountOut >= _quotedAmountWithSlippage, "Amount lesser than min amount");
 
+        // send all amountOut to user
         IERC20(_tokenOut).transfer(_recipient, amountOut);
 
         emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
     }
 
-    function swapForTotalAmountOut(SplitRoute calldata _splitRoute)
-        internal returns(uint256 amountOut)
-    {
-        amountOut = 0;
-        for (uint256 i = 0; i < _splitRoute.routes.length; ++i) {
-            amountOut += swapOnOneRoute(_splitRoute.routes[i]);
-        }
-    }
-
-    function checkAmountIn(
-        SplitRoute calldata _splitRoute,
-        uint256 _amountIn
+    function checkRoutesStructure(
+        FoundRoute[] calldata _foundRoutes,
+        uint256 _amountIn,
+        address _tokenIn,
+        address _tokenOut
     ) internal pure {
         uint amountIn = 0;
-        for (uint256 i = 0; i < _splitRoute.routes.length; ++i) {
-            amountIn += _splitRoute.routes[i].amount.amountIn;
+        for (uint256 i = 0; i < _foundRoutes.length; ++i) {
+            amountIn += _foundRoutes[i].amountIn;
+            checkInputOutputTokens(_foundRoutes[i], _tokenIn, _tokenOut);
         }
         require(amountIn == _amountIn, "Amount in does not match");
     }
 
-    function checkInputToken(
-        SplitRoute calldata _splitRoute,
-        address _tokenIn
-    ) internal pure {
-        for (uint256 i = 0; i < _splitRoute.routes.length; ++i) {
-            require(_splitRoute.routes[i].route.tokenIn == _tokenIn, "Input token does not match");
-        }
-    }
-
-    function checkOutputToken(
-        SplitRoute calldata _splitRoute,
-        address _tokenOut
-    ) internal pure {
-        for (uint256 i = 0; i < _splitRoute.routes.length; ++i) {
-            require(_splitRoute.routes[i].route.tokenOut == _tokenOut, "Output token does not match");
-        }
-    }
-
-    function swapOnOneRoute(TRouteWithQuote calldata _routeWithQuote)
-        internal returns(uint256 amountOut)
-    {
-        Pool[] memory pools = _routeWithQuote.route.pools;
-        address tokenIn = _routeWithQuote.route.tokenIn;
-        amountOut = _routeWithQuote.amount.amountIn;
-
-        for (uint256 i = 0; i < pools.length; ++i) {
-            Pool memory pool = pools[i];
-
-            address tokenOut = pool.tokens[0]._address == tokenIn
-                ? pool.tokens[1]._address
-                : pool.tokens[0]._address;
-
-            amountOut = executeSingleSwapOnPool(
-                pools[i],
-                tokenIn,
-                tokenOut,
-                amountOut
-            );
-
-            tokenIn = tokenOut;
-        }
-    }
-
-    function executeSingleSwapOnPool(
-        Pool memory _pool,
+    function checkInputOutputTokens(
+        FoundRoute calldata _route,
         address _tokenIn,
-        address _tokenOut,
-        uint256 _amountIn
-    )
+        address _tokenOut
+    ) internal pure
+    {
+        uint256 swapsLength = _route.swaps.length;
+
+        require(swapsLength > 0, "No swaps in route");
+        require(_route.swaps[0].tokenIn == _tokenIn, "Input token does not match");
+        require(_route.swaps[swapsLength - 1].tokenOut == _tokenOut, "Output token does not match");
+    }
+
+    function swapForTotalAmountOut(FoundRoute[] calldata _foundRoutes)
     internal returns(uint256 amountOut)
     {
-        // approve to dex contract to spend amountIn
-        IERC20(_tokenIn).approve(dexes[_pool.dexId], _amountIn);
+        amountOut = 0;
+        for (uint256 i = 0; i < _foundRoutes.length; ++i) {
+            amountOut += swapOnOneRoute(_foundRoutes[i]);
+        }
+    }
 
-        amountOut = IDex(dexes[_pool.dexId]).swap(
-            _pool.poolId,
-            _tokenIn,
-            _tokenOut,
-            _amountIn,
-            0,
-            address(this)
-        );
+    function swapOnOneRoute(FoundRoute calldata _route)
+        internal returns(uint256 amountOut)
+    {
+        amountOut = _route.amountIn;
+
+        for (uint256 i = 0; i < _route.swaps.length; ++i) {
+            FoundSwap memory swap = _route.swaps[i];
+
+            // approve dex to spend amount
+            // later think about to approve maxAmount to our dexes from rateX cotract
+            IERC20(swap.tokenIn).approve(dexes[swap.dexId], amountOut);
+
+            // remove amount out min from 0
+            amountOut = IDex(dexes[swap.dexId]).swap(
+                swap.poolId,
+                swap.tokenIn,
+                swap.tokenOut,
+                amountOut,
+                0,
+                address(this) // send funds to main RateX contract
+            );
+        }
     }
 
 }

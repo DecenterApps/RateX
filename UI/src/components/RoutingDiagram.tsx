@@ -3,19 +3,19 @@ import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { Token } from '../constants/Interfaces'
 import { ArrowRightOutlined, ExpandAltOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
-import { Quote, Route, Swap } from '../sdk/types'
+import {FoundQuote, FoundRoute, Quote, Route, Swap} from '../sdk/types'
 
-function RouteComponent({ route }: { route: Route }) {
+function RouteComponent({ route }: { route: FoundRoute }) {
   return (
     <div className="routingDiagramPath">
       <div className="percentage">
         {route.percentage}% 
       </div>
-      <TokenComponent token={route.swaps[0].tokenA}></TokenComponent>
+      <TokenComponent token={route.swaps[0].tokenIn}></TokenComponent>
       {route.swaps.map((swap) => (
         <>
           <ArrowRightOutlined className="routingDiagramPoolArrow" />
-          <TokenComponent token={swap.tokenB}></TokenComponent>
+          <TokenComponent token={swap.tokenOut}></TokenComponent>
         </>
       ))}
     </div>
@@ -37,8 +37,8 @@ function TokenComponent({ token }: { token: string }) {
   )
 }
 
-function RoutingDiagram({ quote }: { quote: Quote | undefined }) {
-  if (!quote || quote.amountOut <= 0) {
+function RoutingDiagram({ quote }: { quote: FoundQuote | undefined }) {
+  if (!quote || quote.quote <= 0) {
     return (<></>)
   }
   quote.routes.sort((a, b) => a.percentage - b.percentage)

@@ -7,7 +7,7 @@ import { Token } from '../constants/Interfaces'
 import { getTokenPrice } from '../providers/OracleProvider'
 import {getQuoteUniLike, swapWithSplitting} from '../sdk/quoter/front_communication'
 import initRPCProvider from '../providers/RPCProvider'
-import { Quote } from '../sdk/types'
+import {FoundQuote, Quote} from '../sdk/types'
 import { notification } from './notifications'
 import './Swap.scss'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
@@ -32,8 +32,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenToPrice, setTokenToPrice] = useState(0)
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
-  const [quote, setQuote] = useState<Quote>()
-  const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
+  const [foundQuote, setFoundQuote] = useState<FoundQuote>();
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -139,7 +138,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     if (tokenFromAmount <= 0 || isNaN(tokenFromAmount)) {
       setTokenToAmount(0)
       setLoadingQuote(false)
-      setQuote(undefined)
+      setFoundQuote(undefined)
       return
     }
 
@@ -147,61 +146,30 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     setLoadingQuote(true)
     getQuoteUniLike(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-      .then((quote: TQuoteUniLike) => {
+      .then((quote: FoundQuote) => {
           if (callTime < lastCallTime.current) {
               return
           }
           setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
           setLoadingQuote(false)
-          setUniLikeQuote(quote)
+          setFoundQuote(quote)
       }).catch((error: string) => {
         setLoadingQuote(false)
         console.log(error)
     })
-
-    // setLoadingQuote(true)
-    // getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
-    //   .then((quote: Quote) => {
-    //     if (callTime < lastCallTime.current) {
-    //       return
-    //     }
-    //     setTokenToAmount(Number(quote.amountOut) / 10 ** tokenTo.decimals)
-    //     setLoadingQuote(false)
-    //     setQuote(quote)
-    //   })
-    //   .catch((error: string) => {
-    //     setLoadingQuote(false)
-    //     console.log(error)
-    //   })
   }
 
   function commitSwap() {
-    //if (quote === undefined) return
-    if (uniLikeQuote === undefined) return
+    if (foundQuote === undefined) return
 
     setLoadingSwap(true)
 
     const amountIn = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
-    // swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
-    //   .then((res) => {
-    //     setLoadingSwap(false)
-    //     // for now hardcode it for testing purposes
-    //     res.isSuccess
-    //       ? notification.success({
-    //           message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
-    //         })
-    //       : notification.error({ message: res.errorMessage })
-    //   })
-    //   .catch((error: string) => {
-    //     setLoadingSwap(false)
-    //     notification.open({ message: error })
-    //   })
-
     swapWithSplitting(
         tokenFrom.address[chainId],
         tokenTo.address[chainId],
-        uniLikeQuote,
+        foundQuote,
         amountIn,
         slippage,
         wallet,
@@ -212,7 +180,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           // for now hardcode it for testing purposes
           res.isSuccess
               ? notification.success({
-                message: `<a  href="https://dashboard.tenderly.co/shared/fork/884a44ff-40a1-422f-af02-c47fc64908ff/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+                message: `<a  href="https://dashboard.tenderly.co/shared/fork/e4b74728-c29f-4b93-b6b6-97c90d9dbf48/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
               })
               : notification.error({ message: res.errorMessage })
         })
@@ -295,7 +263,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <DownOutlined />
           </div>
         </div>
-        <RoutingDiagram quote={quote}></RoutingDiagram>
+        <RoutingDiagram quote={foundQuote}></RoutingDiagram>
         <>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>

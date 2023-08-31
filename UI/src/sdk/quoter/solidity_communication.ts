@@ -1,4 +1,4 @@
-import { Pool, Quote, ResponseType, Route } from '../types'
+import {FoundQuote, Pool, Quote, ResponseType, Route} from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
@@ -25,49 +25,10 @@ async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn:
   return findRouteUniLikeAlgo(tokenA, tokenB, amountIn, pools)
 }
 
-async function executeSwapMultiHop(
-  tokenIn: string,
-  tokenOut: string,
-  quote: Quote,
-  amountIn: bigint,
-  minAmountOut: bigint,
-  signer: string,
-  chainId: number
-) {
-  const web3: Web3 = initRPCProvider(42161)
-  const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
-
-  //@ts-ignore
-  const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
-
-  if (balance < amountIn) {
-    return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
-  }
-
-  try {
-    // @ts-ignore
-    await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
-
-    let transactionHash: string = ''
-
-    // @ts-ignore
-    await RateXContract.methods //@ts-ignore
-      .swapMultiHop(quote.routes[0], amountIn, minAmountOut, signer)
-      .send({ from: signer })
-      .on('transactionHash', function (hash: string) {
-        transactionHash = hash
-      })
-
-    return { isSuccess: true, txHash: transactionHash } as ResponseType
-  } catch (err: any) {
-    return { isSuccess: false, errorMessage: err.message } as ResponseType
-  }
-}
-
 async function executeSwapWithSplitting(
     tokenIn: string,
     tokenOut: string,
-    quote: TQuoteUniLike,
+    quote: FoundQuote,
     amountIn: bigint,
     minAmountOut: bigint,
     signer: string,
@@ -93,7 +54,7 @@ async function executeSwapWithSplitting(
 
     // @ts-ignore
     await RateXContract.methods //@ts-ignore
-        .swapWithSplit(quote, tokenIn, tokenOut, amountIn, minAmountOut, signer)
+        .swapWithSplit(quote.routes, tokenIn, tokenOut, amountIn, minAmountOut, signer)
         .send({ from: signer })
         .on('transactionHash', function (hash: string) {
           transactionHash = hash
@@ -108,6 +69,5 @@ async function executeSwapWithSplitting(
 export {
   getQuoteIterativeSplittingAlgo,
   getBestQuoteUniLikeAlgo,
-  executeSwapMultiHop,
   executeSwapWithSplitting
 }
