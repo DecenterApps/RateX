@@ -2,19 +2,9 @@
 pragma solidity ^0.8.0;
 
 import './CamelotDex.sol';
+import "../rateX/interfaces/IHelperState.sol";
 
-contract CamelotHelper {
-
-    struct Token {
-        address _address;
-        uint decimals;
-    }
-
-    struct PoolInfo {
-        address poolId;
-        string dexId;
-        Token[] tokens;
-    }
+contract CamelotHelper is IHelperState {
 
     struct CamelotPool {
         address poolId;

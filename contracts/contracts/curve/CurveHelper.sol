@@ -2,18 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/ICurvePool.sol";
+import "../rateX/interfaces/IHelperState.sol";
 
-contract CurveHelper {
-    struct Token {
-        address _address;
-        uint decimals;
-    }
-
-    struct PoolInfo {
-        address poolId;
-        string dexId;
-        Token[] tokens;
-    }
+contract CurveHelper is IHelperState {
 
     struct CurvePool {
         address poolId;

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/interfaces/IERC20.sol";
 import "./interfaces/ICurvePool.sol";
 import "./interfaces/ICurvePoolRegistry.sol";
+import "../rateX/libraries/TransferHelper.sol";
 
 contract CurveDex is IDex {
 
@@ -21,16 +21,15 @@ contract CurveDex is IDex {
         uint _amountIn,
         uint _amountOutMin,
         address _to
-    ) external override returns(uint amountOut) {
-        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        IERC20(_tokenIn).approve(address(_poolAddress), _amountIn);
+    ) external override returns(uint256 amountOut) {
 
-        ICurvePool curveStableSwap = ICurvePool(_poolAddress);
+        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_tokenIn, _poolAddress, _amountIn);
 
         (int128 i, int128 j) = findTokenIndexes(_poolAddress, _tokenIn, _tokenOut);
         require(i >= 0 && j >= 0, "Tokens not found in pool");
 
-        amountOut = curveStableSwap.exchange(
+        amountOut = ICurvePool(_poolAddress).exchange(
             i,
             j,
             _amountIn,
