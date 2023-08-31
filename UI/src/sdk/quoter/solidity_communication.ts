@@ -5,12 +5,13 @@ import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
 import { RateXContract } from '../../contracts/rateX/RateX'
 import { findRouteUniLikeAlgo } from '../routing/uni_like_algo/main'
-import {findRouteWithIterativeSplitting} from "../routing/iterative_spliting/main";
+import { findRouteWithIterativeSplitting, updateAlgoStartTime } from "../routing/iterative_spliting/main";
 
 // First we call Solidity to get additional Pools data
-async function getQuoteIterativeSplittingAlgo(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
+async function getQuoteIterativeSplittingAlgo(tokenA: string, tokenB: string, amountIn: bigint, startTime: number): Promise<Quote> {
   const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
-  return findRouteWithIterativeSplitting(tokenA, tokenB, amountIn, pools)
+  updateAlgoStartTime(startTime)
+  return findRouteWithIterativeSplitting(tokenA, tokenB, amountIn, pools, startTime)
 }
 
 async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn: bigint) {

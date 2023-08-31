@@ -6,8 +6,8 @@ import {TQuoteUniLike} from "../routing/uni_like_algo/types";
 *  First we call Solidity to get additional Pools data
 *  Then we call the iterative splitting algorithm to find the best route
 */
-async function getQuoteIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
-  return getQuoteIterativeSplittingAlgo(tokenA, tokenB, amountIn)
+async function getQuoteIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, startTime: number): Promise<Quote> {
+  return getQuoteIterativeSplittingAlgo(tokenA, tokenB, amountIn, startTime)
 }
 
 // Called by the UI to get the best quote for a swap

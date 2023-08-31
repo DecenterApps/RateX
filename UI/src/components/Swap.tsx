@@ -202,7 +202,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
-    getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount, callTime)
       .then((quote: Quote) => {
         if (callTime < lastCallTime.current) {
           return
