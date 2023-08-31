@@ -3,9 +3,9 @@ import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { Token } from '../constants/Interfaces'
 import { ArrowRightOutlined, ExpandAltOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
-import {FoundQuote, FoundRoute, Quote, Route, Swap} from '../sdk/types'
+import {Quote, Route} from '../sdk/types'
 
-function RouteComponent({ route }: { route: FoundRoute }) {
+function RouteComponent({ route }: { route: Route }) {
   return (
     <div className="routingDiagramPath">
       <div className="percentage">
@@ -37,7 +37,7 @@ function TokenComponent({ token }: { token: string }) {
   )
 }
 
-function RoutingDiagram({ quote }: { quote: FoundQuote | undefined }) {
+function RoutingDiagram({ quote }: { quote: Quote | undefined }) {
   if (!quote || quote.quote <= 0) {
     return (<></>)
   }

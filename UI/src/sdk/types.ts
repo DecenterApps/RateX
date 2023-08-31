@@ -44,41 +44,21 @@ export abstract class Pool {
   }
 }
 
-export type Swap = {
-  poolId: string
-  dexId: string
-  tokenA: string
-  tokenB: string
-}
-
-export type Route = {
-  swaps: Swap[]
-  amountOut: bigint
-  percentage: number
-}
-
-export type Quote = {
-  routes: Route[]
-  amountOut: bigint
-}
-
-///////////////////////////////////////////////////
-
-export type FoundSwap = {
+export type SwapStep = {
   poolId: string
   dexId: string
   tokenIn: string
   tokenOut: string
 }
 
-export type FoundRoute = {
-  swaps: FoundSwap[]
+export type Route = {
+  swaps: SwapStep[]
   amountIn: bigint
   percentage: number
   quote: bigint
 }
 
-export type FoundQuote = {
-  routes: FoundRoute[],
+export type Quote = {
+  routes: Route[],
   quote: bigint
 }

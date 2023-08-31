@@ -1,4 +1,4 @@
-import {Pool, Quote, Route} from "../../types";
+import {Quote, Route, Pool} from "../../types";
 import {createGraph, multiHopSwap} from "./multiHopSwap";
 import objectHash from "object-hash";
 
@@ -25,16 +25,22 @@ function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountI
             existingRoute.percentage += step
         }
 
-        amountOut += route.amountOut
+        amountOut += route.quote
         updatePoolsInRoute(poolMap, route, splitAmountIn)
     }
 
-    let quote: Quote = {routes: [], amountOut: amountOut}
-    for (let route of routes.values()) {
-        quote.routes.push(route)
-    }
+    const foundRoutes: Route[] = [];
 
-    return quote
+    for (let route of routes.values()) {
+        route.amountIn = (BigInt(route.percentage) * amountIn) / BigInt(100);
+        foundRoutes.push(route);
+    }
+    const missingAmount = amountIn - foundRoutes.reduce((acc, route) => acc + route.amountIn, BigInt(0));
+    foundRoutes[0].amountIn += missingAmount;
+
+    const quote: Quote = { routes: foundRoutes, quote: amountOut };
+    console.log("IterativeQuote: ", quote);
+    return quote;
 }
 
 function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amountIn: bigint): void {
@@ -45,8 +51,8 @@ function updatePoolsInRoute(poolMap: Map<string, Pool>, route: Route, amountIn: 
             continue
         }
 
-        const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenA, swap.tokenB, amountIn)
-        pool.update(swap.tokenA, swap.tokenB, amountIn, amountOut)
+        const amountOut: bigint = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, amountIn)
+        pool.update(swap.tokenIn, swap.tokenOut, amountIn, amountOut)
         amountIn = amountOut
     }
 }

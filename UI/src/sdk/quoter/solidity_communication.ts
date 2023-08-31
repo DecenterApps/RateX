@@ -1,34 +1,27 @@
-import {FoundQuote, Pool, Quote, ResponseType, Route} from '../types'
+import {Quote, Pool, ResponseType} from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
 import {TQuoteUniLike} from "../routing/uni_like_algo/types";
 import { RateXContract } from '../../contracts/rateX/RateX'
-import { findRouteUniLikeAlgo } from '../routing/uni_like_algo/main'
-import {findRouteWithIterativeSplitting} from "../routing/iterative_spliting/main";
+import {findRoute} from "../routing/main";
 
-async function getQuoteIterativeSplittingAlgo(tokenA: string, tokenB: string, amountIn: bigint): Promise<Quote> {
-  console.log('tokenIn: ', tokenA)
-  console.log('tokenOut: ', tokenB)
+async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint): Promise<Quote> {
+  console.log('tokenIn: ', tokenIn)
+  console.log('tokenOut: ', tokenOut)
 
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
+  const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5)
   console.log('Fetched pools:', pools)
+  console.log("Pool size: ", pools.length)
 
-  return findRouteWithIterativeSplitting(tokenA, tokenB, amountIn, pools)
+  return findRoute(tokenIn, tokenOut, amountIn, pools);
 }
 
-async function getBestQuoteUniLikeAlgo(tokenA: string, tokenB: string, amountIn: bigint) {
-  const pools: Pool[] = await fetchPoolsData(tokenA, tokenB, 5, 5)
-  console.log('Fetched pools:', pools)
-  console.log('Pool size: ', pools.length)
-  return findRouteUniLikeAlgo(tokenA, tokenB, amountIn, pools)
-}
-
-async function executeSwapWithSplitting(
+async function executeSwap(
     tokenIn: string,
     tokenOut: string,
-    quote: FoundQuote,
+    quote: Quote,
     amountIn: bigint,
     minAmountOut: bigint,
     signer: string,
@@ -66,8 +59,4 @@ async function executeSwapWithSplitting(
   }
 }
 
-export {
-  getQuoteIterativeSplittingAlgo,
-  getBestQuoteUniLikeAlgo,
-  executeSwapWithSplitting
-}
+export {getQuote, executeSwap}
