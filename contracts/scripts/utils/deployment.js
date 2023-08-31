@@ -14,7 +14,7 @@ async function deploySushiDex() {
 async function deployCamelotDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const Camelot = await hre.ethers.getContractFactory('CamelotDex')
-  const camelot = await Camelot.deploy()
+  const camelot = await Camelot.deploy(addresses.camelot.router)
   await camelot.waitForDeployment()
   return { camelot, addr1, addr2, addr3 }
 }
@@ -35,16 +35,28 @@ async function deployCurveDex() {
   return { curve, addr1, addr2, addr3};
 }
 
+async function deployBalancerDex() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const Balancer = await hre.ethers.getContractFactory("BalancerDex");
+    const balancer = await Balancer.deploy(addresses.balancer.vault);
+    await balancer.waitForDeployment();
+    return {balancer, addr1, addr2, addr3};
+}
+
 async function deployRateX() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
 
   const { sushiSwap } = await deploySushiDex()
   const { uniswap } = await deployUniswapDex()
+  const { balancer } = await deployBalancerDex()
   const { curve } = await deployCurveDex()
-
+  const { camelot } = await deployCamelotDex()
+  
   const sushiSwapAddress = await sushiSwap.getAddress()
   const uniswapAddress = await uniswap.getAddress()
+  const balancerAddress = await balancer.getAddress()
   const curveAddress = await curve.getAddress()
+  const camelotAddress = await camelot.getAddress()
 
   const initialDexes = [
     {
@@ -58,6 +70,14 @@ async function deployRateX() {
     {
       dexId: "CURVE",
       dexAddress: curveAddress
+    }, 
+    {
+      dexId: "BALANCER_V2",
+      dexAddress: balancerAddress
+    },
+    {
+      dexId: "CAMELOT",
+      dexAddress: camelotAddress
     }
   ];
 
@@ -74,6 +94,15 @@ async function deploySushiSwapHelper() {
   const sushiHelper = await SushiHelper.deploy()
   await sushiHelper.waitForDeployment()
   return { sushiHelper, addr1, addr2, addr3 }
+}
+
+async function deployBalancerHelper() {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const BalancerHelper = await hre.ethers.getContractFactory("BalancerHelper");
+    const balancerHelper = await BalancerHelper.deploy(addresses.balancer.vault);
+    await balancerHelper.waitForDeployment();
+
+    return {balancerHelper, addr1, addr2, addr3};
 }
 
 async function deployCamelotHelper() {
@@ -103,12 +132,15 @@ async function deployCurveHelper() {
 module.exports = {
   deployRateX,
   deploySushiDex,
-  deployCamelotDex,
-  deployUniswapDex,
-  deployCurveDex,
-  deployUniswapHelper,
   deploySushiSwapHelper,
-  deployCamelotHelper,
-  deployUniswapHelper,
+  deployCurveDex,
   deployCurveHelper,
+  deployUniswapDex,
+  deployUniswapHelper,
+  deployBalancerDex,
+  deployBalancerHelper,
+  deployCamelotDex,
+  deployCamelotHelper
 }
+
+

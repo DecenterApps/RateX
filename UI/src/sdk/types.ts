@@ -7,6 +7,7 @@ export interface ResponseType {
 export type Token = {
   _address: string
   decimals: number
+  name?: string
 }
 
 // we get from Graph QL
@@ -25,7 +26,7 @@ export abstract class Pool {
   protected constructor(poolId: string, dexId: string, tokens: Token[]) {
     this.poolId = poolId
     this.dexId = dexId
-    this.tokens = tokens.map((token) => ({ _address: token._address.toLowerCase(), decimals: token.decimals }))
+    this.tokens = tokens.map((token) => ({ _address: token._address.toLowerCase(), decimals: token.decimals, name: token.name }))
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint

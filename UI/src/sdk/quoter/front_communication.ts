@@ -19,6 +19,11 @@ async function swap(
   const slippageBigInt = BigInt(slippagePercentage * 100);
   const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100);
 
+  console.log("Route....");
+  for (let route of quote.routes) {
+    console.log(route);
+  }
+
   return executeSwap(token1, token2, quote, amountIn, minAmountOut, signer, chainId);
 }
 

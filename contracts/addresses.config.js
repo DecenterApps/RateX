@@ -11,6 +11,7 @@ const ARBITRUM_ADDRESSES = {
         LINK: '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
         USDCE: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
         GMX: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
+        RDNT: '0x3082cc23568ea640225c2467653db90e9250aaa0'
     },
 
     sushi: {
@@ -21,6 +22,7 @@ const ARBITRUM_ADDRESSES = {
 
     camelot: {
         eth_arb_pool: '0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f',
+        router: '0xc873fEcbd354f5A56E00E710B90EF4201db2448d'
     },
 
     curve: {
@@ -28,6 +30,10 @@ const ARBITRUM_ADDRESSES = {
 
         poolRegistry: '0x445FE580eF8d70FF569aB36e80c647af338db351',
         stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    },
+    
+    balancer: {
+        vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
     },
 
     uniV3: {
@@ -47,11 +53,12 @@ const ARBITRUM_ADDRESSES = {
     },
 
     impersonate: {
-        WETH: '0x0df5dfd95966753f01cb80e76dc20ea958238c46',
+        WETH: '0x940a7ed683a60220de573ab702ec8f789ef0a402',
         DAI: '0x5ec6abff9bb4c673f63d077a962a29945f744857',
         USDT: '0x62383739d68dd0f844103db8dfb05a7eded5bbe6',
         WBTC: "0x7546966122e636a601a3ea4497d3509f160771d8",
-        USDC: "0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2"
+        USDC: "0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2",
+        RDNT: '0xf977814e90da44bfa03b6295a0616a897441acec'
     }
 }
 

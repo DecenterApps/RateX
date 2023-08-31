@@ -2,7 +2,7 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import dexIds from '../dexIdsList'
+import {dexIds} from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
 import { SushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
@@ -10,7 +10,7 @@ import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 export default class SushiSwapV2 implements DEXGraphFunctionality {
   
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
-  dexId = dexIds.SUSHISWAP_V2
+  dexId = dexIds.SUSHI_V2
 
   static initialize(): DEXGraphFunctionality {
     return new SushiSwapV2()
@@ -60,11 +60,13 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
       const token1: Token = {
         _address: tokensRaw1[0],
         decimals: Number(tokensRaw1[1]),
+        name: tokensRaw1[2]
       }
 
       const token2: Token = {
         _address: tokensRaw2[0],
         decimals: Number(tokensRaw2[1]),
+        name: tokensRaw2[2]
       }
 
       pools.push(new SushiSwapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
@@ -76,18 +78,18 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pairs (first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {
-      volumeUSD_not: "0" }
-    ) {
+    pairs (first: ${numPools}, orderBy: reserveUSD, orderDirection: desc, where: {volumeUSD_not: "0"}) {
       id
       volumeUSD
       token0 {
         id
         decimals
+        name
       }
       token1 {
         id
         decimals
+        name
       }
     }
   }`)
@@ -117,10 +119,12 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
           token0 {
             id
             decimals
+            name
           }
           token1 {
             id
             decimals
+            name
           }
         }
   }`)
@@ -143,10 +147,12 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
           token0 {
             id
             decimals
+            name
           }
           token1 {
             id
             decimals
+            name
           }
         }
   }`)
@@ -161,10 +167,12 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       {
         _address: jsonData.token0.id,
         decimals: jsonData.token0.decimals,
+        name: jsonData.token0.name
       },
       {
         _address: jsonData.token1.id,
         decimals: jsonData.token1.decimals,
+        name: jsonData.token1.name
       },
     ],
   }

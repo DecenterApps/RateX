@@ -1,4 +1,4 @@
-import {Quote, Pool, ResponseType} from '../types'
+import { Pool, Quote, ResponseType } from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
@@ -27,9 +27,9 @@ async function executeSwap(
     signer: string,
     chainId: number
 ): Promise<ResponseType> {
+
   const web3: Web3 = initRPCProvider(42161)
   const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
-
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
 
@@ -40,8 +40,8 @@ async function executeSwap(
   try {
     // @ts-ignore
     await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
-
     let transactionHash: string = ''
+    //quote = transformQuoteForSolidity(quote)
 
     console.log("usao u swap");
 
@@ -52,11 +52,27 @@ async function executeSwap(
         .on('transactionHash', function (hash: string) {
           transactionHash = hash
         })
-
     return { isSuccess: true, txHash: transactionHash } as ResponseType
   } catch (err: any) {
     return { isSuccess: false, errorMessage: err.message } as ResponseType
   }
+}
+
+/* Function to transform the quote to be compatible with the solidity contract
+  * The solidity contract expects the poolId to be an address, but the graph returns it as a bytes32
+  * The solidity contract also expects the token names to be removed
+  * @param quote: The quote to be transformed
+  * @returns The transformed quote
+*/
+function transformQuoteForSolidity(quote: Quote): Quote {
+  quote.routes[0].swaps.map((swap) => {
+    if (swap.poolId.length === 66) {
+      swap.poolId = swap.poolId.slice(0, 42)      // convert to address
+    }
+    return swap
+  })
+
+  return quote
 }
 
 export {getQuote, executeSwap}

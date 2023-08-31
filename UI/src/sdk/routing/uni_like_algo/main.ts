@@ -29,7 +29,9 @@ export function findRouteUniLikeAlgo(
     );
     const quote = swapFinder.findBestRoute();
     console.log("UniLikeQuote:", quote);
-    return convertResponseToFoundQuoteType(quote);
+
+    const convertedQuote = convertResponseToFoundQuoteType(quote);
+    return convertedQuote;
 }
 
 function convertResponseToFoundQuoteType(q: TQuoteUniLike): Quote {

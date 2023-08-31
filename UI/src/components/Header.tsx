@@ -46,7 +46,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     const newChainId = chainList[index].chainId
     setChainId(newChainId)
 
-    console.log(newChainId)
+    console.log("chainId: ", newChainId)
 
     await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
     setIsOpenModal(false)
@@ -116,10 +116,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
       <header>
         <div className="leftHeader">
           <Link to="/" className="link">
-            <div className="headerItem"> Swap </div>
-          </Link>
-          <Link to="/tokens" className="link">
-            <div className="headerItem"> Tokens </div>
+            <div className="headerItem"> RateX </div>
           </Link>
         </div>
         <div className="rightHeader">

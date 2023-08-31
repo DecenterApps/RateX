@@ -4,7 +4,7 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo, Token } from '../../types'
 import { CamelotHelperContract } from '../../../contracts/rateX/CamelotHelper'
-import dexIds from '../dexIdsList'
+import {dexIds} from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
 
 // Camelot is a silly place
@@ -13,7 +13,7 @@ import { CamelotPool } from '../pools/Camelot'
 export default class CamelotV2 implements DEXGraphFunctionality {
     
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
-  dexId = dexIds.CAMELOT_V2
+  dexId = dexIds.CAMELOT
 
   static initialize(): DEXGraphFunctionality {
     return new CamelotV2()

@@ -1,7 +1,11 @@
-import { Pool, Token } from '../../types'
+import { Token, Pool } from '../../types'
 import BigNumber from 'bignumber.js'
+import { sha256 } from 'js-sha256';
 
 // Output amount calculations resource: https://atulagarwal.dev/posts/curveamm/stableswap/
+
+// Hash map of D-invariants (calculateDInvariant can take up to 200ms)
+let DInvariants = new Map<string, BigNumber>()
 
 export class CurvePool extends Pool {
   reserves: BigNumber[]
@@ -29,11 +33,11 @@ export class CurvePool extends Pool {
 }
 
 /*
-    Equivalent to the function get_dy_underlying in Solidity SC for Curve pools
-    @param pool: the pool in which the swap is happening
-    @param tokenA: the address of the token we are swapping from
-    @param tokenB: the address of the token we are swapping to
-    @param dx: the amount of tokenA we are swapping (in wei)
+  Equivalent to the function get_dy_underlying in Solidity SC for Curve pools
+  @param pool: the pool in which the swap is happening
+  @param tokenA: the address of the token we are swapping from
+  @param tokenB: the address of the token we are swapping to
+  @param dx: the amount of tokenA we are swapping (in wei)
 */
 function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, dx: BigNumber): bigint {
   // Get the index of the token we are swapping from and to
@@ -60,23 +64,28 @@ function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, 
 }
 
 /* 
-    Calculate y = pool.tokens[j].amount if one makes pool.tokens[i].amount = x
-    Done by solving quadratic equation iteratively.
-    x_1**2 + x1 * (sum' - (A*n**n - 1) * D / (A * n**n)) = D ** (n + 1) / (n ** (2 * n) * prod' * A)
-    x_1**2 + b*x_1 = c
-    x_1 = (x_1**2 + c) / (2*x_1 + b)
+  Calculate y = pool.tokens[j].amount if one makes pool.tokens[i].amount = x
+  Done by solving quadratic equation iteratively.
+  x_1**2 + x1 * (sum' - (A*n**n - 1) * D / (A * n**n)) = D ** (n + 1) / (n ** (2 * n) * prod' * A)
+  x_1**2 + b*x_1 = c
+  x_1 = (x_1**2 + c) / (2*x_1 + b)
 
-    @param pool: the pool in which the swap is happening
-    @param i: the index of the token we are swapping from
-    @param j: the index of the token we are swapping to
-    @param x: the amount of token i we are swapping (in wei)
-    @param amp: the amplification coefficient of the pool (constant for every pool)
-    @dev: all the amount are in the same precision (the one of the token with the most decimals)
+  @param pool: the pool in which the swap is happening
+  @param i: the index of the token we are swapping from
+  @param j: the index of the token we are swapping to
+  @param x: the amount of token i we are swapping (in wei)
+  @param amp: the amplification coefficient of the pool (constant for every pool)
+  @dev: all the amount are in the same precision (the one of the token with the most decimals)
 */
 function getYAfterSwap(pool: CurvePool, i: number, j: number, x: BigNumber, amp: BigNumber): BigNumber {
   console.assert(i !== j, 'i and j cannot be the same')
   console.assert(i < pool.tokens.length && i >= 0, 'i is out of range')
   console.assert(j < pool.tokens.length && j >= 0, 'j is out of range')
+
+  // check hash if it has already been calculated
+  const hash = calculateYHash(pool, i, j, x, amp)
+  if (DInvariants.has(hash))
+    return DInvariants.get(hash) as BigNumber
 
   // init params
   const N_COINS = pool.tokens.length
@@ -113,19 +122,27 @@ function getYAfterSwap(pool: CurvePool, i: number, j: number, x: BigNumber, amp:
     if (diff.lte(1)) break
   }
 
+  // set new hash and return y
+  DInvariants.set(hash, y)
   return floor(y)
 }
 
 /* 
-    D-invariant is used to ensure that the product of the balances of all tokens in the pool remains constant
-    A * sum(x_i) * n**n + D = A * D * n**n + D**(n+1) / (n**n * prod(x_i))
-    Converging solution: D[j+1] = (A * n**n * sum(x_i) - D[j]**(n+1) / (n**n prod(x_i))) / (A * n**n - 1)
+  D-invariant is used to ensure that the product of the balances of all tokens in the pool remains constant
+  A * sum(x_i) * n**n + D = A * D * n**n + D**(n+1) / (n**n * prod(x_i))
+  Converging solution: D[j+1] = (A * n**n * sum(x_i) - D[j]**(n+1) / (n**n prod(x_i))) / (A * n**n - 1)
 
-    @param pool: the pool in which the swap is happening
-    @param amp: the amplification coefficient of the pool (constant for every pool)
-    @returns: the D-invariant of the pool
+  @param pool: the pool in which the swap is happening
+  @param amp: the amplification coefficient of the pool (constant for every pool)
+  @returns: the D-invariant of the pool
 */
 function calculateDInvariant(pool: CurvePool, amp: BigNumber): BigNumber {
+
+  // check hash if it has already been calculated
+  const hash = calculateDHash(pool, amp)
+  if (DInvariants.has(hash))
+    return DInvariants.get(hash) as BigNumber
+
   // let sum: Decimal = tokens.reduce((sum, token) => sum.plus(token.amount), DecimalZero)
   let sum: BigNumber = new BigNumber(0)
   for (let res of pool.reserves) {
@@ -162,7 +179,43 @@ function calculateDInvariant(pool: CurvePool, amp: BigNumber): BigNumber {
     if (diff.lte(1)) break
   }
 
+  // set new hash and return D
+  DInvariants.set(hash, D)
   return D
+}
+
+// Sort reserves and append amp to the end of the array -> then hash
+function calculateDHash(pool: CurvePool, amp: BigNumber): string {
+  const values = sortLargeNumbers(pool.reserves)
+  values.push(amp.toFixed().toString())
+  const valuesString = values.join('')
+  const hash = sha256(valuesString)
+  return hash
+}
+
+function calculateYHash(pool: CurvePool, i: number, j: number, x: BigNumber, amp: BigNumber): string {
+  const values = sortLargeNumbers(pool.reserves)
+  values.push(i.toString())
+  values.push(j.toString())
+  values.push(x.toFixed().toString())
+  values.push(amp.toFixed().toString())
+  const valuesString = values.join('')
+  const hash = sha256(valuesString)
+  return hash
+}
+
+// sort in ascending order (basic bubble sort - has up to 3 tokens)
+function sortLargeNumbers(arr: BigNumber[]): string[] {
+  for (var i = 0; i < arr.length; i++) {
+    for (var j = 0; j < (arr.length - i - 1); j++) {
+      if (arr[j].gt(arr[j + 1])) {
+        var temp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = temp
+      }
+    }
+  }
+  return arr.map((v) => v.toFixed().toString())
 }
 
 /*

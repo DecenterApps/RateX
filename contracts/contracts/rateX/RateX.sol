@@ -20,15 +20,15 @@ contract RateX is Ownable {
         address dexAddress;
     }
 
-    struct FoundSwap {
+    struct SwapStep {
         address poolId;
         address tokenIn;
         address tokenOut;
         string dexId;
     }
 
-    struct FoundRoute {
-        FoundSwap[] swaps;
+    struct Route {
+        SwapStep[] swaps;
         uint256 amountIn;
     }
 
@@ -41,7 +41,7 @@ contract RateX is Ownable {
     }
 
     function swapWithSplit(
-        FoundRoute[] calldata _foundRoutes,
+        Route[] calldata _foundRoutes,
         address _tokenIn,
         address _tokenOut,
         uint256 _amountIn,
@@ -76,7 +76,7 @@ contract RateX is Ownable {
     }
 
     function checkRoutesStructure(
-        FoundRoute[] calldata _foundRoutes,
+        Route[] calldata _foundRoutes,
         uint256 _amountIn,
         address _tokenIn,
         address _tokenOut
@@ -90,7 +90,7 @@ contract RateX is Ownable {
     }
 
     function checkInputOutputTokens(
-        FoundRoute calldata _route,
+        Route calldata _route,
         address _tokenIn,
         address _tokenOut
     ) internal pure
@@ -102,7 +102,7 @@ contract RateX is Ownable {
         require(_route.swaps[swapsLength - 1].tokenOut == _tokenOut, "Output token does not match");
     }
 
-    function swapForTotalAmountOut(FoundRoute[] calldata _foundRoutes)
+    function swapForTotalAmountOut(Route[] calldata _foundRoutes)
     internal returns(uint256 amountOut)
     {
         amountOut = 0;
@@ -111,13 +111,13 @@ contract RateX is Ownable {
         }
     }
 
-    function swapOnOneRoute(FoundRoute calldata _route)
+    function swapOnOneRoute(Route calldata _route)
         internal returns(uint256 amountOut)
     {
         amountOut = _route.amountIn;
 
         for (uint256 i = 0; i < _route.swaps.length; ++i) {
-            FoundSwap memory swap = _route.swaps[i];
+            SwapStep memory swap = _route.swaps[i];
 
             // approve dex to spend amount
             // later think about to approve maxAmount to our dexes from rateX cotract
@@ -134,5 +134,4 @@ contract RateX is Ownable {
             );
         }
     }
-
 }
