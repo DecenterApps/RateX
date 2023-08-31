@@ -1,7 +1,7 @@
 import { Notyf } from 'notyf'
 
 export const notification = new Notyf({
-  duration: 0,
+  duration: 5000,
   position: {
     x: 'right',
     y: 'bottom',

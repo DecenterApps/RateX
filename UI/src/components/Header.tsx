@@ -46,7 +46,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     const newChainId = chainList[index].chainId
     setChainId(newChainId)
 
-    console.log(newChainId)
+    console.log("chainId: ", newChainId)
 
     await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
     setIsOpenModal(false)

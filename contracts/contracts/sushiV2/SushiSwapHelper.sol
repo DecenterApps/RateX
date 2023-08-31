@@ -7,6 +7,7 @@ contract SushiSwapHelper {
     struct Token {
         address _address;
         uint decimals;
+        string name;
     }
 
     struct PoolInfo {

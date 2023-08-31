@@ -1,4 +1,4 @@
-import { Pool, Token } from '../../types'
+import { Token, Pool } from '../../types'
 import BigNumber from 'bignumber.js'
 
 // Output amount calculations resource: https://atulagarwal.dev/posts/curveamm/stableswap/

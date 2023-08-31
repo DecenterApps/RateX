@@ -24,7 +24,7 @@ async function swap(
   const slippageBigInt = BigInt(slippagePercentage * 100);
   const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100);
 
-  return executeSwapMultiHop(token1, token2, quote, amountIn, minAmountOut, signer, chainId);
+  return await executeSwapMultiHop(token1, token2, quote, amountIn, minAmountOut, signer, chainId);
 }
 
 export { getQuoteIterativeSplitting, swap, getQuoteUniLike }

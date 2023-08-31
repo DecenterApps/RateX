@@ -1,3 +1,4 @@
+import { get } from 'http'
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
 
@@ -9,9 +10,7 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-
-    // TODO: check why there is the problem with curve when we trade weth -> wbtc
-    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'CamelotV2.ts']
+    const files = ['SushiSwapV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -25,11 +24,20 @@ async function initializeDexes(): Promise<void> {
   }
 }
 
+async function checkInitializedDexes() {
+  if (!initialized) {
+    await initializeDexes()
+    initialized = true
+  }
+}
+
 /* returns dictionary of dexes and their poolIds for token1 and token2:
  *   UniswapV3: [poolId1, poolId2, ...],
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
+  await checkInitializedDexes()
+  
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -50,6 +58,8 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @returns: list of poolIds
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
+  await checkInitializedDexes()
+  
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -69,6 +79,8 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @returns: list of poolIds
  */
 async function getTopPools(numPools: number = 5): Promise<void> {
+  await checkInitializedDexes()
+  
   const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -88,10 +100,7 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools
     dexesPools.set(dex, [])
   })
 
-  if (!initialized) {
-    await initializeDexes()
-    initialized = true
-  }
+  await checkInitializedDexes()
 
   const promises: Promise<void>[] = []
   promises.push(getPoolIdsForToken(tokenFrom, numFromToPools))

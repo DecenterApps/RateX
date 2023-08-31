@@ -49,6 +49,8 @@ async function executeSwapMultiHop(
 
     let transactionHash: string = ''
 
+    quote = transformQuoteForSolidity(quote)
+
     // @ts-ignore
     await RateXContract.methods //@ts-ignore
       .swapMultiHop(quote.routes[0], amountIn, minAmountOut, signer)
@@ -63,7 +65,23 @@ async function executeSwapMultiHop(
   }
 }
 
+// change poolId to address if bytes32 and remove token names if they exist
+// If the address is lengths of 66 (byte32) then convert to address
+function transformQuoteForSolidity(quote: Quote): Quote {
+  quote.routes[0].swaps.map((swap) => {
+    // console.log(swap.poolId)
+    if (swap.poolId.length === 66) {
+      // convert to address
+      swap.poolId = swap.poolId.slice(0, 42)
+    }
+    // console.log(swap.poolId)
+    delete swap.tokenAName
+    delete swap.tokenBName
+    return swap
+  })
 
+  return quote
+}
 
 export {
   getQuoteIterativeSplittingAlgo,

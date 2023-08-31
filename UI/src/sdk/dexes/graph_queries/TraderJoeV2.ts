@@ -2,7 +2,7 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import dexIds from '../dexIdsList'
+import {dexIds} from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 
 export default class TraderJoeV2 implements DEXGraphFunctionality {
