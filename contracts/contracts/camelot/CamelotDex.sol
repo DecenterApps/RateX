@@ -4,9 +4,7 @@ pragma solidity ^0.8.0;
 import './interfaces/ICamelotPair.sol';
 import './interfaces/ICamelotRouter.sol';
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/interfaces/IERC20.sol";
-
-import 'hardhat/console.sol';
+import "../rateX/libraries/TransferHelper.sol";
 
 contract CamelotDex is IDex {
     ICamelotRouter private camelotRouter;
@@ -22,11 +20,10 @@ contract CamelotDex is IDex {
         uint _amountIn,
         uint _amountOutMin,
         address _to
-    ) external returns(uint amountOut) {
+    ) external returns(uint256 amountOut) {
 
-        // Transfer tokens to this contract
-        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        IERC20(_tokenIn).approve(address(camelotRouter), _amountIn);
+        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
 
         address[] memory path = new address[](2);
         path[0] = _tokenIn;

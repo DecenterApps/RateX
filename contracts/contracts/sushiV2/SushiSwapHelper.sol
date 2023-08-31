@@ -2,19 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./SushiSwapV2Library.sol";
+import "../rateX/interfaces/IHelperState.sol";
 
-contract SushiSwapHelper {
-    struct Token {
-        address _address;
-        uint decimals;
-        string name;
-    }
-
-    struct PoolInfo {
-        address poolId;
-        string dexId;
-        Token[] tokens;
-    }
+contract SushiSwapHelper is IHelperState {
 
     struct SushiSwapV2Pool {
         address poolId;

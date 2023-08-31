@@ -5,7 +5,7 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/interfaces/IERC20.sol";
+import "../rateX/libraries/TransferHelper.sol";
 
 contract UniswapV3Dex is IDex {
 
@@ -22,11 +22,10 @@ contract UniswapV3Dex is IDex {
         uint _amountIn,
         uint _amountOutMin,
         address _to
-    ) external returns(uint amountOut) {
+    ) external returns(uint256 amountOut) {
 
-        // remove approval in separate contract later
-        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        IERC20(_tokenIn).approve(address(swapRouter), _amountIn);
+        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
 
         amountOut = swapRouter.exactInputSingle(
             ISwapRouter.ExactInputSingleParams({

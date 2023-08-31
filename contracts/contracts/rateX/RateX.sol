@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IDex.sol";
-import "./interfaces/IERC20.sol";
+import "./libraries/TransferHelper.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract RateX is Ownable {
@@ -14,6 +14,10 @@ contract RateX is Ownable {
         uint256 amountOut,
         address recipient
     );
+
+    event DexAdded(string dexId, address dexAddress);
+    event DexReplaced(string dexId, address oldAddress, address newAddress);
+    event DexRemoved(string dexId);
 
     struct DexType {
         string dexId;
@@ -33,44 +37,100 @@ contract RateX is Ownable {
     }
 
     mapping(string => address) public dexes;
+    DexType[] public supportedDexes;
+
+    bool private locked;
+
+    modifier noReentrancy() {
+        require(!locked, "No reentrancy");
+        locked = true;
+        _;
+        locked = false;
+    }
 
     constructor(DexType[] memory _initialDexes) {
         for (uint256 i = 0; i < _initialDexes.length; ++i) {
+            supportedDexes.push(
+                DexType({
+                    dexId: _initialDexes[i].dexId,
+                    dexAddress: _initialDexes[i].dexAddress
+                })
+            );
+        }
+
+        for (uint256 i = 0; i < _initialDexes.length; ++i) {
             dexes[_initialDexes[i].dexId] = _initialDexes[i].dexAddress;
+            supportedDexes[i] = _initialDexes[i];
         }
     }
 
-    function swapWithSplit(
+    function addDex(DexType memory _dex) external onlyOwner {
+        require(dexes[_dex.dexId] == address(0), "Dex already exists");
+        dexes[_dex.dexId] = _dex.dexAddress;
+        supportedDexes.push(_dex);
+
+        emit DexAdded(_dex.dexId, _dex.dexAddress);
+    }
+
+    function replaceDex(DexType memory _dex) external onlyOwner {
+        require(dexes[_dex.dexId] != address(0), "Dex does not exist");
+
+        address oldAddress = dexes[_dex.dexId];
+        dexes[_dex.dexId] = _dex.dexAddress;
+
+        for (uint256 i = 0; i < supportedDexes.length; ++i) {
+            if (keccak256(abi.encodePacked(supportedDexes[i].dexId)) == keccak256(abi.encodePacked(_dex.dexId))) {
+                supportedDexes[i] = _dex;
+            }
+        }
+
+        emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
+    }
+
+    function removeDex(string memory _dexId) external onlyOwner {
+        require(dexes[_dexId] != address(0), "Dex does not exist");
+        delete dexes[_dexId];
+
+        DexType memory forRemoval;
+
+        for (uint256 i = 0; i < supportedDexes.length; ++i) {
+            if (keccak256(abi.encodePacked(supportedDexes[i].dexId)) == keccak256(abi.encodePacked(_dexId))) {
+                forRemoval = supportedDexes[i];
+                supportedDexes[i] = supportedDexes[supportedDexes.length - 1];
+                supportedDexes[supportedDexes.length - 1] = forRemoval;
+            }
+        }
+
+        supportedDexes.pop();
+
+        emit DexRemoved(_dexId);
+    }
+
+    function swap(
         Route[] calldata _foundRoutes,
         address _tokenIn,
         address _tokenOut,
         uint256 _amountIn,
-        uint256 _quotedAmountWithSlippage,
+        uint256 _quotedAmountWithSlippageProtection,
         address _recipient
     )
-    external returns(uint256 amountOut)
+    external noReentrancy returns(uint256 amountOut)
     {
-        // use errors instead later
         require(_foundRoutes.length > 0, "No routes in split route");
 
-        // check if all routes are valid
         checkRoutesStructure(_foundRoutes, _amountIn, _tokenIn, _tokenOut);
 
-        // use safeERC and helper contract for this later
-        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
 
         uint256 balanceBefore = IERC20(_tokenOut).balanceOf(address(this));
         amountOut = swapForTotalAmountOut(_foundRoutes);
         uint256 balanceAfter = IERC20(_tokenOut).balanceOf(address(this));
 
-        // make sure that we have exact new amountOut tokens to send to user
         require(balanceAfter - balanceBefore == amountOut, "Amount out does not match");
 
-        // protect user to not get less than min amount
-        require(amountOut >= _quotedAmountWithSlippage, "Amount lesser than min amount");
+        require(amountOut >= _quotedAmountWithSlippageProtection, "Amount lesser than min amount");
 
-        // send all amountOut to user
-        IERC20(_tokenOut).transfer(_recipient, amountOut);
+        TransferHelper.safeTransfer(_tokenOut, _recipient, amountOut);
 
         emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
     }
@@ -119,18 +179,17 @@ contract RateX is Ownable {
         for (uint256 i = 0; i < _route.swaps.length; ++i) {
             SwapStep memory swap = _route.swaps[i];
 
-            // approve dex to spend amount
-            // later think about to approve maxAmount to our dexes from rateX cotract
-            IERC20(swap.tokenIn).approve(dexes[swap.dexId], amountOut);
+            require(dexes[swap.dexId] != address(0), "Dex does not exist");
 
-            // remove amount out min from 0
+            TransferHelper.safeApprove(swap.tokenIn, dexes[swap.dexId], amountOut);
+
             amountOut = IDex(dexes[swap.dexId]).swap(
                 swap.poolId,
                 swap.tokenIn,
                 swap.tokenOut,
                 amountOut,
                 0,
-                address(this) // send funds to main RateX contract
+                address(this)
             );
         }
     }

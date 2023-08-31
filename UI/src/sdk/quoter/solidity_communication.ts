@@ -47,7 +47,7 @@ async function executeSwap(
 
     // @ts-ignore
     await RateXContract.methods //@ts-ignore
-        .swapWithSplit(quote.routes, tokenIn, tokenOut, amountIn, minAmountOut, signer)
+        .swap(quote.routes, tokenIn, tokenOut, amountIn, minAmountOut, signer)
         .send({ from: signer })
         .on('transactionHash', function (hash: string) {
           transactionHash = hash

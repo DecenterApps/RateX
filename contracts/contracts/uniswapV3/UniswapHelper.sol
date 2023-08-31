@@ -12,7 +12,6 @@ import {LiquidityMath} from "./libraries/LiquidityMath.sol";
 import {SwapMath} from "./libraries/SwapMath.sol";
 import {SafeCast} from "./libraries/SafeCast.sol";
 
-import "hardhat/console.sol";
 import "./interfaces/IUniswapHelper.sol";
 import "./UniViewQuoter.sol";
 

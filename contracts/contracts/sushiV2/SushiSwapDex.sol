@@ -5,7 +5,7 @@ import "./interfaces/ISushiSwapRouter.sol";
 import "./interfaces/ISushiSwapV2Factory.sol";
 import "./SushiSwapV2Library.sol";
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/interfaces/IERC20.sol";
+import "../rateX/libraries/TransferHelper.sol";
 
 contract SushiSwapDex is IDex {
 
@@ -23,18 +23,16 @@ contract SushiSwapDex is IDex {
         uint _amountOutMin,
         address _to
     )
-    external override returns(uint)
+    external override returns(uint256)
     {
-        // remove approval in separate contract later
-        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-        IERC20(_tokenIn).approve(address(sushiRouter), _amountIn);
+        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
+        TransferHelper.safeApprove(_tokenIn, address(sushiRouter), _amountIn);
 
-        address[] memory path;
-        path = new address[](2);
+        address[] memory path = new address[](2);
         path[0] = _tokenIn;
         path[1] = _tokenOut;
 
-        uint[] memory amounts = sushiRouter.swapExactTokensForTokens(
+        uint256[] memory amounts = sushiRouter.swapExactTokensForTokens(
             _amountIn,
             _amountOutMin,
             path,
