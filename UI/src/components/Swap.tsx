@@ -78,7 +78,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const numberRegex = /^\d*\.?\d*$/
     let isValid = numberRegex.test(val)
     if (isValid) {
-      setTokenFromAmount(Number(val))
+      setTokenFromAmount(val)
     }
   }
 
@@ -92,7 +92,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     setTokenToPrice(tempPrice)
 
     // doing it the opposite direction because the state values have not been updated until the next render
-    const tokenToAmount = (tokenFromAmount * tokenToPrice) / tokenFromPrice
+    const tokenToAmount = (Number(tokenFromAmount) * tokenToPrice) / tokenFromPrice
     setTokenToAmount(tokenToAmount)
   }
 
@@ -150,7 +150,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       console.log('Fetched price', _tokenFromPrice, 'for', tokenList[index].ticker)
       setTokenFromPrice(_tokenFromPrice === -1 ? 0 : _tokenFromPrice)
 
-      const tokenToAmount = (tokenFromAmount * _tokenFromPrice) / tokenToPrice
+      const tokenToAmount = (Number(tokenFromAmount) * _tokenFromPrice) / tokenToPrice
       setTokenToAmount(tokenToAmount)
     } else {
       setTokenTo(tokenList[index])
@@ -158,7 +158,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       console.log('Fetched price', _tokenToPrice, 'for', tokenList[index].ticker)
       setTokenToPrice(_tokenToPrice === -1 ? 0 : _tokenToPrice)
 
-      const tokenToAmount = (tokenFromAmount * tokenFromPrice) / _tokenToPrice
+      const tokenToAmount = (Number(tokenFromAmount) * tokenFromPrice) / _tokenToPrice
       setTokenToAmount(tokenToAmount)
     }
 
@@ -166,7 +166,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function calculatePriceImpact(): number {
-    let tokenFromMarketPrice = Math.max(tokenFromAmount * tokenFromPrice, 0)
+    let tokenFromMarketPrice = Math.max(Number(tokenFromAmount) * tokenFromPrice, 0)
     let tokenToMarketPrice = tokenToAmount * tokenToPrice
     let percentage = (100.0 * tokenToMarketPrice) / tokenFromMarketPrice
     if (isNaN(percentage)) return 0
@@ -196,7 +196,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     }
 
     // console.log(typeof tokenFromAmount, tokenFromAmount, typeof tokenFrom.decimals, tokenFrom.decimals)
-    const amount = web3.utils.toBigInt(tokenFromAmount * 10 ** tokenFrom.decimals)
+    const amount = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
     getQuoteIterativeSplitting(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
@@ -220,7 +220,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     setLoadingSwap(true)
 
-    const amountIn = web3.utils.toBigInt(tokenFromAmount * 10 ** Number(tokenFrom.decimals))
+    const amountIn = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** Number(tokenFrom.decimals))
 
     swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
       .then((res) => {

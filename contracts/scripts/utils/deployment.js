@@ -14,7 +14,7 @@ async function deploySushiDex() {
 async function deployCamelotDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const Camelot = await hre.ethers.getContractFactory('CamelotDex')
-  const camelot = await Camelot.deploy()
+  const camelot = await Camelot.deploy(addresses.camelot.router)
   await camelot.waitForDeployment()
   return { camelot, addr1, addr2, addr3 }
 }

@@ -11,7 +11,7 @@ async function initializeDexes(): Promise<void> {
   try {
     // IMPORTANT: for later -> go through folder and init every dex
     // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts', 'Curve.ts', 'CamelotV2.ts']
+    const files = ['CamelotV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
