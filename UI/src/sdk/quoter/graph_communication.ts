@@ -1,7 +1,5 @@
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
-import { get } from 'http'
-// import fs from 'fs-js'
 
 let initialized = false
 let initializedDexes: DEXGraphFunctionality[] = []
@@ -9,8 +7,6 @@ let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctio
 
 async function initializeDexes(): Promise<void> {
   try {
-    // IMPORTANT: for later -> go through folder and init every dex
-    // const files = await fs.promises.readdir('../sdk/dexes_graph')
     const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts', 'Curve.ts', 'CamelotV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
@@ -38,7 +34,7 @@ async function checkInitializedDexes() {
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -60,7 +56,7 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -81,7 +77,7 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  */
 async function getTopPools(numPools: number = 5): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 

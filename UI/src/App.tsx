@@ -15,7 +15,7 @@ function App() {
       <Header chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />
       <div className="mainWindow">
         <Routes>
-          <Route path="/" element={<Swap chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />} />
+          <Route key="0" path="/" element={<Swap chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />} />
         </Routes>
       </div>
     </div>

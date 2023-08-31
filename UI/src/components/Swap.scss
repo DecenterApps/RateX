@@ -12,6 +12,7 @@
   align-items: flex-start;
   padding-left: 30px;
   padding-right: 30px;
+  margin-bottom: 30px;
 }
 
 .tradeBox > * {
@@ -60,8 +61,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  // align-items: center;
-  height: 128px;
+  min-height: 96px;
 }
 
 .assetFrom,
