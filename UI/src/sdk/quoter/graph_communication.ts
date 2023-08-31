@@ -1,17 +1,13 @@
-import { get } from 'http'
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
-// import fs from 'fs-js'
 
-let initializedDexes: DEXGraphFunctionality[] = []
 let initialized = false
+let initializedDexes: DEXGraphFunctionality[] = []
 let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctionality, PoolInfo[]>()
 
 async function initializeDexes(): Promise<void> {
   try {
-    // IMPORTANT: for later -> go through folder and init every dex
-    // const files = await fs.promises.readdir('../sdk/dexes_graph')
-    const files = ['CamelotV2.ts']
+    const files = ['SushiSwapV2.ts', 'UniswapV3.ts', 'BalancerV2.ts', 'Curve.ts', 'CamelotV2.ts']
     for (const file of files) {
       if (file.endsWith('.ts')) {
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -32,13 +28,13 @@ async function checkInitializedDexes() {
   }
 }
 
-/* returns dictionary of dexes and their poolIds for token1 and token2:
+/*   Returns dictionary of dexes and their poolIds for token1 and token2:
  *   UniswapV3: [poolId1, poolId2, ...],
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
 async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -60,7 +56,7 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  */
 async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -81,7 +77,7 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  */
 async function getTopPools(numPools: number = 5): Promise<void> {
   await checkInitializedDexes()
-  
+
   const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
 
@@ -95,6 +91,11 @@ async function getTopPools(numPools: number = 5): Promise<void> {
   })
 }
 
+/* We are fetching pools from multiple dexes, so we might get duplicate pools
+* top numTopPools pools for tokenFrom and tokenTo are fetched from each DEX
+* top numTopPools by TVL from each DEX
+* top numTopPools that contain tokenFrom and tokenTo from each DEX (possible direct swap)
+*/
 async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools: number = 5, numTopPools: number = 5): Promise<Pool[]> {
   let pools: Pool[] = []
   dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => {
@@ -133,4 +134,4 @@ function filterDuplicatePools(): void {
   })
 }
 
-export { fetchPoolsData, getPoolIdsForToken, getPoolIdsForTokenPairs }
+export { fetchPoolsData }

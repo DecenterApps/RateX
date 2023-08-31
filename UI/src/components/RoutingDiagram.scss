@@ -13,7 +13,7 @@
   display: inline-block;
 }
 
-.routingDiagramPath {
+.routingDiagramRoute {
   background-color: $color-light;
   border-radius: 12px;
   margin: 10px;
@@ -23,7 +23,7 @@
   align-items: center;
 }
 
-.routingDiagramPath .percentage {
+.routingDiagramRoute .percentage {
   text-align: right;
   width: 42px;
   margin-right: 10px;
@@ -41,15 +41,23 @@
   width: 32px;
 }
 
-.routingDiagramPoolArrow {
+.routingDiagramArrow {
   margin: 3px;
   flex: 1 1 auto;
 }
 
-.routingDiagramExpandIcon {
-  position: absolute;
-  top: 15px;
-  right: 15px;
+.routingDiagram a {
+  width: min-content;
+  display: block;
+  margin: auto;
+  color: $color-text-primary;
+  text-decoration: none;
+}
+
+.routingDiagramArrow .dex {
+  font-size: 10px;
+  margin-top: -3px;
+  white-space: nowrap;
 }
 
 .tooltip {
@@ -74,7 +82,7 @@
 }
 
 .tooltip .tooltiptext::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 100%;
   left: 50%;
