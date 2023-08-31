@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Fragment } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
 import { notification } from './notifications'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
@@ -11,8 +11,7 @@ import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 // sdk
-import { getQuoteUniLike, getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
-import { TQuoteUniLike } from '../sdk/routing/uni_like_algo/types'
+import { getQuoteIterativeSplitting, swap } from '../sdk/quoter/front_communication'
 import { Quote } from '../sdk/types'
 import Web3 from 'web3'
 import './Swap.scss'
@@ -25,8 +24,8 @@ interface SwapProps {
 }
 
 function Swap({ chainIdState, walletState }: SwapProps) {
-  const [chainId, setChainId] = chainIdState
-  const [wallet, setWallet] = walletState
+  const [chainId] = chainIdState
+  const [wallet] = walletState
 
   const [slippage, setSlippage] = useState(0.5)
   const [tokenFromAmount, setTokenFromAmount] = useState<number>(-1)
@@ -36,8 +35,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
-  const [tempToken, setTempToken] = useState('')                      // for custom token address
-  const [uniLikeQuote, setUniLikeQuote] = useState<TQuoteUniLike>()
+  const [tempToken, setTempToken] = useState('')
 
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [changeToken, setChangeToken] = useState(1)
@@ -53,7 +51,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       tokenToPrice === -1 ? setTokenFromPrice(0) : setTokenToPrice(tokenToPrice)
     }
     getPrices()
-  }, [])
+  }, [chainId, tokenFrom.ticker, tokenTo.ticker])
 
   // for now commented, to reduce quote contracts calls
   // useEffect(() => {
@@ -80,7 +78,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const numberRegex = /^\d*\.?\d*$/
     let isValid = numberRegex.test(val)
     if (isValid) {
-      setTokenFromAmount(Number(val))
+      setTokenFromAmount(val)
     }
   }
 
@@ -109,34 +107,45 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       const contract = new web3.eth.Contract(ERC20_ABI, tempToken)
 
       const token: Token = {
-        'ticker': '',
-        'img': 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png',
-        'name': '',
-        'address': {
-            '1': '',
-            '42161': tempToken
+        ticker: '',
+        img: 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png',
+        name: '',
+        address: {
+          '1': '',
+          '42161': tempToken,
         },
-        'decimals': 18
+        decimals: 18,
       }
-      await contract.methods.name().call().then((name: any) => {
-        token.name = name
-      })
+      await contract.methods
+        .name()
+        .call()
+        .then((name: any) => {
+          token.name = name
+        })
 
-      await contract.methods.symbol().call().then((symbol: any) => {
-        token.ticker = symbol
-      })
+      await contract.methods
+        .symbol()
+        .call()
+        .then((symbol: any) => {
+          token.ticker = symbol
+        })
 
-      await contract.methods.decimals().call().then((decimals: any) => {
-        token.decimals = Number(decimals)
-      })
-      
+      await contract.methods
+        .decimals()
+        .call()
+        .then((decimals: any) => {
+          token.decimals = Number(decimals)
+        })
+
       // console.log(token)
-      if (token.name !== '' || token.ticker !=='' || token.decimals !== 0) {
+      if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
         await modifyToken(0, [token])
         return setIsOpenModal(false)
       }
     } catch (error: any) {
-      notification.error({ message: "Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!" })
+      notification.error({
+        message: 'Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!',
+      })
       // alert(error)
     }
   }
@@ -255,12 +264,11 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   )
 
   return (
-    <>
+    <Fragment>
       <Modal open={isOpenModal} footer={null} onCancel={() => checkTempToken()} title="Select a token">
         <div className="modalContent">
           {tokenList.map((token, index) => {
             return (
-              <>
               <div className="tokenChoice" key={index} onClick={() => modifyToken(index, tokenList)}>
                 <img src={token.img} alt={token.ticker} className="tokenLogo" />
                 <div className="tokenChoiceNames">
@@ -268,10 +276,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
                   <div className="tokenTicker"> {token.ticker} </div>
                 </div>
               </div>
-              </>
             )
           })}
-        <Input className='tokenAddress' placeholder='Or enter token address' onChange={changeTempToken} />
+          <Input className="tokenAddress" placeholder="Or enter token address" onChange={changeTempToken} />
         </div>
       </Modal>
       <div className="tradeBox">
@@ -282,7 +289,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           </Popover>
         </div>
         <div className="input">
-          <Input placeholder="0" value={tokenFromAmount == -1 ? '' : tokenFromAmount} onChange={changeAmount} />
+          <Input placeholder="0" value={tokenFromAmount === -1 ? '' : tokenFromAmount} onChange={changeAmount} />
           <div className="tokenFromAmountUSD">{`$${Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4)}`}</div>
           <div className="assetFrom" onClick={() => openModal(1)}>
             <img src={tokenFrom.img} alt="assetFromLogo" className="assetLogo" />
@@ -302,13 +309,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               <div></div>
             </div>
           ) : (
-            <>
+            <Fragment>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
                 {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
                 <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
               </div>
-            </>
+            </Fragment>
           )}
           <div className="assetTo" onClick={() => openModal(2)}>
             <img src={tokenTo.img} alt="assetFromLogo" className="assetLogo" />
@@ -316,10 +323,10 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <DownOutlined />
           </div>
         </div>
-        <RoutingDiagram quote={quote}></RoutingDiagram>
-        <>
+        <Fragment>{!loadingQuote && <RoutingDiagram quote={quote}></RoutingDiagram>}</Fragment>
+        <Fragment>
           {loadingSwap ? (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
               <div className="lds-ellipsis">
                 <div></div>
                 <div></div>
@@ -328,13 +335,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount == 0}>
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
               Swap
             </button>
           )}
-        </>
+        </Fragment>
       </div>
-    </>
+    </Fragment>
   )
 }
 
