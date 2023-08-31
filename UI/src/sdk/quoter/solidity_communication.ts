@@ -41,7 +41,7 @@ async function executeSwap(
     // @ts-ignore
     await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
     let transactionHash: string = ''
-    //quote = transformQuoteForSolidity(quote)
+    quote = transformQuoteForSolidity(quote)
 
     console.log("usao u swap");
 
