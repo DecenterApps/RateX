@@ -30,7 +30,7 @@ Our idea was to create the 'competition'. We would:
 
 4. Display best route and execute swap
 
-## Dexes integrated
+## Integrated DEXes
 | Supported DEX                         | Arbitrum TVL ($) - 01.09.2023 |
 |---------------------------------------|-------------------------------|
 | Uniswap V3                            | 207.98 milion                 |
@@ -44,24 +44,23 @@ Our idea was to create the 'competition'. We would:
 1. Weighted (we support this)
 2. Stable (we have **tried** to support this, feel free to correct the code so it can be integrated)
 3. Linear (for Boosted pools - critical vulnerability on 22.08.2023. and all the liquidity has been withdrawn)
+<br>
 <div style="flex: 1;">
   <img src="images/balancer_pools.png"
         alt="Results"
-        style="max-width: 90%;" />
+        style="max-width: 70%;" />
 </div>
-
-
+<br>
 
 # Results
 We have two algorithms for finding quote (more on them in later sections). Both of them showed competitive rates for different pairs of tokens and different amounts.
-<br>
 
+<br>
 <div style="flex: 1;">
   <img src="images/results.png"
         alt="Results"
-        style="max-width: 100%;" />
+        style="max-width: 200%;" />
 </div>
-
 <br>
 
 # About the creators

@@ -12,7 +12,7 @@ think that a pool does not have any more liquidity.
 <div style="flex: 1;">
   <img src="images/results.png"
         alt="Results"
-        style="max-width: 150%;" />
+        style="max-width: 200%;" />
 </div>
 <br>
 

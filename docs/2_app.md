@@ -10,7 +10,7 @@ The communication flow of the app is as follows:
   <div style="flex: 1.5;">
     <img src="images/flow_graph.jpeg"
          alt="Sql to Mongo parser"
-         style="max-width: 100%;" />
+         style="max-width: 60%;" />
   </div>
   
   <!-- Right column for the text -->

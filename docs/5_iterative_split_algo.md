@@ -36,7 +36,7 @@ The process is stopped when we allocate the whole 100% of the input amount. We r
 
 This is an example of the graph after route splitting allocations:
 <div style="flex: 1.0;">
-<img src="images/algo_dp.png"
+<img src="images/algo_dp.jpg"
         alt="Iterative splitting algo"
         style="max-width: 100%;" />
 </div>
