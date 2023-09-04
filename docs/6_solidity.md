@@ -4,7 +4,6 @@
 
 Every DEX has it's own pool functionality needed for <b>calculating swap</b> (_Dex.sol_) and <b>retrieving pool info </b> (_Helper.sol_), so let's dive into each: <br>
 
-<br>
 
 ## Uniswap V3
 

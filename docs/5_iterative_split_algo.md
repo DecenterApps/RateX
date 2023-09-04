@@ -7,6 +7,12 @@ The algorithm follows these steps:
 4. Updating the local state of all the pools in the given route
 5. Repeat steps 2-4 until the full input amount is allocated
 
+## 0. Fetching the pools
+We retrieve:
+1. top N pools for tokenFrom and tokenTo are fetched from each DEX
+2. top N pools by TVL from each DEX
+3. top N pools that contain tokenFrom and tokenTo from each DEX (for a  possible direct swap)
+
 ## 1. Creating the pool graph
 This is done using the `createGraph(pools: Pool[])` function. The function takes in an array of pools (retrieved from any implemented DEX), and returns the graph representation of those pools. 
 
