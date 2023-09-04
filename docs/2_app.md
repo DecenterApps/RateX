@@ -4,25 +4,7 @@ The app consists of 3 parts:
 2. SDK (routing logic)
 3. Solidity (pool data retrieval and swap execution)
 
-The communication flow of the app is as follows:
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <!-- Left column for the image -->
-  <div style="flex: 1.5;">
-    <img src="images/flow_graph.jpeg"
-         alt="Sql to Mongo parser"
-         style="max-width: 60%;" />
-  </div>
-  
-  <!-- Right column for the text -->
-  <div style="flex: 2; padding-left: 20px; word-wrap: break-word;">
-    <p>
-      ID's of the biggest pools (any TVL metrics can work - for example by liquidity, reserves in ETH etc.) for each DEX are fetched from the Graph API.
-      The graph does not have the most fresh data, so the token balances in the
-      pool are fetched on-chain. The SDK executes the routing algorithm to find the best 
-      route and returns a quote to the user. The swap is executed on-chain.
-    </p>
-  </div>
-</div>
+The flow graph of the app can be seen in the next chapter.
 
 ## How the app looks
 <div style="flex: 1;">

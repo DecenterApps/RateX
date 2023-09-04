@@ -59,7 +59,7 @@ We have two algorithms for finding quote (more on them in later sections). Both 
 <div style="flex: 1;">
   <img src="images/results.png"
         alt="Results"
-        style="max-width: 200%;" />
+        style="max-width: 250%;" />
 </div>
 <br>
 
@@ -84,7 +84,7 @@ And every other [Decenter member](https://www.decenter.com/team/) helping the pr
 
 <br>
 <div style='flex: 0.2; align="center"'>
-<img src="images/decenter_logo.jpg"
+<img src="images/decenter_logo.png"
         alt="decenter"
-        style="max-width: 30%;" />
+        style="max-width: 100%;" />
 </div>
