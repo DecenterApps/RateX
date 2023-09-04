@@ -10,7 +10,7 @@ The communication flow of the app is as follows:
   <div style="flex: 1;">
     <img src="images/flow_graph.jpeg"
          alt="Sql to Mongo parser"
-         style="max-width: 100%;" />
+         style="max-width: 50%;" />
   </div>
   
   <!-- Right column for the text -->
@@ -37,9 +37,9 @@ The communication flow of the app is as follows:
 Fill in contracts/.env and UI/.env files (only the RPC provider part - alchemy key).
 Position yourself in the RateX/contracts files and run:
 ```
-npx hardhat node                                          - starting a local hardhat fork
-npx hardhat run scripts/deploy.js --network localhost     - deploys smart contracts
-npx hardhat run scrips/fundHardhat.js --network localhost - funds the first hardhat account
+npx hardhat node                                                - starting a local hardhat fork
+npx hardhat run scripts/deploy.js --network localhost           - deploys smart contracts
+npx hardhat run scrips/fundHardhat.js --network localhost       - funds the first hardhat account
 ```
 Then, from the RateX folder run `npm start`.
 
@@ -47,8 +47,8 @@ Then, from the RateX folder run `npm start`.
 Create a [Tenderly](https://tenderly.co/) fork and fill in contracts/.env and UI/.env files.
 Position yourself in the RateX/contracts folder and run:
 ```
-npx hardhat run scripts/deploy.js --network tenderly - deploys smart contracts
-npx hardhat run scrips/fundTenderly.js --network tenderly   - funds the first wallet account
+npx hardhat run scripts/deploy.js --network tenderly            - deploys smart contracts
+npx hardhat run scrips/fundTenderly.js --network tenderly       - funds the first wallet account
 ```
 Then, from the RateX folder run `npm start`.
 
