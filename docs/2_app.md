@@ -7,16 +7,16 @@ The app consists of 3 parts:
 The communication flow of the app is as follows:
 <div style="display: flex; align-items: center; justify-content: space-between;">
   <!-- Left column for the image -->
-  <div style="flex: 1;">
+  <div style="flex: 1.5;">
     <img src="images/flow_graph.jpeg"
          alt="Sql to Mongo parser"
-         style="max-width: 50%;" />
+         style="max-width: 100%;" />
   </div>
   
   <!-- Right column for the text -->
   <div style="flex: 2; padding-left: 20px; word-wrap: break-word;">
     <p>
-      IDs of the biggest pools (by TVL) for each DEX are fetched from the Graph API.
+      ID's of the biggest pools (any TVL metrics can work - for example by liquidity, reserves in ETH etc.) for each DEX are fetched from the Graph API.
       The graph does not have the most fresh data, so the token balances in the
       pool are fetched on-chain. The SDK executes the routing algorithm to find the best 
       route and returns a quote to the user. The swap is executed on-chain.
@@ -47,10 +47,9 @@ Then, from the RateX folder run `npm start`.
 Create a [Tenderly](https://tenderly.co/) fork and fill in contracts/.env and UI/.env files.
 Position yourself in the RateX/contracts folder and run:
 ```
+npx hardhat node
 npx hardhat run scripts/deploy.js --network tenderly            - deploys smart contracts
 npx hardhat run scrips/fundTenderly.js --network tenderly       - funds the first wallet account
 ```
 Then, from the RateX folder run `npm start`.
-
-
 
