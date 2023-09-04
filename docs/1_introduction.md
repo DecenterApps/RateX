@@ -1,3 +1,9 @@
+<div style='flex: 0.2; align="center"'>
+<img src="images/decenter_logo.png"
+        alt="decenter"
+        style="max-width: 70%;" />
+</div>
+
 # Introduction
 The purpose of this project was to create a decentralized open source DEX aggregator on Arbitrum.
 
@@ -81,10 +87,3 @@ Special thanks to:
 - [Nikola Vukovic](https://www.linkedin.com/in/nikola-vukovic/) - mentoring the UI and TypeScript part of the SDK
 
 And every other [Decenter member](https://www.decenter.com/team/) helping the project come to life!
-
-<br>
-<div style='flex: 0.2; align="center"'>
-<img src="images/decenter_logo.png"
-        alt="decenter"
-        style="max-width: 100%;" />
-</div>
