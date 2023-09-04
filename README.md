@@ -1,12 +1,6 @@
 # RateX
-Free, open-source, and completely decentralized dex aggregator
+The purpose of this project was to create a decentralized open source DEX aggregator on Arbitrum. For complete documentation, take a look at the RateX/docs foler.
 
-To install dependencies for the UI and SDK, posiiton yourself in the root folder (RateX) and run:
-```bash
-npm install
-```
+To install dependencies for the UI and SDK, posiiton yourself in the root folder (RateX) and run `npm run postinstall`
 
-To run the app, once again from the root folder run:
-```bash
-npm start
-```
+On the information on how to run the app, take a look at RateX/docs/2_app.md file.
