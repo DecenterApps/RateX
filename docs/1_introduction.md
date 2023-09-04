@@ -64,8 +64,15 @@ Creators of RateX are interns at [Decenter](https://www.decenter.com/), Web3.0 c
 Special thanks to:
 
 - [Nikola Markovic](https://www.linkedin.com/in/nikolamarkovicnmz/) - mentoring the project
-- [Konstantnin Jaredic](https://github.com/kjaredic) - mentoring the solidity side of the app
-- [Nikola Klipa](https://www.linkedin.com/in/nikolaklipa/) - mentoring the algorithm side of the app
-- [Nikola Vukovic](https://www.linkedin.com/in/nikola-vukovic/) - mentoring the SDK side of the app
+- [Konstantnin Jaredic](https://github.com/kjaredic), [Nebojsa Majkic](https://www.linkedin.com/in/nmajkic/) - mentoring the solidity part
+- [Nikola Klipa](https://www.linkedin.com/in/nikolaklipa/) - mentoring the algorithm part
+- [Nikola Vukovic](https://www.linkedin.com/in/nikola-vukovic/) - mentoring the UI and TypeScript part of the SDK
 
 And every other [Decenter member](https://www.decenter.com/team/) helping the project come to life!
+
+<br>
+<div style="flex: 0.2;", align="center">
+<img src="images/decenter_logo.png"
+        alt="decenter"
+        style="max-width: 30%;" />
+</div>

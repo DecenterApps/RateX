@@ -1,4 +1,4 @@
-# Introduction
+# Solidity 
 
 <b>RateX</b> has one main contract, found in `contracts/contracts/rateX/RateX.sol`, that will group all DEXes implemented and unify them trough interface (_each DEX would need to implement its `swap` function_). When calling for quote from SDK, RateX will have same functionalities for every DEX, making the developer not relying on specific DEX functionalities. <br>
 
@@ -113,7 +113,9 @@ function swapExactTokensForTokensSupportingFeeOnTransferTokens(
 
 # Test
 
-Test for every DEX (and also RateX) can be found under `tests/` where you should run:
+Test for every DEX (and also RateX) can be found under `tests/` written in javascript. For testing our contracts, you should run:
 ```
 npx hardhat test 'insert_file_name.js` --network hardhat
 ```
+
+<b>_NOTE:_</b> Some test could not work currently during our latest phase of internship where we focused on presenting the work (changing the solidity side of the app), and did not update the tests. Sorry for inconvinience, we will fix this issue in the following period.
