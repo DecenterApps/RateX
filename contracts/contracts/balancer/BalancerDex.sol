@@ -55,12 +55,12 @@ contract BalancerDex is IDex {
     fundManagement.fromInternalBalance = false;
     fundManagement.recipient = payable(_to);
     fundManagement.toInternalBalance = false;
-
+    
     amountOut = balancerVault.swap(
       singleSwap,
       fundManagement,
       _amountOutMin,
-      9999999999999999999999999999999999999
+      block.timestamp
     );
   }
 
