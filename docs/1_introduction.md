@@ -1,5 +1,5 @@
 <div style='flex: 0.2; align="center"'>
-<img src="images/decenter_logo.png"
+<img src="images/rsz_decenter_logo.png"
         alt="decenter"
         style="max-width: 70%;" />
 </div>
