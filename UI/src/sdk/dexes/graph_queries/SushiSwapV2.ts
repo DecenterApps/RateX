@@ -46,7 +46,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
     const rawData: any[][] = await SushiSwapHelperContract.methods.getPoolsData(poolInfos).call()
 

@@ -6,5 +6,5 @@ export interface DEXGraphFunctionality {
   getPoolsWithToken: (token: string, first: number) => Promise<PoolInfo[]>
 
   // calls to Solidity for additional data
-  getPoolsData: (poolInfos: PoolInfo[]) => Promise<Pool[]>
+  getAdditionalPoolDataFromSolidity: (poolInfos: PoolInfo[]) => Promise<Pool[]>
 }

@@ -110,6 +110,7 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools
 
   await checkInitializedDexes()
 
+  // call Graph API
   const promises: Promise<void>[] = []
   promises.push(getPoolIdsForToken(tokenFrom, numFromToPools))
   promises.push(getPoolIdsForToken(tokenTo, numFromToPools))
@@ -119,9 +120,10 @@ async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools
 
   filterDuplicatePools()
 
+  // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
-    dexPoolsPromises.push(dex.getPoolsData(poolInfos))
+    dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos))
   }
   const allPoolsData = await Promise.all(dexPoolsPromises)
   allPoolsData.forEach((poolsData: Pool[]) => {
