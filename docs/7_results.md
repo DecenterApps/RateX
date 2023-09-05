@@ -9,10 +9,10 @@ we fetch +- 15 ticks from the current tick for Uniswap V3 pools, so our code wil
 think that a pool does not have any more liquidity.
 
 <br>
-<div style="flex: 1;">
+<div style="text-align:center">
   <img src="images/results.png"
         alt="Results"
-        style="max-width: 200%;" />
+        style="max-width: 250%;" />
 </div>
 <br>
 

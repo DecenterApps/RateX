@@ -35,7 +35,7 @@ This is done in the `updatePoolsInRoute()` function. We go through all of the po
 The process is stopped when we allocate the whole 100% of the input amount. We return the quote containing all the routes used, with their given percentages, and the final expected output amount.
 
 This is an example of the graph after route splitting allocations:
-<div style="flex: 1.0;">
+<div style="text-align:center">
 <img src="images/algo_dp.png"
         alt="Iterative splitting algo"
         style="max-width: 100%;" />

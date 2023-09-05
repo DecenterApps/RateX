@@ -8,33 +8,33 @@
 The purpose of this project was to create a decentralized open source DEX aggregator on Arbitrum.
 
 ## What is a DEX?
-DEX is a decentralized exchange where users can trade token A for token B. DEXes have many pools and every pool have 2 or more tokens. The price of a token depends on the ratios of all the 
+DEX is a decentralized exchange where users can trade token A for token B. DEXes have many pools and every pool can have 2 or more tokens. The price of a token depends on the ratios of all the 
 tokens in the pool. Each DEX has mechanisms to determine how much token B they can give back for 
 some input amount of token A. 
 
 ## What is a DEX aggregator?
-Aggregators job is to find the best swap route so the output amount of token B highest possible. 
+Aggregators job is to find the best swap route so the output amount of token B is the highest possible. 
 Each DEX usually has an internal router that only goes through the pools of that DEX. Best aggregators route through pools of numerous DEXes - current leaders are [0x](https://0x.org/products/swap) and [1inch](https://app.1inch.io/#/1/classic/swap/ETH). 
 
 ## Why are we making this?
 Current DEX aggregators do not charge any fees but do take the positive slippage, if there is one.
-Slippage is the difference between the expected price of a trade and the price at which the trade is executed. Also, their routing algorithms are closed source so if they suddenly started charging fees they effectively have no immediate competition.
+Slippage is the difference between the expected price of a trade and the price at which the trade is executed. Also, their routing algorithms are closed source, so if they suddenly started charging fees, they effectively have no immediate competition.
 
 Our idea was to create the 'competition'. We would:
 1. not take the positive slippage and fees
-2. make quoting algorithm open source
-3. create the code (SDK) executed on the user's machine (in browser for example), instead of a server
+2. make the routing algorithm open source
+3. create the code (SDK) executed on the user's machine (in browser), instead of a server
 
 ## How does the app find best quote
-1. We get pool addresses info from Graph API (because we need top pools in DEX we are looking for, but also top pools for each token in token pair that we are looking to swap). We decided to go with the Graph API because we need to sort the info by some TVL metrics in our SDK, and on-chain doesn't support that.
-2. Fetch additional pool info on-chain for each DEX individually (Check helper contracts for more info).
-3. Place those pool info into SDK algorithm for finding the best route. Algorithm calculates swap amount out off-chain, using our calculation extracted from solidity implementations (for each DEX we have special calculation). Our SDK has 2 algorithms: 
+1. We get basic pool information (addresses) from the Graph API (because we need top pools for each DEX we are supporting, but also top pools for each token in token pair that we are swapping). We decided to go with the Graph API because we need to sort the data by the TVL in our SDK (doing that on-chain has it's own complication - see the 3rd chapter).
+2. Fetch additional pool information on-chain for each DEX (check helper contracts for more info).
+3. Place that pool information into the routing algorithm to find the best route. Algorithm calculates swap 'amount out' off-chain, using on-chain Solidity calculations adjusted for Typescript (each DEX has a unique math behind it). Our SDK has 2 algorithms: 
     - Uni-like algorithm
-    - Iterative DP algorithm
+    - Iterative DP (dynamic programming) algorithm
 <br>
 <b>_NOTE:_</b> Both algorithms have split functionalities.
 
-4. Display best route and execute swap
+4. Display the best route and execute swap
 
 ## Integrated DEXes
 | Supported DEX                         | Arbitrum TVL ($) - 01.09.2023 |
@@ -51,7 +51,7 @@ Our idea was to create the 'competition'. We would:
 2. Stable (we have **tried** to support this, feel free to correct the code so it can be integrated)
 3. Linear (for Boosted pools - critical vulnerability on 22.08.2023. and all the liquidity has been withdrawn)
 <br>
-<div style="flex: 1;">
+<div style="text-align:center">
   <img src="images/balancer_pools.png"
         alt="Results"
         style="max-width: 70%;" />
@@ -59,10 +59,10 @@ Our idea was to create the 'competition'. We would:
 <br>
 
 # Results
-We have two algorithms for finding quote (more on them in later sections). Both of them showed competitive rates for different pairs of tokens and different amounts.
+We have two algorithms for finding the best quote (more on them in later sections). Both of them showed competitive rates for different pairs of tokens and different amounts.
 
 <br>
-<div style="flex: 1;">
+<div style="text-align:center">
   <img src="images/results.png"
         alt="Results"
         style="max-width: 250%;" />
