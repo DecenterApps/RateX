@@ -16,6 +16,9 @@ some input amount of token A.
 Aggregators job is to find the best swap route so the output amount of token B is the highest possible. 
 Each DEX usually has an internal router that only goes through the pools of that DEX. Best aggregators route through pools of numerous DEXes - current leaders are [0x](https://0x.org/products/swap) and [1inch](https://app.1inch.io/#/1/classic/swap/ETH). 
 
+## Why Arbitrum?
+Arbitrum is an L2 (layer 2) chain/network. L2 chains combine multiple tx (transaction) into one, and then send that one tx to an L1 network (so that tx is written into a block). There are 2 ways multiple txs are combined into one (sequencer and zero knowledge proofs). What this means for us, is that the gas cost of one tx on an L2 network will be significantly cheaper than if it were on L1. This gave us the freedom to focus on the routing algorithm.
+
 ## Why are we making this?
 Current DEX aggregators do not charge any fees but do take the positive slippage, if there is one.
 Slippage is the difference between the expected price of a trade and the price at which the trade is executed. Also, their routing algorithms are closed source, so if they suddenly started charging fees, they effectively have no immediate competition.
