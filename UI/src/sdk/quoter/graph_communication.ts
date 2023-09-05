@@ -7,12 +7,13 @@ let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctio
 
 async function initializeDexes(): Promise<void> {
   try {
+    // CHANGE DEXES FOR ALGORITHM
     const files = [
       'SushiSwapV2.ts',
       'UniswapV3.ts',
       'BalancerV2.ts',
       'Curve.ts',
-      // 'CamelotV2.ts'
+      // 'CamelotV2.ts' 
     ]
     for (const file of files) {
       if (file.endsWith('.ts')) {

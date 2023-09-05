@@ -7,7 +7,7 @@ import './interfaces/IStablePool.sol';
 
 contract BalancerHelper {
 
-    IVault private balancerVault;
+    IVault private immutable balancerVault;
 
     constructor(address _balancerVault) {
         balancerVault = IVault(_balancerVault);
@@ -29,21 +29,6 @@ contract BalancerHelper {
         decimals = pool.decimals();
         weights = pool.getNormalizedWeights();
         require(weights.length > 0, "Weights are empty");
-        feePercentage = pool.getSwapFeePercentage();
-
-        (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);
-    }
-
-    function getStablePoolInfo(
-        bytes32 _poolId
-    )
-        external
-        view
-        returns (uint8 decimals, address[] memory tokens, uint256[] memory balances, uint256 aValue, uint256 aPrecision, uint256 feePercentage)
-    {
-        IStablePool pool = IStablePool(this.getPool(_poolId));
-        decimals = pool.decimals();
-        (aValue, , aPrecision) = pool.getAmplificationParameter();
         feePercentage = pool.getSwapFeePercentage();
 
         (tokens, balances, ) = balancerVault.getPoolTokens(_poolId);

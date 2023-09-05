@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/interfaces/IERC20.sol";
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import './interfaces/IVault.sol';
 import './interfaces/IWeightedPool.sol';
 import './interfaces/IStablePool.sol';
@@ -16,7 +16,7 @@ contract BalancerDex is IDex {
     Linear
   }
 
-  IVault private balancerVault;
+  IVault private immutable balancerVault;
 
   constructor(address _balancerVault) {
       balancerVault = IVault(_balancerVault);
@@ -36,9 +36,7 @@ contract BalancerDex is IDex {
   ) external override returns (uint amountOut) {
     // remove approval in separate contract later
     IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
-    IERC20(_tokenIn).approve(address(this), _amountIn);
     IERC20(_tokenIn).approve(address(balancerVault), _amountIn);
-    IERC20(_tokenIn).approve(_poolAddress, _amountIn);
 
     IWeightedPool pool = IWeightedPool(_poolAddress);
     bytes32 _poolId = pool.getPoolId();
@@ -60,30 +58,7 @@ contract BalancerDex is IDex {
       singleSwap,
       fundManagement,
       _amountOutMin,
-      9999999999999999999999999999999999999
-    );
-  }
-
-  function swapWeightedToken(
-    bytes32 _poolId, 
-    address tokenA, 
-    address tokenB, 
-    uint256 amountA
-  ) 
-    external
-    payable 
-    returns (uint256 amountB) 
-  {
-    IWeightedPool pool = IWeightedPool(this.getPool(_poolId));
-    address poolAddress = pool.getPool();
-    
-    this.swap(
-      poolAddress,
-      tokenA,
-      tokenB,
-      amountA,
-      0,
-      msg.sender
+      block.timestamp
     );
   }
 }

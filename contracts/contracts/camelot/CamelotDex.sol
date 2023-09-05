@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 import './interfaces/ICamelotPair.sol';
 import './interfaces/ICamelotRouter.sol';
 import "../rateX/interfaces/IDex.sol";
-import "../rateX/libraries/TransferHelper.sol";
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract CamelotDex is IDex {
-    ICamelotRouter private camelotRouter;
+    ICamelotRouter private immutable camelotRouter;
 
     constructor(address _routerAddress) {
         camelotRouter = ICamelotRouter(_routerAddress);
@@ -22,8 +22,8 @@ contract CamelotDex is IDex {
         address _to
     ) external returns(uint256 amountOut) {
 
-        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
-        TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
+        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+        IERC20(_tokenIn).approve(address(camelotRouter), _amountIn);
 
         address[] memory path = new address[](2);
         path[0] = _tokenIn;
