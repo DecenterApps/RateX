@@ -38,5 +38,5 @@ Then, from the RateX folder run `npm start`.
 
 ## Choose pools
 
-For choosing pools, change variable `files` in function `initializeDexes` found in: <br>
+Change variable `files` in function `initializeDexes` found in: <br>
  `UI/src/sdk/quoter/graph_communication.ts`
