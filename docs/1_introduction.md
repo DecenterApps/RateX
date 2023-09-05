@@ -28,7 +28,7 @@ Our idea was to create the 'competition'. We would:
 2. make the routing algorithm open source
 3. create the code (SDK) executed on the user's machine (in browser), instead of a server
 
-## How does the app find best quote
+## How does the app find the best quote
 1. We get basic pool information (addresses) from the Graph API (because we need top pools for each DEX we are supporting, but also top pools for each token in token pair that we are swapping). We decided to go with the Graph API because we need to sort the data by the TVL in our SDK (doing that on-chain has it's own complication - see the 3rd chapter).
 2. Fetch additional pool information on-chain for each DEX (check helper contracts for more info).
 3. Place that pool information into the routing algorithm to find the best route. Algorithm calculates swap 'amount out' off-chain, using on-chain Solidity calculations adjusted for Typescript (each DEX has a unique math behind it). Our SDK has 2 algorithms: 
