@@ -35,3 +35,8 @@ npx hardhat run scrips/fundTenderly.js --network tenderly       - funds the firs
 ```
 Then, from the RateX folder run `npm start`.
 
+
+## Choose pools
+
+For choosing pools, change variable `files` in function `initializeDexes` found in: <br>
+ `UI/src/sdk/quoter/graph_communication.ts`
