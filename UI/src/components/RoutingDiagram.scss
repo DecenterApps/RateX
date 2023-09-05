@@ -1,0 +1,97 @@
+@import '../shared.scss';
+
+.routingDiagram {
+  background-color: $color-neutral;
+  border-radius: 12px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.routingDiagram h4 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+.routingDiagramRoute {
+  background-color: $color-light;
+  border-radius: 12px;
+  margin: 10px;
+  padding: 10px;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+}
+
+.routingDiagramRoute .percentage {
+  text-align: right;
+  width: 42px;
+  margin-right: 10px;
+}
+
+.routingDiagramToken img {
+  width: 26px;
+  margin: -3px;
+  margin-top: 1px;
+}
+
+.routingDiagramToken {
+  align-items: center;
+  text-align: center;
+  width: 32px;
+}
+
+.routingDiagramArrow {
+  margin: 3px;
+  flex: 1 1 auto;
+}
+
+.routingDiagram a {
+  width: min-content;
+  display: block;
+  margin: auto;
+  color: $color-text-primary;
+  text-decoration: none;
+}
+
+.routingDiagramArrow .dex {
+  font-size: 10px;
+  margin-top: -3px;
+  white-space: nowrap;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: $color-dark;
+  opacity: 0.7;
+  color: $color-text-primary;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 125%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent $color-dark transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}

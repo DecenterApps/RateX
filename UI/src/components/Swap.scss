@@ -1,0 +1,188 @@
+@import '../shared.scss';
+
+.tradeBox {
+  width: 400px;
+  background-color: $color-dark;
+  border: 2px solid $color-neutral;
+  min-height: 300px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-left: 30px;
+  padding-right: 30px;
+  margin-bottom: 30px;
+}
+
+.tradeBox > * {
+  width: 100%;
+}
+
+.tradeBoxHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.switchButton {
+  background-color: #3a4157;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  border-radius: 8px;
+  position: absolute;
+  top: 88px;
+  left: calc(50% - 14px);
+  color: #5f6783;
+  border: 3px solid $color-dark;
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.switchButton:hover {
+  color: $color-text-primary;
+  cursor: pointer;
+}
+
+.tokenFromAmountUSD,
+.tokenToAmountUSD {
+  color: $color-text-secondary;
+  font-size: 14px;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  padding-left: 4px;
+  align-self: flex-start;
+}
+
+.input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 96px;
+}
+
+.assetFrom,
+.assetTo {
+  position: absolute;
+  min-width: 50px;
+  height: 32px;
+  background-color: $color-light;
+  transition: 0.3s;
+  right: 20px;
+  border-radius: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  font-weight: bold;
+  font-size: 17px;
+  padding-right: 8px;
+  top: 32px;
+}
+
+.assetFrom:hover,
+.assetTo:hover {
+  background-color: $color-light-hover;
+  cursor: pointer;
+}
+
+.swapButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $color-light;
+  height: 55px;
+  font-size: 20px;
+  border-radius: 12px;
+  color: $color-text-primary;
+  font-weight: bold;
+  transition: 0.3s;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  border: none;
+}
+
+.swapButton:hover {
+  cursor: pointer;
+  background-color: $color-light-hover;
+}
+
+.swapButton[disabled] {
+  background-color: $color-neutral;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.input .lds-ellipsis {
+  left: calc(50% - 38px);
+  top: calc(32px + 32px / 2 - 6px);
+}
+
+.tokenAddress {
+  color: $color-text-secondary;
+  font-size: 15px;
+  margin-top: 10px; 
+  margin-bottom: 10px;
+  padding: 10px;
+  width: 90%;
+  height: 50px !important; 
+  align-self: center;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 77px;
+  height: 13px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}

@@ -1,1039 +1,1202 @@
 {
-  "oracles": [
-      {
-          "ticker": "1INCH",
-          "address": {
-              "1": "0xc929ad75B72593967DE83E7F7Cda0493458261D9",
-              "42161": "0x4bC735Ef24bf286983024CAd5D03f0738865Aaef",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "AAPL",
-          "address": {
-              "1": "0x139C8512Cde1778e9b9a8e721ce1aEbd4dD43587",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "AAVE",
-          "address": {
-              "1": "0x547a514d5e3769680Ce22B2361c10Ea13619e8a9",
-              "42161": "0xaD1d5344AaDE45F43E596773Bcc4c423EAbdD034",
-              "10": "0x338ed6787f463394D24813b297401B9F05a8C9d1"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ADA",
-          "address": {
-              "1": "0xAE48c91dF1fE419994FFDa27da09D5aC69c30f55",
-              "42161": "0xD9f615A9b820225edbA2d821c4A696a0924051c6",
-              "10": "0x43dEa17DeE1ca50c6266acb59b32659E44D3ee5D"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ADX",
-          "address": {
-              "1": "0x231e764B44b2C1b7Ca171fa8021A24ed520Cde10",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ALCX",
-          "address": {
-              "1": "0xc355e4C0B3ff4Ed0B49EaACD55FE29B311f42976",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "AMPL",
-          "address": {
-              "1": "0xe20CA8D7546932360e37E9D72c1a47334af57706",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ANKR",
-          "address": {
-              "1": "0x7eed379bf00005CfeD29feD4009669dE9Bcc21ce",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "APE",
-          "address": {
-              "1": "0xD10aBbC76679a20055E167BB80A24ac851b37056",
-              "42161": "0x221912ce795669f628c51c69b7d0873eDA9C03bB",
-              "10": "0x89178957E9bD07934d7792fFc0CF39f11c8C2B1F"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ATOM",
-          "address": {
-              "1": "0xDC4BDB458C6361093069Ca2aD30D74cc152EdC75",
-              "42161": "0xCDA67618e51762235eacA373894F0C79256768fa",
-              "10": "0xEF89db2eA46B4aD4E333466B6A486b809e613F39"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "AUD",
-          "address": {
-              "1": "0x77F9710E7d0A19669A13c055F62cd80d313dF022",
-              "42161": "0x9854e9a850e7C354c1de177eA953a6b1fba8Fc22",
-              "10": "0x39be70E93D2D285C9E71be7f70FC5a45A7777B14"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "AVAX",
-          "address": {
-              "1": "0xFF3EEb22B5E3dE6e705b44749C2559d704923FD7",
-              "42161": "0x8bf61728eeDCE2F32c456454d87B5d6eD6150208",
-              "10": "0x5087Dc69Fd3907a016BD42B38022F7f024140727"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BADGER",
-          "address": {
-              "1": "0x66a47b7206130e6FF64854EF0E1EDfa237E65339",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BAL",
-          "address": {
-              "1": "0xdF2917806E30300537aEB49A7663062F4d1F2b5F",
-              "42161": "0xBE5eA816870D11239c543F84b71439511D70B94f",
-              "10": "0x30D9d31C1ac29Bc2c2c312c1bCa9F8b3D60e2376"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BIT",
-          "address": {
-              "1": "0x7b33EbfA52F215a30FaD5a71b3FeE57a4831f1F0",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BNB",
-          "address": {
-              "1": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A",
-              "42161": "0x6970460aabF80C5BE983C6b74e5D06dEDCA95D4A",
-              "10": "0xD38579f7cBD14c22cF1997575eA8eF7bfe62ca2c"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BNT",
-          "address": {
-              "1": "0x1E6cF0D433de4FE882A437ABC654F58E1e78548c",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BRL",
-          "address": {
-              "1": "0x971E8F1B779A5F1C36e1cd7ef44Ba1Cc2F5EeE0f",
-              "42161": "0x04b7384473A2aDF1903E3a98aCAc5D62ba8C2702",
-              "10": "0xB22900D4D0CEa5DB0B3bb08565a9f0f4a831D32C"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "wBTC",
-          "address": {
-              "1": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
-              "42161": "0x6ce185860a4963106506C203335A2910413708e9",
-              "10": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "BUSD",
-          "address": {
-              "1": "0x833D8Eb16D306ed1FbB5D7A2E019e106B960965A",
-              "42161": "0x8FCb0F3715A82D83270777b3a5f3a7CF95Ce8Eec",
-              "10": "0xC1cB3b7cbB3e786aB85ea28489f332f4FAEd5Bc4"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CAD",
-          "address": {
-              "1": "0xa34317DB73e77d453b1B8d04550c44D10e981C8e",
-              "42161": "0xf6DA27749484843c4F02f5Ad1378ceE723dD61d4",
-              "10": "0x6fD5e4a193459FC7DFCFc674357a123F655f6EF8"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CAKE",
-          "address": {
-              "1": "0xEb0adf5C06861d6c07174288ce4D0a8128164003",
-              "42161": "0x256654437f1ADA8057684b18d742eFD14034C400",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CHF",
-          "address": {
-              "1": "0x449d117117838fFA61263B61dA6301AA2a88B13A",
-              "42161": "0xe32AccC8c4eC03F6E75bd3621BfC9Fbb234E1FC3",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CNY",
-          "address": {
-              "1": "0xeF8A4aF35cd47424672E3C590aBD37FBB7A7759a",
-              "42161": "0xcC3370Bde6AFE51e1205a5038947b9836371eCCb",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "COMP",
-          "address": {
-              "1": "0xdbd020CAeF83eFd542f4De03e3cF0C28A4428bd5",
-              "42161": "0xe7C53FFd03Eb6ceF7d208bC4C13446c76d1E5884",
-              "10": "0xe1011160d78a80E2eEBD60C228EEf7af4Dfcd4d7"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CRO",
-          "address": {
-              "1": "0x00Cb80Cf097D9aA9A3779ad8EE7cF98437eaE050",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CRV",
-          "address": {
-              "1": "0xCd627aA160A6fA45Eb793D19Ef54f5062F20f33f",
-              "42161": "0xaebDA2c976cfd1eE1977Eac079B4382acb849325",
-              "10": "0xbD92C6c284271c227a1e0bF1786F468b539f51D9"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CSPR",
-          "address": {
-              "1": "0x9e37a8Ee3bFa8eD6783Db031Dc458d200b226074",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CSPX",
-          "address": {
-              "1": "0xF4E1B57FB228879D057ac5AE33973e8C53e4A0e0",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "CVX",
-          "address": {
-              "1": "0xd962fC30A72A84cE50161031391756Bf2876Af5D",
-              "42161": "0x851175a919f36c8e30197c09a9A49dA932c2CC00",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "Calculated XSUSHI",
-          "address": {
-              "1": "0xCC1f5d9e6956447630d703C8e93b2345c2DE3D13",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "DAI",
-          "address": {
-              "1": "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9",
-              "42161": "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB",
-              "10": "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "DODO",
-          "address": {
-              "1": "0x9613A51Ad59EE375e6D8fa12eeef0281f1448739",
-              "42161": "0xA33a06c119EC08F92735F9ccA37e07Af08C4f281",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "DOGE",
-          "address": {
-              "1": "0x2465CefD3b488BE410b941b1d4b2767088e2A028",
-              "42161": "0x9A7FB1b3950837a8D9b40517626E11D4127C098C",
-              "10": "0xC6066533917f034Cf610c08e1fe5e9c7eADe0f54"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "DOT",
-          "address": {
-              "1": "0x1C07AFb8E2B827c5A4739C6d59Ae3A5035f28734",
-              "42161": "0xa6bC5bAF2000424e90434bA7104ee399dEe80DEc",
-              "10": "0x28e67BAeEB5dE7A788f3Dde6CF6ee491369Bb3Fa"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "DPI",
-          "address": {
-              "1": "0xD2A593BF7594aCE1faD597adb697b5645d5edDB2",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ENJ",
-          "address": {
-              "1": "0x23905C55dC11D609D5d11Dc604905779545De9a7",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ENS",
-          "address": {
-              "1": "0x5C00128d4d1c2F4f652C267d7bcdD7aC99C16E16",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "EOS",
-          "address": {
-              "1": "0x10a43289895eAff840E8d45995BBa89f9115ECEe",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ERN",
-          "address": {
-              "1": "0x0a87e12689374A4EF49729582B474a1013cceBf8",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "wETH",
-          "address": {
-              "1": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-              "42161": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
-              "10": "0x13e3Ee699D1909E989722E753853AE30b17e08c5"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "EUR",
-          "address": {
-              "1": "0xb49f677943BC038e9857d61E7d053CaA2C1734C1",
-              "42161": "0xA14d53bC1F1c0F31B4aA3BD109344E5009051a84",
-              "10": "0x3626369857A10CcC6cc3A6e4f5C2f5984a519F20"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "EURT",
-          "address": {
-              "1": "0x01D391A48f4F7339aC64CA2c83a07C22F95F587a",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FLOW",
-          "address": {
-              "1": "0xD9BdD9f5ffa7d89c846A5E3231a093AE4b3469D2",
-              "42161": "",
-              "10": "0x2fF1EB7D0ceC35959F0248E9354c3248c6683D9b"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FOR",
-          "address": {
-              "1": "0x456834f736094Fb0AAD40a9BBc9D4a0f37818A54",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FORTH",
-          "address": {
-              "1": "0x7D77Fd73E468baECe26852776BeaF073CDc55fA0",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FOX",
-          "address": {
-              "1": "0xccA02FFEFAcE21325befD6616cB4Ba5fCB047480",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FRAX",
-          "address": {
-              "1": "0xB9E1E3A9feFf48998E45Fa90847ed4D467E8BcfD",
-              "42161": "0x0809E3d38d1B4214958faf06D8b1B1a2b73f2ab8",
-              "10": "0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "FXS",
-          "address": {
-              "1": "0x6Ebc52C8C1089be9eB3945C4350B68B8E4C2233f",
-              "42161": "0x36a121448D74Fa81450c992A1a44B9b7377CD3a5",
-              "10": "0xB9B16330671067B1b062B9aC2eFd2dB75F03436E"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GBP",
-          "address": {
-              "1": "0x5c0Ab2d9b5a7ed9f470386e82BB36A3613cDd4b5",
-              "42161": "0x9C4424Fd84C6661F97D8d6b3fc3C1aAc2BeDd137",
-              "10": "0x540D48C01F946e729174517E013Ad0bdaE5F08C0"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GHO",
-          "address": {
-              "1": "0x3f12643D3f6f874d39C2a4c9f2Cd6f2DbAC877FC",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GLM",
-          "address": {
-              "1": "0x83441C3A10F4D05de6e0f2E849A850Ccf27E6fa7",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GOOGL",
-          "address": {
-              "1": "0x36D39936BeA501755921beB5A382a88179070219",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GRT",
-          "address": {
-              "1": "0x86cF33a451dE9dc61a2862FD94FF4ad4Bd65A5d2",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "GUSD",
-          "address": {
-              "1": "0xa89f5d2365ce98B3cD68012b6f503ab1416245Fc",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "HBAR",
-          "address": {
-              "1": "0x38C5ae3ee324ee027D88c5117ee58d07c9b4699b",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "HIGH",
-          "address": {
-              "1": "0xe2F95bC12FE8a3C35684Be7586C39fD7c0E5b403",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "IB01",
-          "address": {
-              "1": "0x32d1463EB53b73C095625719Afa544D5426354cB",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "IBTA",
-          "address": {
-              "1": "0xd27e6D02b72eB6FCe04Ad5690C419196B4EF2885",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "IMX",
-          "address": {
-              "1": "0xBAEbEFc1D023c0feCcc047Bff42E75F15Ff213E6",
-              "42161": "",
-              "10": "0x26Fce884555FAe5F0E4701cc976FE8D8bB111A38"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "INJ",
-          "address": {
-              "1": "0xaE2EbE3c4D20cE13cE47cbb49b6d7ee631Cd816e",
-              "42161": "",
-              "10": "0x90CC16F5493894eff84a5Fedd1dcE297d174fEEf"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "INR",
-          "address": {
-              "1": "0x605D5c2fBCeDb217D7987FC0951B5753069bC360",
-              "42161": "",
-              "10": "0x5535e67d8f99c8ebe961E1Fc1F6DDAE96FEC82C9"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "IOTX",
-          "address": {
-              "1": "0x96c45535d235148Dc3ABA1E48A6E3cFB3510f4E2",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "JPY",
-          "address": {
-              "1": "0xBcE206caE7f0ec07b545EddE332A47C2F75bbeb3",
-              "42161": "0x3dD6e51CB9caE717d5a8778CF79A04029f9cFDF8",
-              "10": "0x536944c3A71FEb7c1E5C66Ee37d1a148d8D8f619"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "KNC",
-          "address": {
-              "1": "0xf8fF43E991A81e6eC886a3D281A2C6cC19aE70Fc",
-              "42161": "0xbF539d4c2106dd4D9AB6D56aed3d9023529Db145",
-              "10": "0xCB24d22aF35986aC1feb8874AdBbDF68f6dC2e96"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "KRW",
-          "address": {
-              "1": "0x01435677FB11763550905594A16B645847C1d0F3",
-              "42161": "0x85bb02E0Ae286600d1c68Bb6Ce22Cc998d411916",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "KSM",
-          "address": {
-              "1": "0x06E4164E24E72B879D93360D1B9fA05838A62EB5",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "LINK",
-          "address": {
-              "1": "0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c",
-              "42161": "0x86E53CF1B870786351Da77A57575e79CB55812CB",
-              "10": "0xCc232dcFAAE6354cE191Bd574108c1aD03f86450"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "LTC",
-          "address": {
-              "1": "0x6AF09DF7563C363B5763b9102712EbeD3b9e859B",
-              "42161": "",
-              "10": "0x45954efBD01f5A12428A09E4C38b8434C3dD4Ac3"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "LUSD",
-          "address": {
-              "1": "0x3D7aE7E594f2f2091Ad8798313450130d0Aba3a0",
-              "42161": "0x0411D28c94d85A36bC72Cb0f875dfA8371D8fFfF",
-              "10": "0x9dfc79Aaeb5bb0f96C6e9402671981CdFc424052"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "MANA",
-          "address": {
-              "1": "0x56a4857acbcfe3a66965c251628B1c9f1c408C19",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "MATIC",
-          "address": {
-              "1": "0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676",
-              "42161": "0x52099D4523531f678Dfc568a7B1e5038aadcE1d6",
-              "10": "0x0ded608AFc23724f614B76955bbd9dFe7dDdc828"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "MIM",
-          "address": {
-              "1": "0x7A364e8770418566e3eb2001A96116E6138Eb32F",
-              "42161": "0x87121F6c9A9F6E90E59591E4Cf4804873f54A95b",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "MKR",
-          "address": {
-              "1": "0xec1D1B3b0443256cc3860e24a46F108e699484Aa",
-              "42161": "0xdE9f0894670c4EFcacF370426F10C3AD2Cdf147e",
-              "10": "0x607b417DF51e0E1ed3A12fDb7FC0e8307ED250F3"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "MSFT",
-          "address": {
-              "1": "0x021Fb44bfeafA0999C7b07C4791cf4B859C3b431",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "NEAR",
-          "address": {
-              "1": "0xC12A6d1D827e23318266Ef16Ba6F397F2F91dA9b",
-              "42161": "0xBF5C3fB2633e924598A46B9D07a174a9DBcF57C0",
-              "10": "0xca6fa4b8CB365C02cd3Ba70544EFffe78f63ac82"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "NFLX",
-          "address": {
-              "1": "0x67C2e69c5272B94AF3C90683a9947C39Dc605ddE",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "NMR",
-          "address": {
-              "1": "0xcC445B35b3636bC7cC7051f4769D8982ED0d449A",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "NZD",
-          "address": {
-              "1": "0x3977CFc9e4f29C184D4675f4EB8e0013236e5f3e",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "OMG",
-          "address": {
-              "1": "0x7D476f061F8212A8C9317D5784e72B4212436E93",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ONT",
-          "address": {
-              "1": "0xcDa3708C5c2907FCca52BB3f9d3e4c2028b89319",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "OXT",
-          "address": {
-              "1": "0xd75AAaE4AF0c398ca13e2667Be57AF2ccA8B5de6",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "PERP",
-          "address": {
-              "1": "0x01cE1210Fe8153500F60f7131d63239373D7E26C",
-              "42161": "",
-              "10": "0xA12CDDd8e986AF9288ab31E58C60e65F2987fB13"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "PHA",
-          "address": {
-              "1": "0x2B1248028fe48864c4f1c305E524e2e6702eAFDF",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "RAI",
-          "address": {
-              "1": "0x483d36F6a1d063d580c7a24F9A42B346f3a69fbb",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "REQ",
-          "address": {
-              "1": "0x2F05888D185970f178f40610306a0Cc305e52bBF",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "RPL",
-          "address": {
-              "1": "0x4E155eD98aFE9034b7A5962f6C84c86d869daA9d",
-              "42161": "0xF0b7159BbFc341Cc41E7Cb182216F62c6d40533D",
-              "10": "0xADE082c91A6AeCC86fC11704a830e933e1b382eA"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "RSR",
-          "address": {
-              "1": "0x759bBC1be8F90eE6457C44abc7d443842a976d02",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SAND",
-          "address": {
-              "1": "0x35E3f7E558C04cE7eEE1629258EcbbA03B36Ec56",
-              "42161": "",
-              "10": "0xAE33e077a02071E62d342E449Afd9895b016d541"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SGD",
-          "address": {
-              "1": "0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13",
-              "42161": "0xF0d38324d1F86a176aC727A4b0c43c9F9d9c5EB1",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SHV",
-          "address": {
-              "1": "0xc04611C43842220fd941515F86d1DDdB15F04e46",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SNX",
-          "address": {
-              "1": "0xDC3EA94CD0AC27d9A86C180091e7f78C683d3699",
-              "42161": "0x054296f0D036b95531B4E14aFB578B80CFb41252",
-              "10": "0x2FCF37343e916eAEd1f1DdaaF84458a359b53877"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SOL",
-          "address": {
-              "1": "0x4ffC43a60e009B551865A93d232E33Fce9f01507",
-              "42161": "0x24ceA4b8ce57cdA5058b924B9B9987992450590c",
-              "10": "0xC663315f7aF904fbbB0F785c32046dFA03e85270"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SPELL",
-          "address": {
-              "1": "0x8c110B94C5f1d347fAcF5E1E938AB2db60E3c9a8",
-              "42161": "0x383b3624478124697BEF675F07cA37570b73992f",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "STETH",
-          "address": {
-              "1": "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8",
-              "42161": "0x07C5b924399cc23c24a95c8743DE4006a32b7f2a",
-              "10": "0x41878779a388585509657CE5Fb95a80050502186"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "STG",
-          "address": {
-              "1": "0x7A9f34a0Aa917D438e9b6E630067062B7F8f6f3d",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SUSHI",
-          "address": {
-              "1": "0xCc70F09A6CC17553b2E31954cD36E4A2d89501f7",
-              "42161": "0xb2A8BA74cbca38508BA1632761b56C897060147C",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "SXP",
-          "address": {
-              "1": "0xFb0CfD6c19e25DB4a08D8a204a387cEa48Cc138f",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "TOMO",
-          "address": {
-              "1": "0x3d44925a8E9F9DFd90390E58e92Ec16c996A331b",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "TRU",
-          "address": {
-              "1": "0x26929b85fE284EeAB939831002e1928183a10fb1",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "TRY",
-          "address": {
-              "1": "0xB09fC5fD3f11Cf9eb5E1C5Dba43114e3C9f477b5",
-              "42161": "0xE8f8AfE4b56c6C421F691bfAc225cE61b2C7CD05",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "TUSD",
-          "address": {
-              "1": "0xec746eCF986E2927Abd291a2A1716c940100f8Ba",
-              "42161": "0x6fAbee62266Da6686EE2744C6f15bb8352d2f28D",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "UNI",
-          "address": {
-              "1": "0x553303d460EE0afB37EdFf9bE42922D8FF63220e",
-              "42161": "0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720",
-              "10": "0x11429eE838cC01071402f21C219870cbAc0a59A0"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "USDC",
-          "address": {
-              "1": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
-              "42161": "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3",
-              "10": "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "USDD",
-          "address": {
-              "1": "0x0ed39A19D2a68b722408d84e4d970827f61E6c0A",
-              "42161": "0x4Ee1f9ec1048979930aC832a3C1d18a0b4955a02",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "USDP",
-          "address": {
-              "1": "0x09023c0DA49Aaf8fc3fA3ADF34C6A7016D38D5e3",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "USDT",
-          "address": {
-              "1": "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D",
-              "42161": "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7",
-              "10": "0xECef79E109e997bCA29c1c0897ec9d7b03647F5E"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "WING",
-          "address": {
-              "1": "0x134fE0a225Fb8e6683617C13cEB6B3319fB4fb82",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "XAG",
-          "address": {
-              "1": "0x379589227b15F1a12195D3f2d90bBc9F31f95235",
-              "42161": "0xC56765f04B248394CF1619D20dB8082Edbfa75b1",
-              "10": "0x290dd71254874f0d4356443607cb8234958DEe49"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "XAU",
-          "address": {
-              "1": "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6",
-              "42161": "0x1F954Dc24a49708C26E0C1777f16750B5C6d5a2c",
-              "10": "0x8F7bFb42Bf7421c2b34AAD619be4654bFa7B3B8B"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "XCN",
-          "address": {
-              "1": "0xeb988B77b94C186053282BfcD8B7ED55142D3cAB",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "XRP",
-          "address": {
-              "1": "0xCed2660c6Dd1Ffd856A5A82C67f3482d88C50b12",
-              "42161": "0xB4AD57B52aB9141de9926a3e0C8dc6264c2ef205",
-              "10": "0x8788F0DBDa7678244Ac7FF09d963d7696D56A8a0"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "YFI",
-          "address": {
-              "1": "0xA027702dbb89fbd58938e4324ac03B58d812b0E1",
-              "42161": "0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21",
-              "10": "0x5cdC797acCBf57EE2363Fed9701262Abc87a232e"
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "ZRX",
-          "address": {
-              "1": "0x2885d15b8Af22648b98B122b22FDF4D2a56c6023",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      },
-      {
-          "ticker": "sUSD",
-          "address": {
-              "1": "0xad35Bd71b9aFE6e4bDc266B345c198eaDEf9Ad94",
-              "42161": "",
-              "10": ""
-          },
-          "ABI": []
-      }
-  ]
+    "oracles": [
+        {
+            "ticker": "1INCH",
+            "address": {
+                "1": "0xc929ad75B72593967DE83E7F7Cda0493458261D9",
+                "42161": "0x4bC735Ef24bf286983024CAd5D03f0738865Aaef",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "AAPL",
+            "address": {
+                "1": "0x139C8512Cde1778e9b9a8e721ce1aEbd4dD43587",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "AAVE",
+            "address": {
+                "1": "0x547a514d5e3769680Ce22B2361c10Ea13619e8a9",
+                "42161": "0xaD1d5344AaDE45F43E596773Bcc4c423EAbdD034",
+                "10": "0x338ed6787f463394D24813b297401B9F05a8C9d1"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ADA",
+            "address": {
+                "1": "0xAE48c91dF1fE419994FFDa27da09D5aC69c30f55",
+                "42161": "0xD9f615A9b820225edbA2d821c4A696a0924051c6",
+                "10": "0x43dEa17DeE1ca50c6266acb59b32659E44D3ee5D"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ADX",
+            "address": {
+                "1": "0x231e764B44b2C1b7Ca171fa8021A24ed520Cde10",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ALCX",
+            "address": {
+                "1": "0xc355e4C0B3ff4Ed0B49EaACD55FE29B311f42976",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "AMPL",
+            "address": {
+                "1": "0xe20CA8D7546932360e37E9D72c1a47334af57706",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ANKR",
+            "address": {
+                "1": "0x7eed379bf00005CfeD29feD4009669dE9Bcc21ce",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "APE",
+            "address": {
+                "1": "0xD10aBbC76679a20055E167BB80A24ac851b37056",
+                "42161": "0x221912ce795669f628c51c69b7d0873eDA9C03bB",
+                "10": "0x89178957E9bD07934d7792fFc0CF39f11c8C2B1F"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ATOM",
+            "address": {
+                "1": "0xDC4BDB458C6361093069Ca2aD30D74cc152EdC75",
+                "42161": "0xCDA67618e51762235eacA373894F0C79256768fa",
+                "10": "0xEF89db2eA46B4aD4E333466B6A486b809e613F39"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "AUD",
+            "address": {
+                "1": "0x77F9710E7d0A19669A13c055F62cd80d313dF022",
+                "42161": "0x9854e9a850e7C354c1de177eA953a6b1fba8Fc22",
+                "10": "0x39be70E93D2D285C9E71be7f70FC5a45A7777B14"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "AVAX",
+            "address": {
+                "1": "0xFF3EEb22B5E3dE6e705b44749C2559d704923FD7",
+                "42161": "0x8bf61728eeDCE2F32c456454d87B5d6eD6150208",
+                "10": "0x5087Dc69Fd3907a016BD42B38022F7f024140727"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BADGER",
+            "address": {
+                "1": "0x66a47b7206130e6FF64854EF0E1EDfa237E65339",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BAL",
+            "address": {
+                "1": "0xdF2917806E30300537aEB49A7663062F4d1F2b5F",
+                "42161": "0xBE5eA816870D11239c543F84b71439511D70B94f",
+                "10": "0x30D9d31C1ac29Bc2c2c312c1bCa9F8b3D60e2376"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BIT",
+            "address": {
+                "1": "0x7b33EbfA52F215a30FaD5a71b3FeE57a4831f1F0",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BNB",
+            "address": {
+                "1": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A",
+                "42161": "0x6970460aabF80C5BE983C6b74e5D06dEDCA95D4A",
+                "10": "0xD38579f7cBD14c22cF1997575eA8eF7bfe62ca2c"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BNT",
+            "address": {
+                "1": "0x1E6cF0D433de4FE882A437ABC654F58E1e78548c",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "BRL",
+            "address": {
+                "1": "0x971E8F1B779A5F1C36e1cd7ef44Ba1Cc2F5EeE0f",
+                "42161": "0x04b7384473A2aDF1903E3a98aCAc5D62ba8C2702",
+                "10": "0xB22900D4D0CEa5DB0B3bb08565a9f0f4a831D32C"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "WBTC",
+            "address": {
+                "1": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
+                "42161": "0x6ce185860a4963106506C203335A2910413708e9",
+                "10": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "BUSD",
+            "address": {
+                "1": "0x833D8Eb16D306ed1FbB5D7A2E019e106B960965A",
+                "42161": "0x8FCb0F3715A82D83270777b3a5f3a7CF95Ce8Eec",
+                "10": "0xC1cB3b7cbB3e786aB85ea28489f332f4FAEd5Bc4"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CAD",
+            "address": {
+                "1": "0xa34317DB73e77d453b1B8d04550c44D10e981C8e",
+                "42161": "0xf6DA27749484843c4F02f5Ad1378ceE723dD61d4",
+                "10": "0x6fD5e4a193459FC7DFCFc674357a123F655f6EF8"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CAKE",
+            "address": {
+                "1": "0xEb0adf5C06861d6c07174288ce4D0a8128164003",
+                "42161": "0x256654437f1ADA8057684b18d742eFD14034C400",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CHF",
+            "address": {
+                "1": "0x449d117117838fFA61263B61dA6301AA2a88B13A",
+                "42161": "0xe32AccC8c4eC03F6E75bd3621BfC9Fbb234E1FC3",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CNY",
+            "address": {
+                "1": "0xeF8A4aF35cd47424672E3C590aBD37FBB7A7759a",
+                "42161": "0xcC3370Bde6AFE51e1205a5038947b9836371eCCb",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "COMP",
+            "address": {
+                "1": "0xdbd020CAeF83eFd542f4De03e3cF0C28A4428bd5",
+                "42161": "0xe7C53FFd03Eb6ceF7d208bC4C13446c76d1E5884",
+                "10": "0xe1011160d78a80E2eEBD60C228EEf7af4Dfcd4d7"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CRO",
+            "address": {
+                "1": "0x00Cb80Cf097D9aA9A3779ad8EE7cF98437eaE050",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CRV",
+            "address": {
+                "1": "0xCd627aA160A6fA45Eb793D19Ef54f5062F20f33f",
+                "42161": "0xaebDA2c976cfd1eE1977Eac079B4382acb849325",
+                "10": "0xbD92C6c284271c227a1e0bF1786F468b539f51D9"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "CSPR",
+            "address": {
+                "1": "0x9e37a8Ee3bFa8eD6783Db031Dc458d200b226074",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CSPX",
+            "address": {
+                "1": "0xF4E1B57FB228879D057ac5AE33973e8C53e4A0e0",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "CVX",
+            "address": {
+                "1": "0xd962fC30A72A84cE50161031391756Bf2876Af5D",
+                "42161": "0x851175a919f36c8e30197c09a9A49dA932c2CC00",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "Calculated XSUSHI",
+            "address": {
+                "1": "0xCC1f5d9e6956447630d703C8e93b2345c2DE3D13",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "DAI",
+            "address": {
+                "1": "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9",
+                "42161": "0xc5C8E77B397E531B8EC06BFb0048328B30E9eCfB",
+                "10": "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "DODO",
+            "address": {
+                "1": "0x9613A51Ad59EE375e6D8fa12eeef0281f1448739",
+                "42161": "0xA33a06c119EC08F92735F9ccA37e07Af08C4f281",
+                "10": ""
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "DOGE",
+            "address": {
+                "1": "0x2465CefD3b488BE410b941b1d4b2767088e2A028",
+                "42161": "0x9A7FB1b3950837a8D9b40517626E11D4127C098C",
+                "10": "0xC6066533917f034Cf610c08e1fe5e9c7eADe0f54"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "DOT",
+            "address": {
+                "1": "0x1C07AFb8E2B827c5A4739C6d59Ae3A5035f28734",
+                "42161": "0xa6bC5bAF2000424e90434bA7104ee399dEe80DEc",
+                "10": "0x28e67BAeEB5dE7A788f3Dde6CF6ee491369Bb3Fa"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "DPI",
+            "address": {
+                "1": "0xD2A593BF7594aCE1faD597adb697b5645d5edDB2",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ENJ",
+            "address": {
+                "1": "0x23905C55dC11D609D5d11Dc604905779545De9a7",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ENS",
+            "address": {
+                "1": "0x5C00128d4d1c2F4f652C267d7bcdD7aC99C16E16",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "EOS",
+            "address": {
+                "1": "0x10a43289895eAff840E8d45995BBa89f9115ECEe",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ERN",
+            "address": {
+                "1": "0x0a87e12689374A4EF49729582B474a1013cceBf8",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "WETH",
+            "address": {
+                "1": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
+                "42161": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
+                "10": "0x13e3Ee699D1909E989722E753853AE30b17e08c5"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "EUR",
+            "address": {
+                "1": "0xb49f677943BC038e9857d61E7d053CaA2C1734C1",
+                "42161": "0xA14d53bC1F1c0F31B4aA3BD109344E5009051a84",
+                "10": "0x3626369857A10CcC6cc3A6e4f5C2f5984a519F20"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "EURT",
+            "address": {
+                "1": "0x01D391A48f4F7339aC64CA2c83a07C22F95F587a",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FLOW",
+            "address": {
+                "1": "0xD9BdD9f5ffa7d89c846A5E3231a093AE4b3469D2",
+                "42161": "",
+                "10": "0x2fF1EB7D0ceC35959F0248E9354c3248c6683D9b"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FOR",
+            "address": {
+                "1": "0x456834f736094Fb0AAD40a9BBc9D4a0f37818A54",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FORTH",
+            "address": {
+                "1": "0x7D77Fd73E468baECe26852776BeaF073CDc55fA0",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FOX",
+            "address": {
+                "1": "0xccA02FFEFAcE21325befD6616cB4Ba5fCB047480",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FRAX",
+            "address": {
+                "1": "0xB9E1E3A9feFf48998E45Fa90847ed4D467E8BcfD",
+                "42161": "0x0809E3d38d1B4214958faf06D8b1B1a2b73f2ab8",
+                "10": "0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "FXS",
+            "address": {
+                "1": "0x6Ebc52C8C1089be9eB3945C4350B68B8E4C2233f",
+                "42161": "0x36a121448D74Fa81450c992A1a44B9b7377CD3a5",
+                "10": "0xB9B16330671067B1b062B9aC2eFd2dB75F03436E"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GBP",
+            "address": {
+                "1": "0x5c0Ab2d9b5a7ed9f470386e82BB36A3613cDd4b5",
+                "42161": "0x9C4424Fd84C6661F97D8d6b3fc3C1aAc2BeDd137",
+                "10": "0x540D48C01F946e729174517E013Ad0bdaE5F08C0"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GHO",
+            "address": {
+                "1": "0x3f12643D3f6f874d39C2a4c9f2Cd6f2DbAC877FC",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GLM",
+            "address": {
+                "1": "0x83441C3A10F4D05de6e0f2E849A850Ccf27E6fa7",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GOOGL",
+            "address": {
+                "1": "0x36D39936BeA501755921beB5A382a88179070219",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GRT",
+            "address": {
+                "1": "0x86cF33a451dE9dc61a2862FD94FF4ad4Bd65A5d2",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "GUSD",
+            "address": {
+                "1": "0xa89f5d2365ce98B3cD68012b6f503ab1416245Fc",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "HBAR",
+            "address": {
+                "1": "0x38C5ae3ee324ee027D88c5117ee58d07c9b4699b",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "HIGH",
+            "address": {
+                "1": "0xe2F95bC12FE8a3C35684Be7586C39fD7c0E5b403",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "IB01",
+            "address": {
+                "1": "0x32d1463EB53b73C095625719Afa544D5426354cB",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "IBTA",
+            "address": {
+                "1": "0xd27e6D02b72eB6FCe04Ad5690C419196B4EF2885",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "IMX",
+            "address": {
+                "1": "0xBAEbEFc1D023c0feCcc047Bff42E75F15Ff213E6",
+                "42161": "",
+                "10": "0x26Fce884555FAe5F0E4701cc976FE8D8bB111A38"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "INJ",
+            "address": {
+                "1": "0xaE2EbE3c4D20cE13cE47cbb49b6d7ee631Cd816e",
+                "42161": "",
+                "10": "0x90CC16F5493894eff84a5Fedd1dcE297d174fEEf"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "INR",
+            "address": {
+                "1": "0x605D5c2fBCeDb217D7987FC0951B5753069bC360",
+                "42161": "",
+                "10": "0x5535e67d8f99c8ebe961E1Fc1F6DDAE96FEC82C9"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "IOTX",
+            "address": {
+                "1": "0x96c45535d235148Dc3ABA1E48A6E3cFB3510f4E2",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "JPY",
+            "address": {
+                "1": "0xBcE206caE7f0ec07b545EddE332A47C2F75bbeb3",
+                "42161": "0x3dD6e51CB9caE717d5a8778CF79A04029f9cFDF8",
+                "10": "0x536944c3A71FEb7c1E5C66Ee37d1a148d8D8f619"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "KNC",
+            "address": {
+                "1": "0xf8fF43E991A81e6eC886a3D281A2C6cC19aE70Fc",
+                "42161": "0xbF539d4c2106dd4D9AB6D56aed3d9023529Db145",
+                "10": "0xCB24d22aF35986aC1feb8874AdBbDF68f6dC2e96"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "KRW",
+            "address": {
+                "1": "0x01435677FB11763550905594A16B645847C1d0F3",
+                "42161": "0x85bb02E0Ae286600d1c68Bb6Ce22Cc998d411916",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "KSM",
+            "address": {
+                "1": "0x06E4164E24E72B879D93360D1B9fA05838A62EB5",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "LINK",
+            "address": {
+                "1": "0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c",
+                "42161": "0x86E53CF1B870786351Da77A57575e79CB55812CB",
+                "10": "0xCc232dcFAAE6354cE191Bd574108c1aD03f86450"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "LTC",
+            "address": {
+                "1": "0x6AF09DF7563C363B5763b9102712EbeD3b9e859B",
+                "42161": "",
+                "10": "0x45954efBD01f5A12428A09E4C38b8434C3dD4Ac3"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "LUSD",
+            "address": {
+                "1": "0x3D7aE7E594f2f2091Ad8798313450130d0Aba3a0",
+                "42161": "0x0411D28c94d85A36bC72Cb0f875dfA8371D8fFfF",
+                "10": "0x9dfc79Aaeb5bb0f96C6e9402671981CdFc424052"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "MANA",
+            "address": {
+                "1": "0x56a4857acbcfe3a66965c251628B1c9f1c408C19",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "MATIC",
+            "address": {
+                "1": "0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676",
+                "42161": "0x52099D4523531f678Dfc568a7B1e5038aadcE1d6",
+                "10": "0x0ded608AFc23724f614B76955bbd9dFe7dDdc828"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "MIM",
+            "address": {
+                "1": "0x7A364e8770418566e3eb2001A96116E6138Eb32F",
+                "42161": "0x87121F6c9A9F6E90E59591E4Cf4804873f54A95b",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "MKR",
+            "address": {
+                "1": "0xec1D1B3b0443256cc3860e24a46F108e699484Aa",
+                "42161": "0xdE9f0894670c4EFcacF370426F10C3AD2Cdf147e",
+                "10": "0x607b417DF51e0E1ed3A12fDb7FC0e8307ED250F3"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "MSFT",
+            "address": {
+                "1": "0x021Fb44bfeafA0999C7b07C4791cf4B859C3b431",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "NEAR",
+            "address": {
+                "1": "0xC12A6d1D827e23318266Ef16Ba6F397F2F91dA9b",
+                "42161": "0xBF5C3fB2633e924598A46B9D07a174a9DBcF57C0",
+                "10": "0xca6fa4b8CB365C02cd3Ba70544EFffe78f63ac82"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "NFLX",
+            "address": {
+                "1": "0x67C2e69c5272B94AF3C90683a9947C39Dc605ddE",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "NMR",
+            "address": {
+                "1": "0xcC445B35b3636bC7cC7051f4769D8982ED0d449A",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "NZD",
+            "address": {
+                "1": "0x3977CFc9e4f29C184D4675f4EB8e0013236e5f3e",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "OMG",
+            "address": {
+                "1": "0x7D476f061F8212A8C9317D5784e72B4212436E93",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ONT",
+            "address": {
+                "1": "0xcDa3708C5c2907FCca52BB3f9d3e4c2028b89319",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "OXT",
+            "address": {
+                "1": "0xd75AAaE4AF0c398ca13e2667Be57AF2ccA8B5de6",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "PERP",
+            "address": {
+                "1": "0x01cE1210Fe8153500F60f7131d63239373D7E26C",
+                "42161": "",
+                "10": "0xA12CDDd8e986AF9288ab31E58C60e65F2987fB13"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "PHA",
+            "address": {
+                "1": "0x2B1248028fe48864c4f1c305E524e2e6702eAFDF",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "RAI",
+            "address": {
+                "1": "0x483d36F6a1d063d580c7a24F9A42B346f3a69fbb",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "REQ",
+            "address": {
+                "1": "0x2F05888D185970f178f40610306a0Cc305e52bBF",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "RPL",
+            "address": {
+                "1": "0x4E155eD98aFE9034b7A5962f6C84c86d869daA9d",
+                "42161": "0xF0b7159BbFc341Cc41E7Cb182216F62c6d40533D",
+                "10": "0xADE082c91A6AeCC86fC11704a830e933e1b382eA"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "RSR",
+            "address": {
+                "1": "0x759bBC1be8F90eE6457C44abc7d443842a976d02",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "RDNT",
+            "address": {
+                "1": "",
+                "42161": "0x20d0Fcab0ECFD078B036b6CAf1FaC69A6453b352",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SAND",
+            "address": {
+                "1": "0x35E3f7E558C04cE7eEE1629258EcbbA03B36Ec56",
+                "42161": "",
+                "10": "0xAE33e077a02071E62d342E449Afd9895b016d541"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SGD",
+            "address": {
+                "1": "0xe25277fF4bbF9081C75Ab0EB13B4A13a721f3E13",
+                "42161": "0xF0d38324d1F86a176aC727A4b0c43c9F9d9c5EB1",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SHV",
+            "address": {
+                "1": "0xc04611C43842220fd941515F86d1DDdB15F04e46",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SNX",
+            "address": {
+                "1": "0xDC3EA94CD0AC27d9A86C180091e7f78C683d3699",
+                "42161": "0x054296f0D036b95531B4E14aFB578B80CFb41252",
+                "10": "0x2FCF37343e916eAEd1f1DdaaF84458a359b53877"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SOL",
+            "address": {
+                "1": "0x4ffC43a60e009B551865A93d232E33Fce9f01507",
+                "42161": "0x24ceA4b8ce57cdA5058b924B9B9987992450590c",
+                "10": "0xC663315f7aF904fbbB0F785c32046dFA03e85270"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SPELL",
+            "address": {
+                "1": "0x8c110B94C5f1d347fAcF5E1E938AB2db60E3c9a8",
+                "42161": "0x383b3624478124697BEF675F07cA37570b73992f",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "STETH",
+            "address": {
+                "1": "0xCfE54B5cD566aB89272946F602D76Ea879CAb4a8",
+                "42161": "0x07C5b924399cc23c24a95c8743DE4006a32b7f2a",
+                "10": "0x41878779a388585509657CE5Fb95a80050502186"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "STG",
+            "address": {
+                "1": "0x7A9f34a0Aa917D438e9b6E630067062B7F8f6f3d",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SUSHI",
+            "address": {
+                "1": "0xCc70F09A6CC17553b2E31954cD36E4A2d89501f7",
+                "42161": "0xb2A8BA74cbca38508BA1632761b56C897060147C",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "SXP",
+            "address": {
+                "1": "0xFb0CfD6c19e25DB4a08D8a204a387cEa48Cc138f",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "TOMO",
+            "address": {
+                "1": "0x3d44925a8E9F9DFd90390E58e92Ec16c996A331b",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "TRU",
+            "address": {
+                "1": "0x26929b85fE284EeAB939831002e1928183a10fb1",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "TRY",
+            "address": {
+                "1": "0xB09fC5fD3f11Cf9eb5E1C5Dba43114e3C9f477b5",
+                "42161": "0xE8f8AfE4b56c6C421F691bfAc225cE61b2C7CD05",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "TUSD",
+            "address": {
+                "1": "0xec746eCF986E2927Abd291a2A1716c940100f8Ba",
+                "42161": "0x6fAbee62266Da6686EE2744C6f15bb8352d2f28D",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "UNI",
+            "address": {
+                "1": "0x553303d460EE0afB37EdFf9bE42922D8FF63220e",
+                "42161": "0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720",
+                "10": "0x11429eE838cC01071402f21C219870cbAc0a59A0"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "USDC",
+            "address": {
+                "1": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+                "42161": "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3",
+                "10": "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "USDD",
+            "address": {
+                "1": "0x0ed39A19D2a68b722408d84e4d970827f61E6c0A",
+                "42161": "0x4Ee1f9ec1048979930aC832a3C1d18a0b4955a02",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "USDP",
+            "address": {
+                "1": "0x09023c0DA49Aaf8fc3fA3ADF34C6A7016D38D5e3",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "USDT",
+            "address": {
+                "1": "0x3E7d1eAB13ad0104d2750B8863b489D65364e32D",
+                "42161": "0x3f3f5dF88dC9F13eac63DF89EC16ef6e7E25DdE7",
+                "10": "0xECef79E109e997bCA29c1c0897ec9d7b03647F5E"
+            },
+            "ABI": [
+                {
+                    "inputs": [],
+                    "name": "latestAnswer",
+                    "outputs": [
+                        {
+                            "internalType": "int256",
+                            "name": "",
+                            "type": "int256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+        },
+        {
+            "ticker": "WING",
+            "address": {
+                "1": "0x134fE0a225Fb8e6683617C13cEB6B3319fB4fb82",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "XAG",
+            "address": {
+                "1": "0x379589227b15F1a12195D3f2d90bBc9F31f95235",
+                "42161": "0xC56765f04B248394CF1619D20dB8082Edbfa75b1",
+                "10": "0x290dd71254874f0d4356443607cb8234958DEe49"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "XAU",
+            "address": {
+                "1": "0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6",
+                "42161": "0x1F954Dc24a49708C26E0C1777f16750B5C6d5a2c",
+                "10": "0x8F7bFb42Bf7421c2b34AAD619be4654bFa7B3B8B"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "XCN",
+            "address": {
+                "1": "0xeb988B77b94C186053282BfcD8B7ED55142D3cAB",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "XRP",
+            "address": {
+                "1": "0xCed2660c6Dd1Ffd856A5A82C67f3482d88C50b12",
+                "42161": "0xB4AD57B52aB9141de9926a3e0C8dc6264c2ef205",
+                "10": "0x8788F0DBDa7678244Ac7FF09d963d7696D56A8a0"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "YFI",
+            "address": {
+                "1": "0xA027702dbb89fbd58938e4324ac03B58d812b0E1",
+                "42161": "0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21",
+                "10": "0x5cdC797acCBf57EE2363Fed9701262Abc87a232e"
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "ZRX",
+            "address": {
+                "1": "0x2885d15b8Af22648b98B122b22FDF4D2a56c6023",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        },
+        {
+            "ticker": "sUSD",
+            "address": {
+                "1": "0xad35Bd71b9aFE6e4bDc266B345c198eaDEf9Ad94",
+                "42161": "",
+                "10": ""
+            },
+            "ABI": []
+        }
+    ]
 }
