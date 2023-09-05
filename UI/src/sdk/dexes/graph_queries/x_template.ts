@@ -42,7 +42,7 @@ export default class NewDex implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     return []
   }
 }

@@ -8,7 +8,7 @@ import "../rateX/libraries/TransferHelper.sol";
 
 contract CurveDex is IDex {
 
-    ICurvePoolRegistry private curvePoolRegistry;
+    ICurvePoolRegistry private immutable curvePoolRegistry;
 
     constructor(address _curvePoolRegistry){
         curvePoolRegistry = ICurvePoolRegistry(_curvePoolRegistry);

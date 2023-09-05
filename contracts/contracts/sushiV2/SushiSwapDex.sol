@@ -9,7 +9,7 @@ import "../rateX/libraries/TransferHelper.sol";
 
 contract SushiSwapDex is IDex {
 
-    ISushiSwapRouter private sushiRouter;
+    ISushiSwapRouter private immutable sushiRouter;
 
     constructor(address _sushiSwapRouter){
         sushiRouter = ISushiSwapRouter(_sushiSwapRouter);

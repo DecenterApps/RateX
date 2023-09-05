@@ -118,8 +118,6 @@ contract RateX is Ownable {
     {
         require(_foundRoutes.length > 0, "No routes in split route");
 
-        checkRoutesStructure(_foundRoutes, _amountIn, _tokenIn, _tokenOut);
-
         TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
 
         uint256 balanceBefore = IERC20(_tokenOut).balanceOf(address(this));
@@ -133,20 +131,6 @@ contract RateX is Ownable {
         TransferHelper.safeTransfer(_tokenOut, _recipient, amountOut);
 
         emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
-    }
-
-    function checkRoutesStructure(
-        Route[] calldata _foundRoutes,
-        uint256 _amountIn,
-        address _tokenIn,
-        address _tokenOut
-    ) internal pure {
-        uint amountIn = 0;
-        for (uint256 i = 0; i < _foundRoutes.length; ++i) {
-            amountIn += _foundRoutes[i].amountIn;
-            checkInputOutputTokens(_foundRoutes[i], _tokenIn, _tokenOut);
-        }
-        require(amountIn == _amountIn, "Amount in does not match");
     }
 
     function checkInputOutputTokens(

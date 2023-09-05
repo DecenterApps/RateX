@@ -9,7 +9,7 @@ import "../rateX/libraries/TransferHelper.sol";
 
 contract UniswapV3Dex is IDex {
 
-    ISwapRouter public swapRouter;
+    ISwapRouter public immutable swapRouter;
 
     constructor(address _swapRouterAddress) {
         swapRouter = ISwapRouter(_swapRouterAddress);

@@ -50,7 +50,7 @@ export default class CamelotV2 implements DEXGraphFunctionality {
   }
 
   // call to Solidity for additional data
-  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
     const rawData: any[][] = await CamelotHelperContract.methods.getPoolsData(poolInfos).call()
     

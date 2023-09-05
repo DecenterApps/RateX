@@ -39,7 +39,7 @@ export default class Curve implements DEXGraphFunctionality {
     }
 
     // calls to Solidity for additional data
-    async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
         //@ts-ignore
         const rawData: any[][] = await CurveHelperContract.methods.getPoolsData(poolInfos).call()
 

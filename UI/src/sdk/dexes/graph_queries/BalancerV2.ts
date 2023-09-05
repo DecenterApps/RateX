@@ -57,7 +57,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getPoolsData(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
      const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos)
 
     return pools
