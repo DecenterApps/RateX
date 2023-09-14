@@ -106,6 +106,10 @@ contract RateX is Ownable {
         emit DexRemoved(_dexId);
     }
 
+    function getSupportedDexes() external view returns(DexType[] memory) {
+        return supportedDexes;
+    }
+
     function swap(
         Route[] calldata _foundRoutes,
         address _tokenIn,
@@ -117,6 +121,8 @@ contract RateX is Ownable {
     external noReentrancy returns(uint256 amountOut)
     {
         require(_foundRoutes.length > 0, "No routes in split route");
+
+        checkAmountIn(_foundRoutes, _amountIn);
 
         TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
 
@@ -133,17 +139,12 @@ contract RateX is Ownable {
         emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
     }
 
-    function checkInputOutputTokens(
-        Route calldata _route,
-        address _tokenIn,
-        address _tokenOut
-    ) internal pure
-    {
-        uint256 swapsLength = _route.swaps.length;
-
-        require(swapsLength > 0, "No swaps in route");
-        require(_route.swaps[0].tokenIn == _tokenIn, "Input token does not match");
-        require(_route.swaps[swapsLength - 1].tokenOut == _tokenOut, "Output token does not match");
+    function checkAmountIn(Route[] calldata _foundRoutes, uint256 _amountIn) private pure {
+        uint256 totalAmountIn = 0;
+        for (uint256 i = 0; i < _foundRoutes.length; ++i) {
+            totalAmountIn += _foundRoutes[i].amountIn;
+        }
+        require(totalAmountIn == _amountIn, "Amount in does not match");
     }
 
     function swapForTotalAmountOut(Route[] calldata _foundRoutes)
@@ -161,16 +162,16 @@ contract RateX is Ownable {
         amountOut = _route.amountIn;
 
         for (uint256 i = 0; i < _route.swaps.length; ++i) {
-            SwapStep memory swap = _route.swaps[i];
+            SwapStep memory swapStep = _route.swaps[i];
 
-            require(dexes[swap.dexId] != address(0), "Dex does not exist");
+            require(dexes[swapStep.dexId] != address(0), "Dex does not exist");
 
-            TransferHelper.safeApprove(swap.tokenIn, dexes[swap.dexId], amountOut);
+            TransferHelper.safeApprove(swapStep.tokenIn, dexes[swapStep.dexId], amountOut);
 
-            amountOut = IDex(dexes[swap.dexId]).swap(
-                swap.poolId,
-                swap.tokenIn,
-                swap.tokenOut,
+            amountOut = IDex(dexes[swapStep.dexId]).swap(
+                swapStep.poolId,
+                swapStep.tokenIn,
+                swapStep.tokenOut,
                 amountOut,
                 0,
                 address(this)
