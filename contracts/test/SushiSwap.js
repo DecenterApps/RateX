@@ -1,78 +1,52 @@
 hre = require("hardhat");
-const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
 const {deploySushiDex} = require("../scripts/utils/deployment");
 
-describe("Tests for swaping with sushiswap", async function () {
+describe("Tests for swapping on sushiswap", async function () {
 
     const addresses = config[hre.network.config.chainId];
 
-    async function deploySushiSwapFixture() {
-        return (await deploySushiDex());
-    }
+    let snapshotId;
 
-    it("Should swap wei to dai tokens", async function () {
-        const {sushiSwap, addr1, addr2} = await loadFixture(deploySushiSwapFixture);
-
-        await sendWethTokensToUser(addr1, hre.ethers.parseEther("500"))
-        await approveToContract(addr1, await sushiSwap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10000"));
-
-        const wethContract = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
-        const wethBalanceBefore = await wethContract.balanceOf(addr1);
-        console.log(`Balance in weth before: ${wethBalanceBefore}`);
-
-        const daiContract = await hre.ethers.getContractAt("IERC20", addresses.tokens.DAI);
-        const daiBalanceBefore = await daiContract.balanceOf(addr1);
-        console.log(`Dai balance before: ${daiBalanceBefore}`);
-
-        const sushiSwapFactory = await hre.ethers.getContractAt("ISushiSwapV2Factory", addresses.sushi.factory);
-        const weiDaiAddress = await sushiSwapFactory.getPair(addresses.tokens.DAI, addresses.tokens.WETH);
-        console.log("Wei dai address: ", weiDaiAddress);
-
-        await sushiSwap.connect(addr1).swap(
-            addresses.tokens.USDC, // not needed, will be changed later
-            addresses.tokens.WETH,
-            addresses.tokens.DAI,
-            hre.ethers.parseEther("100"),
-            1,
-            addr1
-        );
-
-        const wethBalanceAfter = await wethContract.balanceOf(addr1);
-        console.log(`Balance in weth after: ${wethBalanceAfter}`);
-        const daiBalanceAfter = await daiContract.balanceOf(addr1);
-        console.log(`Dai balance after: ${daiBalanceAfter}`);
+    beforeEach(async function () {
+        snapshotId = await hre.network.provider.send("evm_snapshot");
     });
 
-    it("Should swap usdc to wei", async function () {
-        const {sushiSwap, addr1, addr2} = await loadFixture(deploySushiSwapFixture);
+    afterEach(async function () {
+        await hre.network.provider.send("evm_revert", [snapshotId]);
+    });
 
-        await sendERCTokensToUser("0x62383739d68dd0f844103db8dfb05a7eded5bbe6", addresses.tokens.USDC, addr1, "10000000000"); // 10000 USDC
-        await approveToContract(addr1, await sushiSwap.getAddress(), addresses.tokens.USDC, hre.ethers.parseEther("10000000000"));
+    it("Should swap wei to dai tokens", async function () {
+        const {sushiSwap, addr1} = await deploySushiDex();
 
-        const wethContract = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
-        const wethBalanceBefore = await wethContract.balanceOf(addr1);
-        console.log(`Balance in weth before: ${wethBalanceBefore}`);
+        const amountIn = hre.ethers.parseEther("100");
+        await sendWethTokensToUser(addr1, amountIn);
+        await approveToContract(addr1, await sushiSwap.getAddress(), addresses.tokens.WETH, amountIn);
 
-        const usdcContract = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDC);
-        const usdcBalanceBefore = await usdcContract.balanceOf(addr1);
-        console.log(`USDC balance before: ${usdcBalanceBefore}`);
+        const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
+        const DAI = await hre.ethers.getContractAt("IERC20", addresses.tokens.DAI);
 
+        const wethBalanceBefore = await WETH.balanceOf(addr1);
 
-        await sushiSwap.connect(addr1).swap(
-            addresses.tokens.USDC, // not needed, will be changed later
-            addresses.tokens.USDC,
+        const tx = await sushiSwap.swap(
+            "0x0000000000000000000000000000000000000000", // not used in function because we can get pool address from pair
             addresses.tokens.WETH,
-            1000000000, // 1000 USDC
+            addresses.tokens.DAI,
+            amountIn,
             1,
             addr1
         );
+        const txReceipt = await tx.wait();
 
-        const wethBalanceAfter = await wethContract.balanceOf(addr1);
-        console.log(`Balance in weth after: ${wethBalanceAfter}`);
-        const usdcBalanceAfter = await usdcContract.balanceOf(addr1);
-        console.log(`Usdc balance after: ${usdcBalanceAfter}`);
+        const event = txReceipt.logs[txReceipt.logs.length - 1];
+        const amountOut = event.args[0];
+
+        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        const daiBalanceAfter = await DAI.balanceOf(addr1);
+
+        expect(daiBalanceAfter).to.be.equal(amountOut);
+        expect(BigInt(wethBalanceAfter)).to.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 });

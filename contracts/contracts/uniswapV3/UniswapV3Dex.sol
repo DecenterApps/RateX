@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "../rateX/interfaces/IDex.sol";
 import "../rateX/libraries/TransferHelper.sol";
@@ -39,5 +38,7 @@ contract UniswapV3Dex is IDex {
                 sqrtPriceLimitX96: 0
             })
         );
+
+        emit TestAmountOutEvent(amountOut);
     }
 }

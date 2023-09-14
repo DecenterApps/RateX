@@ -36,6 +36,8 @@ contract CurveDex is IDex {
             _amountOutMin,
             _to
         );
+
+        emit TestAmountOutEvent(amountOut);
     }
 
     function findTokenIndexes(
