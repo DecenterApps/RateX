@@ -1,6 +1,5 @@
 import {Pool} from "../../types";
-import {ComputeRoutesParams, TRoute} from "./types";
-
+import {ComputeRoutesParams, TRoute, TRouteStep} from "./types";
 
 export default function computeRoutes(
     tokenIn: string,
@@ -26,7 +25,7 @@ export default function computeRoutes(
 
 function _computeRoutes(
     params: ComputeRoutesParams,
-    currentRoute: Pool[],
+    currentRoute: TRouteStep[],
     usedPools: boolean[],
     foundRoutes: TRoute[],
     previousTokenOut: string
@@ -37,7 +36,7 @@ function _computeRoutes(
 
     if (routeFound(currentRoute, params)) {
         foundRoutes.push({
-            pools: [...currentRoute],
+            steps: [...currentRoute],
             tokenIn: params.tokenIn,
             tokenOut: params.tokenOut
         });
@@ -56,27 +55,27 @@ function _computeRoutes(
             continue;
         }
 
-        const currentTokenOut = curPool.getToken0()._address.toLowerCase() === previousTokenOut.toLowerCase()
-            ? curPool.getToken1()._address
-            : curPool.getToken0()._address;
+        const tokensToExplore = curPool.tokens.filter((token) => token._address.toLowerCase() !== previousTokenOut.toLowerCase());
 
-        currentRoute.push(curPool);
-        usedPools[i] = true;
+        for (let token of tokensToExplore) {
+            currentRoute.push({pool: curPool, tokenOut: token._address});
+            usedPools[i] = true;
 
-        _computeRoutes(
-            params,
-            currentRoute,
-            usedPools,
-            foundRoutes,
-            currentTokenOut
-        );
+            _computeRoutes(
+                params,
+                currentRoute,
+                usedPools,
+                foundRoutes,
+                token._address
+            );
 
-        usedPools[i] = false;
-        currentRoute.pop();
+            usedPools[i] = false;
+            currentRoute.pop();
+        }
     }
 }
 
-function routeFound(route: Pool[], params: ComputeRoutesParams): boolean {
-    return route.length > 0 && route[route.length - 1].containsToken(params.tokenOut);
+function routeFound(route: TRouteStep[], params: ComputeRoutesParams): boolean {
+    return route.length > 0 && route[route.length - 1].tokenOut.toLowerCase() === params.tokenOut.toLowerCase();
 }
 

@@ -44,14 +44,12 @@ export function getSingleRouteWithSingleQuote(route: TRoute, amount: AmountPerce
     let tokenIn = route.tokenIn;
     let amountOut = amount.amountIn;
 
-    for (let pool of route.pools) {
-        let tokenOut = pool.getToken0()._address.toLowerCase() === tokenIn.toLowerCase()
-            ? pool.getToken1()._address
-            : pool.getToken0()._address;
+    for (let step of route.steps) {
+        const tokenOut = step.tokenOut;
 
-        amountOut = pool.calculateExpectedOutputAmount(tokenIn, tokenOut, amountOut);
+        amountOut = step.pool.calculateExpectedOutputAmount(tokenIn, tokenOut, amountOut);
 
-        if (amountOut === BigInt(0)) {
+        if (amountOut <= BigInt(0)) {
             break;
         }
 

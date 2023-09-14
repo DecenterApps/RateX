@@ -1,7 +1,12 @@
 import {Pool} from "../../types";
 
+export interface TRouteStep {
+    pool: Pool,
+    tokenOut: string;
+}
+
 export interface TRoute {
-    pools: Pool[],
+    steps: TRouteStep[],
     tokenIn: string,
     tokenOut: string
 }
