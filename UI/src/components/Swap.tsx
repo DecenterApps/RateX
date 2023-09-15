@@ -6,13 +6,15 @@ import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
-import {findQuote, swap} from '../sdk/quoter/front_communication'
+import {findQuote, swap} from '../sdk/swap/front_communication'
 import {Quote} from '../sdk/types'
 import './Swap.scss'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+
+const TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID
 
 const web3: Web3 = initRPCProvider(42161)
 
@@ -229,13 +231,14 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         chainId
     )
         .then((res) => {
-          setLoadingSwap(false)
-          // for now hardcode it for testing purposes
           res.isSuccess
               ? notification.success({
-                message: `<a  href="https://dashboard.tenderly.co/shared/fork/e4b74728-c29f-4b93-b6b6-97c90d9dbf48/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+                message: TENDERLY_FORK_ID !== undefined ?
+                    `<a  href="https://dashboard.tenderly.co/shared/fork/${TENDERLY_FORK_ID}/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
+                    : `Tx hash: ${res.txHash}`
               })
               : notification.error({ message: res.errorMessage })
+          setLoadingSwap(false)
         })
         .catch((error: string) => {
           console.log("Error on swap: ", error);

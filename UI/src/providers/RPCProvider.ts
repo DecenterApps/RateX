@@ -1,27 +1,24 @@
 import Web3 from 'web3'
 
-const ALCHEMY_KEY = process.env.ALCHEMY_KEY
-const TENDERLY_FORK_ID = process.env.TENDERLY_FORK_ID
+const ARBITRUM_URL = process.env.REACT_APP_ARBITRUM_URL
+const TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID
 
 // Arbitrum Endpoints
 const abritrumOneEndpoint = 'https://arb1.arbitrum.io/rpc'
-const alchemyMainnetEndpoint = `https://arb-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
+const userProvidedArbitrumEndpoint = `${ARBITRUM_URL}`
 const tenderlyForkEndpoint: string = `https://rpc.tenderly.co/fork/${TENDERLY_FORK_ID}`
-
-// FOR NOW WE CAN USE IT LIKE THIS
-const USE_TENDERLKLY_FORK = false
 
 // Optimism Endpoints
 const optimismEndpoint = 'https://mainnet.optimism.io'
 
 function initArbitrumProvider(): Web3 {
-  if (USE_TENDERLKLY_FORK) {
+  if (TENDERLY_FORK_ID !== undefined) {
     return new Web3(new Web3.providers.HttpProvider(tenderlyForkEndpoint))
   } else {
     try {
       return new Web3(new Web3.providers.HttpProvider(abritrumOneEndpoint))
     } catch (error) {
-      return new Web3(new Web3.providers.HttpProvider(alchemyMainnetEndpoint))
+      return new Web3(new Web3.providers.HttpProvider(userProvidedArbitrumEndpoint))
     }
   }
 }
@@ -34,9 +31,13 @@ function initOptimismProvider(): Web3 {
 // window object won't be available
 function initRPCProvider(chainId: number): Web3 {
   // check if metamask is connected
-  if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) return new Web3(window.ethereum)
-  else if (chainId === 42161) return initArbitrumProvider()
-  else return initOptimismProvider()
+  if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) {
+    return new Web3(window.ethereum)
+  }
+  if (chainId === 42161) {
+    return initArbitrumProvider()
+  }
+  return initOptimismProvider()
 }
 
 // test method for running sdk locally

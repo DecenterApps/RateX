@@ -9,17 +9,10 @@ const {
 } = require('./utils/deployment')
 
 const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
-const {config} = require('../addresses.config')
-const {resolve, join} = require("path");
-const fs = require("fs");
-const {sendWethTokensToUser, sendERCTokensToUser} = require("./utils/contract");
-
-
-const addresses = config[hre.network.config.chainId]
 
 async function main() {
     console.log('Deploying contracts...')
-    const {rateX, addr1} = await deployRateX()
+    const {rateX} = await deployRateX()
     const {uniswapHelper} = await deployUniswapHelper()
     const {balancerHelper} = await deployBalancerHelper()
     const {sushiHelper} = await deploySushiSwapHelper()
@@ -44,12 +37,7 @@ async function main() {
     const balancerHelperAddress = await balancerHelper.getAddress();
     console.log("BalancerHelper address: " + balancerHelperAddress);
 
-    await saveRateXContractAbi(rateX);
-    await saveUniswapHelperContractAbi(uniswapHelper);
-    await saveSushiSwapHelperContractAbi(sushiHelper);
-    await saveCurveHelperContractAbi(curveHelper);
-    await saveCamelotHelperContractAbi(camelotHelper);
-    await saveBalancerHelperContractAbi(balancerHelper);
+    await saveAbisToFile();
 
     saveAddresses(
         rateXAddress,
@@ -61,40 +49,13 @@ async function main() {
     );
 }
 
-async function saveRateXContractAbi(rateXContract) {
-    const RateX = await hre.artifacts.readArtifact('RateX')
-    const rateXAbi = RateX.abi
-    saveAbiToFile(rateXAbi, 'RateX');
-}
-
-async function saveUniswapHelperContractAbi(uniswapHelperContract) {
-    const UniswapHelper = await hre.artifacts.readArtifact('UniswapHelper')
-    const uniswapHelperAbi = UniswapHelper.abi
-    saveAbiToFile(uniswapHelperAbi, 'UniswapHelper');
-}
-
-async function saveSushiSwapHelperContractAbi(sushiHelper) {
-    const SushiSwapHelper = await hre.artifacts.readArtifact('SushiSwapHelper')
-    const sushiSwapAbi = SushiSwapHelper.abi
-    saveAbiToFile(sushiSwapAbi, 'SushiSwapHelper');
-}
-
-async function saveCurveHelperContractAbi(curveHelper) {
-    const CurveHelper = await hre.artifacts.readArtifact('CurveHelper')
-    const curveAbi = CurveHelper.abi
-    saveAbiToFile(curveAbi, 'CurveHelper');
-}
-
-async function saveCamelotHelperContractAbi(camelotHelper) {
-    const CamelotHelper = await hre.artifacts.readArtifact('CamelotHelper')
-    const camelotAbi = CamelotHelper.abi
-    saveAbiToFile(camelotAbi, 'CamelotHelper');
-}
-
-async function saveBalancerHelperContractAbi(balancerHelper) {
-    const BalancerHelper = await hre.artifacts.readArtifact('BalancerHelper')
-    const balancerAbi = BalancerHelper.abi
-    saveAbiToFile(balancerAbi, 'BalancerHelper');
+async function saveAbisToFile() {
+    await saveAbiToFile((await hre.artifacts.readArtifact('RateX')).abi, 'RateX');
+    await saveAbiToFile((await hre.artifacts.readArtifact('UniswapHelper')).abi, 'UniswapHelper');
+    await saveAbiToFile((await hre.artifacts.readArtifact('SushiSwapHelper')).abi, 'SushiSwapHelper');
+    await saveAbiToFile((await hre.artifacts.readArtifact('CurveHelper')).abi, 'CurveHelper');
+    await saveAbiToFile((await hre.artifacts.readArtifact('CamelotHelper')).abi, 'CamelotHelper');
+    await saveAbiToFile((await hre.artifacts.readArtifact('BalancerHelper')).abi, 'BalancerHelper');
 }
 
 main().catch((error) => {

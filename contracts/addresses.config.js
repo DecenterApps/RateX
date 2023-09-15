@@ -50,11 +50,14 @@ const ARBITRUM_ADDRESSES = {
         usdt_usdce_pool_0_0_1: '0x8c9D230D45d6CfeE39a6680Fb7CB7E8DE7Ea8E71',
         weth_usdt_pool_0_3: '0xc82819F72A9e77E2c0c3A69B3196478f44303cf4',
         dai_usdce_pool_0_0_1: '0xF0428617433652c9dc6D1093A42AdFbF30D29f74',
+        wbtc_usdce_pool_0_05: '0xac70bD92F89e6739B3a08Db9B6081a923912f73D',
+        weth_usdce_pool_0_05: '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
+        weth_usdt_pool_0_05: '0x641c00a822e8b671738d32a431a4fb6074e5c79d'
     },
 
     impersonate: {
         WETH: '0x940a7ed683a60220de573ab702ec8f789ef0a402',
-        DAI: '0x5ec6abff9bb4c673f63d077a962a29945f744857',
+        DAI: '0x2d070ed1321871841245d8ee5b84bd2712644322',
         USDT: '0x62383739d68dd0f844103db8dfb05a7eded5bbe6',
         WBTC: "0x7546966122e636a601a3ea4497d3509f160771d8",
         USDC: "0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2",

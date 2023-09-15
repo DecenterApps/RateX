@@ -23,15 +23,15 @@ module.exports = {
   networks: {
     arbitrum: {
       chainId: 42161,
-      url: process.env.ARBITRUM_URL_ALCHEMY,
+      url: process.env.ARBITRUM_URL,
       accounts: [
-        process.env.ACC1_SK || "",
+        process.env.SECRET_KEY || "",
       ]
     },
     hardhat: {
       chainId: 31337,
       forking: {
-        url: process.env.ARBITRUM_URL_ALCHEMY,
+        url: process.env.ARBITRUM_URL,
       }
     },
     localhost: {
@@ -40,9 +40,9 @@ module.exports = {
     },
     tenderly: {
         chainId: 42161,
-        url: process.env.TENDERLY_URL,
+        url: `https://rpc.tenderly.co/fork/${process.env.TENDERLY_FORK_ID}`,
         accounts: [
-            process.env.ACC1_SK || "",
+            process.env.SECRET_KEY || "",
         ]
     }
   }

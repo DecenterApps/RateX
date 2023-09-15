@@ -1,4 +1,4 @@
-import { fetchPoolsData } from "../sdk/quoter/graph_communication"
+import { fetchPoolsData } from "../sdk/swap/graph_communication"
 
 function Token() {
   const checkFetchPoolsData = async () => {

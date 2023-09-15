@@ -1,46 +1,69 @@
 hre = require("hardhat");
-const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
-const {approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
+const {approveToContract, sendERCTokensToUser, sendWethTokensToUser} = require("../scripts/utils/contract");
 const {deployCurveDex} = require("../scripts/utils/deployment");
 
-const addresses = config[hre.network.config.chainId];
-
-describe("Tests for connecting with Curve", async function () {
+describe("Tests for swapping on Curve", async function () {
     const addresses = config[hre.network.config.chainId];
 
-    async function deployCurveFixture() {
-        return (await deployCurveDex());
-    }
+    let snapshotId;
+
+    beforeEach(async function () {
+        snapshotId = await hre.network.provider.send("evm_snapshot");
+    });
+
+    afterEach(async function () {
+        await hre.network.provider.send("evm_revert", [snapshotId]);
+    });
 
     it("Should swap with curve2pool", async function () {
-        const {curve, addr1, addr2} = await loadFixture(deployCurveFixture);
+        const {curve, addr1} = await deployCurveDex();
 
         const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
         const USDCE = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDCE);
 
+        const amountIn = hre.ethers.parseUnits("1000", 6);
+
+        await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, addr1, amountIn);
+        await approveToContract(addr1, await curve.getAddress(), addresses.tokens.USDT, amountIn);
+
         const balanceUSDTBefore = await USDT.balanceOf(addr1);
-        const balanceUSDCEBefore = await USDCE.balanceOf(addr1);
-        console.log(`Balance in USDT before: ${balanceUSDTBefore}`);
-        console.log(`Balance in USDCE before: ${balanceUSDCEBefore}`);
 
-        await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, addr1, "2000000000"); // 2000 USDT
-        await approveToContract(addr1, await curve.getAddress(), addresses.tokens.USDT, "10000000000");
-
-        const amountOut = await curve.swap(
+        const tx = await curve.swap(
             addresses.curve.curve2Pool,
             addresses.tokens.USDT,
             addresses.tokens.USDCE,
-            "1000000000", // sending 1000 USDT
+            amountIn,
             0,
             addr1
         );
-        console.log(`Amount out: ${amountOut}`);
+        const txReceipt = await tx.wait();
+        const event = txReceipt.logs[txReceipt.logs.length - 1];
+        const amountOut = event.args[0];
 
         const balanceUSDTAfter = await USDT.balanceOf(addr1);
         const balanceUSDCEAfter = await USDCE.balanceOf(addr1);
-        console.log(`Balance in USDT after: ${balanceUSDTAfter}`);
-        console.log(`Balance in USDCE after: ${balanceUSDCEAfter}`);
+
+        expect(balanceUSDCEAfter).to.equal(amountOut);
+        expect(BigInt(balanceUSDTAfter)).to.equal(BigInt(balanceUSDTBefore) - BigInt(amountIn));
+    });
+
+    it("Should revert because tokens not found in pool", async function () {
+        const {curve, addr1} = await deployCurveDex();
+
+        const amountIn = hre.ethers.parseEther("1");
+
+        await sendWethTokensToUser(addr1, amountIn);
+        await approveToContract(addr1, await curve.getAddress(), addresses.tokens.WETH, amountIn);
+
+        await expect(curve.swap(
+            addresses.curve.curve2Pool,
+            addresses.tokens.WETH, // should revert because WETH not in pool
+            addresses.tokens.USDC,
+            amountIn,
+            0,
+            addr1
+        )).to.be.revertedWith("Tokens not found in pool");
     });
 });

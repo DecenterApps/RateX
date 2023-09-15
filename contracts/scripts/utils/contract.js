@@ -18,27 +18,12 @@ async function approveToContract(owner, contractAddress, tokenAddress, amount) {
 async function sendERCTokensToUser(impersonatedAddress, tokenAddress, toAddress, amount) {
     const signer = await hre.ethers.getImpersonatedSigner(impersonatedAddress);
     const ercToken = await hre.ethers.getContractAt("IERC20", tokenAddress, signer);
-    const balance = await ercToken.balanceOf(signer.address);
     const txTransfer = await ercToken.connect(signer).transfer(toAddress, amount);
     await txTransfer.wait();
-}
-
-async function getSymbolAndDecimalsOfERC20Token(tokenAddress) {
-    const [owner] = await hre.ethers.getSigners();
-    const erc20Token = await hre.ethers.getContractAt("IERC20", tokenAddress, owner);
-    const symbol = await erc20Token.symbol();
-    const decimals = await erc20Token.decimals();
-    return {symbol, decimals};
-}
-
-function anyAddress(address) {
-    return address.startsWith("0x");
 }
 
 module.exports = {
     sendWethTokensToUser,
     approveToContract,
-    sendERCTokensToUser,
-    getSymbolAndDecimalsOfERC20Token,
-    anyAddress
+    sendERCTokensToUser
 }

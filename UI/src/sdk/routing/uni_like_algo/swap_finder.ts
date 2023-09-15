@@ -169,11 +169,11 @@ export class SwapFinder {
     ) {
         const usedPoolsSet = new Set<string>();
         usedRoutes.forEach(route => {
-            route.route.pools.forEach(pool => usedPoolsSet.add(pool.poolId));
+            route.route.steps.forEach(step => usedPoolsSet.add(step.pool.poolId));
         });
 
         for (const candidateRoute of candidateRoutes) {
-            const candidatePools = candidateRoute.route.pools.map(pool => pool.poolId);
+            const candidatePools = candidateRoute.route.steps.map(step => step.pool.poolId);
             if (candidatePools.some(pool => usedPoolsSet.has(pool))) {
                 continue;
             }
