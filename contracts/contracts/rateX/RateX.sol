@@ -5,8 +5,13 @@ import "./interfaces/IDex.sol";
 import "./libraries/TransferHelper.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+///@title Main contract for RateX dex aggregator
+///@notice This contract aggregates multiple dexes
+///and it is only contract users directly interacts with
+///@dev This is first version of the contract, it does not have any optimizations
 contract RateX is Ownable {
 
+    ///@notice Event emitted when swap is executed
     event SwapEvent(
         address tokenIn,
         address tokenOut,
@@ -15,15 +20,24 @@ contract RateX is Ownable {
         address recipient
     );
 
+    ///@notice Event emitted when new dex is added
     event DexAdded(string dexId, address dexAddress);
+
+    ///@notice Event emitted when dex is replaced
     event DexReplaced(string dexId, address oldAddress, address newAddress);
+
+    ///@notice Event emitted when dex is removed
     event DexRemoved(string dexId);
 
+    ///@notice Struct for single dex
     struct DexType {
         string dexId;
         address dexAddress;
     }
 
+    ///@notice Struct for executing single swap
+    ///@param poolId Address of the pool we are swapping through
+    ///@dev we will get amount in for swap from route
     struct SwapStep {
         address poolId;
         address tokenIn;
@@ -31,12 +45,19 @@ contract RateX is Ownable {
         string dexId;
     }
 
+    ///@notice Single route for swap
+    ///@param swaps Array of SwapStep structs
+    ///@param amountIn Amount of tokenIn for swap
+    ///@dev We can determine amountOut by executing swaps from swaps array
     struct Route {
         SwapStep[] swaps;
         uint256 amountIn;
     }
 
+    ///@notice Mapping of dexId to dexAddress
     mapping(string => address) public dexes;
+
+    ///@notice Array of supported dexes
     DexType[] public supportedDexes;
 
     bool private locked;
@@ -48,6 +69,7 @@ contract RateX is Ownable {
         locked = false;
     }
 
+    ///@dev we have predefined dexes to add
     constructor(DexType[] memory _initialDexes) {
         for (uint256 i = 0; i < _initialDexes.length; ++i) {
             supportedDexes.push(
@@ -64,6 +86,8 @@ contract RateX is Ownable {
         }
     }
 
+    ///@notice Function for adding new dex, only owner can call it
+    ///@dev Address of new dex should implement IDex interface
     function addDex(DexType memory _dex) external onlyOwner {
         require(dexes[_dex.dexId] == address(0), "Dex already exists");
         dexes[_dex.dexId] = _dex.dexAddress;
@@ -72,6 +96,10 @@ contract RateX is Ownable {
         emit DexAdded(_dex.dexId, _dex.dexAddress);
     }
 
+    ///@notice Function for replacing existing dex, only owner can call it
+    ///@dev Address of new dex should implement IDex interface
+    /// think later about how to notify users if new dex is replaced
+    /// and if they can vote for that
     function replaceDex(DexType memory _dex) external onlyOwner {
         require(dexes[_dex.dexId] != address(0), "Dex does not exist");
 
@@ -87,6 +115,9 @@ contract RateX is Ownable {
         emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
     }
 
+    ///@notice Function for removing existing dex, only owner can call it
+    ///@dev To save gas costs, this function will not preserve order of supportedDexes array
+    /// Same as replacement and adding, think about how users should be notified
     function removeDex(string memory _dexId) external onlyOwner {
         require(dexes[_dexId] != address(0), "Dex does not exist");
         delete dexes[_dexId];
@@ -106,10 +137,20 @@ contract RateX is Ownable {
         emit DexRemoved(_dexId);
     }
 
+    ///@notice Function for getting all supported dexes
     function getSupportedDexes() external view returns(DexType[] memory) {
         return supportedDexes;
     }
 
+    ///@notice main function for executing swap
+    ///@param _foundRoutes Array of routes for swap
+    ///@param _tokenIn Address of token we are swapping from
+    ///@param _tokenOut Address of token we are swapping to
+    ///@param _amountIn Amount of tokenIn for swap
+    ///@param _quotedAmountWithSlippageProtection min amount of tokenOut we want to get
+    ///@param _recipient Address of recipient
+    ///@return amountOut Amount of tokenOut we got
+    ///@dev Right now we don't have any optimizations for gas costs and calldata size
     function swap(
         Route[] calldata _foundRoutes,
         address _tokenIn,
