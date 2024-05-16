@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "postinstall": "(cd UI && npm install); (cd UI/src/sdk && npm install); (cd contracts && npm install)",
+    "postinstall": "cd UI && npm install && cd src/sdk && npm install && cd ../../../contracts && npm install",
     "start": "npm run --prefix ./UI start"
   },
   "dependencies": {

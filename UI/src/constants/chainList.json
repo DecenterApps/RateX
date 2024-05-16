@@ -1,13 +1,13 @@
 [
     {
         "chainId": 42161,
-        "name": "Arbitrum One",
+        "name": "Arbitrium",
         "Token": {
             "name": "ETH",
             "symbol": "ETH",
             "decimals": 18
         },
-        "RPC": "https://arb1.arbitrum.io/rpc",
+        "RPC": "TENDERLY RPC HERE",
         "img": "https://altcoinsbox.com/wp-content/uploads/2023/03/arbitrum-logo.png"
     },
     {
