@@ -206,6 +206,7 @@ function calculateYHash(pool: CurvePool, i: number, j: number, x: BigNumber, amp
 
 // sort in ascending order (basic bubble sort - has up to 3 tokens)
 function sortLargeNumbers(arr: BigNumber[]): string[] {
+  arr = [...arr]; // We shouldn't modify original array
   for (var i = 0; i < arr.length; i++) {
     for (var j = 0; j < (arr.length - i - 1); j++) {
       if (arr[j].gt(arr[j + 1])) {
