@@ -2,8 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/ISushiSwapRouter.sol";
-import "./interfaces/ISushiSwapV2Factory.sol";
-import "./SushiSwapV2Library.sol";
 import "../rateX/interfaces/IDex.sol";
 import "../rateX/libraries/TransferHelper.sol";
 
@@ -39,6 +37,8 @@ contract SushiSwapDex is IDex {
             _to,
             block.timestamp
         );
+
+        emit TestAmountOutEvent(amounts[1]);
 
         return amounts[1];
     }

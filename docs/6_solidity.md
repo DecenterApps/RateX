@@ -114,7 +114,10 @@ function swapExactTokensForTokensSupportingFeeOnTransferTokens(
 
 Test for every DEX (and also RateX) can be found under `tests/` written in javascript. For testing our contracts, you should run:
 ```
-npx hardhat test 'insert_file_name.js` --network hardhat
+npx hardhat test
+```
+or testing single contract
+```angular2html
+npx hardhat 'insert_file_name.js`
 ```
 
-<b>_NOTE:_</b> Some test could not work currently during our latest phase of internship where we focused on presenting the work (changing the solidity side of the app), and did not update the tests. Sorry for inconvinience, we will fix this issue in the following period.

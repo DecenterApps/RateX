@@ -1,51 +1,51 @@
 hre = require("hardhat");
-const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
-const {deployCamelotDex, deployCamelotHelper} = require("../scripts/utils/deployment");
-const {sendERCTokensToUser, approveToContract} = require("../scripts/utils/contract");
+const {deployCamelotDex} = require("../scripts/utils/deployment");
+const {approveToContract, sendWethTokensToUser} = require("../scripts/utils/contract");
 
-describe("Tests for connecting to Camelot V2", async function () {
+describe("Tests for Camelot V2", async function () {
 
     const addresses = config[hre.network.config.chainId];
 
+    let snapshotId;
 
-    async function deployCamelotDexFixture() {
-        return (await deployCamelotDex());
-    }
-    async function deployCamelotHelperFixture() {
-        return (await deployCamelotHelper());
-    }
-
-    it("Should connect to pool and retrieve info", async function() {
-        const {camelotHelper, addr1, addr2} = await loadFixture(deployCamelotHelperFixture);
-        const [reserve0, reserve1, token0feePercent, token1FeePercent] = await camelotHelper.getPoolInfo("0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f");
-        const stable = await camelotHelper.getStableSwap("0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f");
-        expect(stable).to.equals(false);
-        expect(token0feePercent).to.equals(300n);
-        expect(token1FeePercent).to.equals(300n);
+    beforeEach(async function () {
+        snapshotId = await hre.network.provider.send("evm_snapshot");
     });
 
-    it("Should swap USDT and wETH", async function() {
-        const {camelot, addr1, addr2} = await loadFixture(deployCamelotDexFixture);
+    afterEach(async function () {
+        await hre.network.provider.send("evm_revert", [snapshotId]);
+    });
 
-        const contractAddress = await camelot.getAddress();
-        const accountAddress = await addr1.getAddress();
+    it("Should swap weth to usdt", async function() {
+        const {camelot, addr1} = await deployCamelotDex();
+        const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
+        const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
 
-        const USDT_ADDRESS = addresses.tokens.USDT;
-        const WETH_ADDRESS = addresses.tokens.WETH;
-        const AMOUNT_IN = 1000000000000n;
+        const amountIn = hre.ethers.parseEther("100");
+        await sendWethTokensToUser(addr1, amountIn);
+        await approveToContract(addr1, await camelot.getAddress(), addresses.tokens.WETH, amountIn);
 
-        await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, addr1, AMOUNT_IN); // 2000 WETH
-        await approveToContract(addr1, contractAddress, addresses.tokens.WETH, AMOUNT_IN);
+        const wethBalanceBefore = await WETH.balanceOf(addr1);
 
-        await expect(camelot.swap(
-            '0xa6c5c7d189fa4eb5af8ba34e63dcdd3a635d433f', // random address - we don't need pool address
-            WETH_ADDRESS,
-            USDT_ADDRESS,
-            AMOUNT_IN,
+        const tx = await camelot.swap(
+            "0x0000000000000000000000000000000000000000", // not used in function because we can get pool address from pair
+            addresses.tokens.WETH,
+            addresses.tokens.USDT,
+            amountIn,
             0n,
-            accountAddress
-        )).to.not.be.revertedWith("Too little received");
+            addr1
+        );
+        const txReceipt = await tx.wait();
+
+        const event = txReceipt.logs[txReceipt.logs.length - 1];
+        const amountOut = event.args[0];
+
+        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        const usdtBalanceAfter = await USDT.balanceOf(addr1);
+
+        expect(usdtBalanceAfter).to.be.equal(amountOut);
+        expect(BigInt(wethBalanceAfter)).to.be.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 });
