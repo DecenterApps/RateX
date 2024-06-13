@@ -12,6 +12,12 @@ export default class NewDex implements DEXGraphFunctionality {
     return new NewDex()
   }
 
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = ''
+    }
+  }
+
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools))

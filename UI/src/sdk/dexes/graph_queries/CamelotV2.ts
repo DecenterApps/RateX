@@ -4,19 +4,25 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo, Token } from '../../types'
 import { CamelotHelperContract } from '../../../contracts/rateX/CamelotHelper'
-import {dexIds} from '../dexIdsList'
+import { dexIds } from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
 
 // Camelot is a silly place
 // Test queries on https://thegraph.com/hosted-service/subgraph/messari/camelot-v2-arbitrum
 
 export default class CamelotV2 implements DEXGraphFunctionality {
-    
+  // Camelot is currently not working, ne
   endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
   dexId = dexIds.CAMELOT
 
   static initialize(): DEXGraphFunctionality {
     return new CamelotV2()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
+    }
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -53,10 +59,9 @@ export default class CamelotV2 implements DEXGraphFunctionality {
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
     const rawData: any[][] = await CamelotHelperContract.methods.getPoolsData(poolInfos).call()
-    
-    const pools: Pool[] = []
-    for(let pool of rawData) {
 
+    const pools: Pool[] = []
+    for (let pool of rawData) {
       const poolId = pool[0]
       const dexId = pool[1]
       const tokensRaw1 = pool[2][0]

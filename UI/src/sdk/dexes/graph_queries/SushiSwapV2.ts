@@ -2,18 +2,23 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import {dexIds} from '../dexIdsList'
+import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
 import { SushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
-  
-  endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
+  endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange'
   dexId = dexIds.SUSHI_V2
 
   static initialize(): DEXGraphFunctionality {
     return new SushiSwapV2()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
+    }
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -60,13 +65,13 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
       const token1: Token = {
         _address: tokensRaw1[0],
         decimals: Number(tokensRaw1[1]),
-        name: tokensRaw1[2]
+        name: tokensRaw1[2],
       }
 
       const token2: Token = {
         _address: tokensRaw2[0],
         decimals: Number(tokensRaw2[1]),
-        name: tokensRaw2[2]
+        name: tokensRaw2[2],
       }
 
       pools.push(new SushiSwapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
@@ -167,12 +172,12 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       {
         _address: jsonData.token0.id,
         decimals: jsonData.token0.decimals,
-        name: jsonData.token0.name
+        name: jsonData.token0.name,
       },
       {
         _address: jsonData.token1.id,
         decimals: jsonData.token1.decimals,
-        name: jsonData.token1.name
+        name: jsonData.token1.name,
       },
     ],
   }
