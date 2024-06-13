@@ -1,6 +1,6 @@
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CurveHelperContract } from '../../../contracts/rateX/CurveHelper'
+import { CreateCurveHelperContract } from '../../../contracts/rateX/CurveHelper'
 import { CurvePool } from '../pools/Curve'
 import BigNumber from 'bignumber.js'
 import { dexIds } from '../dexIdsList'
@@ -9,6 +9,7 @@ import { dexIds } from '../dexIdsList'
 export default class Curve implements DEXGraphFunctionality {
   mainPoolsEndpoint = 'https://api.curve.fi/api/getPools/ethereum/main'
   dexId = dexIds.CURVE
+  chainId = 1
 
   static initialize(): DEXGraphFunctionality {
     return new Curve()
@@ -18,6 +19,7 @@ export default class Curve implements DEXGraphFunctionality {
     if (chainId == 42161) {
       this.mainPoolsEndpoint = 'https://api.curve.fi/api/getPools/arbitrum/main'
     }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -46,6 +48,7 @@ export default class Curve implements DEXGraphFunctionality {
   // calls to Solidity for additional data
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
+    const CurveHelperContract = CreateCurveHelperContract(this.chainId)
     const rawData: any[][] = await CurveHelperContract.methods.getPoolsData(poolInfos).call()
 
     const pools: Pool[] = []

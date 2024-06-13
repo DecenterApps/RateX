@@ -11,6 +11,7 @@ import { BalancerState } from '../pools/Balancer/BalancerState'
 export default class BalancerV2 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2'
   dexId = dexIds.BALANCER_V2
+  chainId = 1
 
   static initialize(): DEXGraphFunctionality {
     return new BalancerV2()
@@ -20,6 +21,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     if (chainId == 42161) {
       this.endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
     }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -59,7 +61,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
   }
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
-    const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos)
+    const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos, this.chainId)
 
     return pools
   }

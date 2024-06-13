@@ -4,12 +4,13 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { SushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
+import { CreateSushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
   endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/exchange'
   dexId = dexIds.SUSHI_V2
+  chainId = 1
 
   static initialize(): DEXGraphFunctionality {
     return new SushiSwapV2()
@@ -19,6 +20,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     if (chainId == 42161) {
       this.endpoint = 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange'
     }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -53,6 +55,7 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
+    const SushiSwapHelperContract = CreateSushiSwapHelperContract(this.chainId)
     const rawData: any[][] = await SushiSwapHelperContract.methods.getPoolsData(poolInfos).call()
 
     const pools: Pool[] = []
