@@ -1,24 +1,35 @@
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
 
-let initialized = false
+let initializedMainnet = false
+let initializedArbitrum = false
 let initializedDexes: DEXGraphFunctionality[] = []
 let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctionality, PoolInfo[]>()
 
-async function initializeDexes(): Promise<void> {
+async function initializeDexes(chainId: number): Promise<void> {
   try {
+    // Clear Previous Dex Graph Mappings and Initialized DEX array
+    dexesPools.clear()
+    initializedDexes = []
+
     // CHANGE DEXES FOR ALGORITHM
     const files = [
-      'SushiSwapV2.ts',
+      //'SushiSwapV2.ts',
       'UniswapV3.ts',
-      'BalancerV2.ts',
-      'Curve.ts',
-      // 'CamelotV2.ts' 
+      //'BalancerV2.ts',
+      //'Curve.ts',
+      // 'CamelotV2.ts'
     ]
+
     for (const file of files) {
       if (file.endsWith('.ts')) {
+        if (chainId == 1 && file === 'CamelotV2.ts') {
+        }
         const module = await import(`../dexes/graph_queries/${file}`)
         const dex: DEXGraphFunctionality = module.default.initialize()
+        if (chainId !== 1) {
+          dex.setEndpoint(chainId)
+        }
         initializedDexes.push(dex)
         dexesPools.set(dex, [])
       }
@@ -28,10 +39,16 @@ async function initializeDexes(): Promise<void> {
   }
 }
 
-async function checkInitializedDexes() {
-  if (!initialized) {
-    await initializeDexes()
-    initialized = true
+async function checkInitializedDexes(chainId: number) {
+  if (chainId === 1 && !initializedMainnet) {
+    await initializeDexes(chainId)
+    initializedArbitrum = false
+    initializedMainnet = true
+  }
+  if (chainId === 42161 && !initializedArbitrum) {
+    await initializeDexes(chainId)
+    initializedMainnet = false
+    initializedArbitrum = true
   }
 }
 
@@ -39,8 +56,8 @@ async function checkInitializedDexes() {
  *   UniswapV3: [poolId1, poolId2, ...],
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
-async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3): Promise<void> {
-  await checkInitializedDexes()
+async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3, chainId: number): Promise<void> {
+  await checkInitializedDexes(chainId)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -61,8 +78,8 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @param amountIn: amount of token1 to swap (in wei) - currently unused
  * @returns: list of poolIds
  */
-async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<void> {
-  await checkInitializedDexes()
+async function getPoolIdsForToken(token: string, numPools: number = 5, chainId: number): Promise<void> {
+  await checkInitializedDexes(chainId)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -82,8 +99,8 @@ async function getPoolIdsForToken(token: string, numPools: number = 5): Promise<
  * @param amountIn: amount of token1 to swap (in wei) - currently unused
  * @returns: list of poolIds
  */
-async function getTopPools(numPools: number = 5): Promise<void> {
-  await checkInitializedDexes()
+async function getTopPools(numPools: number = 5, chainId: number): Promise<void> {
+  await checkInitializedDexes(chainId)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -99,24 +116,30 @@ async function getTopPools(numPools: number = 5): Promise<void> {
 }
 
 /* We are fetching pools from multiple dexes, so we might get duplicate pools
-* top numTopPools pools for tokenFrom and tokenTo are fetched from each DEX
-* top numTopPools by TVL from each DEX
-* top numTopPools that contain tokenFrom and tokenTo from each DEX (possible direct swap)
-*/
-async function fetchPoolsData(tokenFrom: string, tokenTo: string, numFromToPools: number = 5, numTopPools: number = 5): Promise<Pool[]> {
+ * top numTopPools pools for tokenFrom and tokenTo are fetched from each DEX
+ * top numTopPools by TVL from each DEX
+ * top numTopPools that contain tokenFrom and tokenTo from each DEX (possible direct swap)
+ */
+async function fetchPoolsData(
+  tokenFrom: string,
+  tokenTo: string,
+  numFromToPools: number = 5,
+  numTopPools: number = 5,
+  chainId: number
+): Promise<Pool[]> {
   let pools: Pool[] = []
   dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => {
     dexesPools.set(dex, [])
   })
 
-  await checkInitializedDexes()
+  await checkInitializedDexes(chainId)
 
   // call Graph API
   const promises: Promise<void>[] = []
-  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools))
-  promises.push(getPoolIdsForToken(tokenTo, numFromToPools))
-  promises.push(getTopPools(numTopPools))
-  promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools))
+  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools, chainId))
+  promises.push(getPoolIdsForToken(tokenTo, numFromToPools, chainId))
+  promises.push(getTopPools(numTopPools, chainId))
+  promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools, chainId))
   await Promise.all(promises)
 
   filterDuplicatePools()
