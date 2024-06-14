@@ -60,6 +60,11 @@ function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, 
   let dy = pool.reserves[j].minus(y).minus(1).div(precisions[j])
   const fee = pool.fee.times(dy).div(10 ** 10)
   const res = floor(dy.minus(fee))
+  
+  for (let k = 0; k < pool.tokens.length; k++) {
+    pool.reserves[k] = pool.reserves[k].div(precisions[k])
+  }
+
   return BigInt(res.toFixed())
 }
 
