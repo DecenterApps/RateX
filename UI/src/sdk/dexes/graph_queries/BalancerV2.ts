@@ -2,20 +2,26 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import {dexIds, balancerWeightedPoolTypes} from '../dexIdsList'
+import { dexIds, balancerWeightedPoolTypes } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { BalancerState } from '../pools/Balancer/BalancerState'
-import { json } from 'stream/consumers'
 
 // test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
 
 export default class BalancerV2 implements DEXGraphFunctionality {
-
-  endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
+  endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2'
   dexId = dexIds.BALANCER_V2
+  chainId = 1
 
   static initialize(): DEXGraphFunctionality {
     return new BalancerV2()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
+    }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -24,8 +30,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {
-      }
+      } catch (e) {}
     })
 
     return poolsInfo
@@ -37,8 +42,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {
-      }
+      } catch (e) {}
     })
 
     return poolsInfo
@@ -50,15 +54,14 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {
-      }
+      } catch (e) {}
     })
 
     return poolsInfo
   }
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
-     const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos)
+    const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos, this.chainId)
 
     return pools
   }
@@ -131,12 +134,11 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
   // const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
   const isWeighted = balancerWeightedPoolTypes.includes(jsonData.poolType)
-  if (!isWeighted)
-    throw new Error("BALANCER: Pool type not supported")
+  if (!isWeighted) throw new Error('BALANCER: Pool type not supported')
 
   // console.log(jsonData)
   // always has 2 tokens in pool
-  // TO_DO: IMPORTANT POOL TYPE 
+  // TO_DO: IMPORTANT POOL TYPE
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
@@ -144,14 +146,14 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       {
         _address: jsonData.tokens[0].id,
         decimals: jsonData.tokens[0].decimals,
-        name: jsonData.tokens[0].name
+        name: jsonData.tokens[0].name,
       },
       {
         _address: jsonData.tokens[1].id,
         decimals: jsonData.tokens[1].decimals,
-        name: jsonData.tokens[1].name
-      }
-    ]
+        name: jsonData.tokens[1].name,
+      },
+    ],
   }
   return pool
 }

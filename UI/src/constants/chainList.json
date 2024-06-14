@@ -1,24 +1,35 @@
 [
-    {
-        "chainId": 42161,
-        "name": "Arbitrum One",
-        "Token": {
-            "name": "ETH",
-            "symbol": "ETH",
-            "decimals": 18
-        },
-        "RPC": "https://arb1.arbitrum.io/rpc",
-        "img": "https://altcoinsbox.com/wp-content/uploads/2023/03/arbitrum-logo.png"
+  {
+    "chainId": 1,
+    "name": "Mainnet",
+    "Token": {
+      "name": "ETH",
+      "symbol": "ETH",
+      "decimals": 18
     },
-    {
-        "chainId": 10,
-        "name": "Optimism",
-        "Token": {
-            "name": "ETH",
-            "symbol": "ETH",
-            "decimals": 18
-        },
-        "RPC": "https://mainnet.optimism.io",
-        "img": "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png"
-    }
+    "RPC": "https://rpc.tenderly.co/fork/b255b456-9d77-4595-b9d0-be20981c2e19",
+    "img": "https://cryptologos.cc/logos/ethereum-eth-logo.png"
+  },
+  {
+    "chainId": 42161,
+    "name": "Arbitrum",
+    "Token": {
+      "name": "ETH",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "RPC": "https://rpc.tenderly.co/fork/3b6e4609-e571-421c-88da-cc5341eaede6",
+    "img": "https://altcoinsbox.com/wp-content/uploads/2023/03/arbitrum-logo.png"
+  },
+  {
+    "chainId": 10,
+    "name": "Optimism",
+    "Token": {
+      "name": "ETH",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "RPC": "https://mainnet.optimism.io",
+    "img": "https://cryptologos.cc/logos/optimism-ethereum-op-logo.png"
+  }
 ]

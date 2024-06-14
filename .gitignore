@@ -3,6 +3,7 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
 # testing
 /coverage
 # production
@@ -21,3 +22,4 @@ yarn-error.log*
 
 # Algo testing
 bane.ts
+.env

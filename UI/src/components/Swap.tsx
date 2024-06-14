@@ -1,22 +1,18 @@
 import { useEffect, useRef, useState, Fragment } from 'react'
 import { Input, Modal, Popover, Radio } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
-import {ERC20_ABI} from '../contracts/abi/common/ERC20_ABI'
+import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
-import {findQuote, swap} from '../sdk/swap/front_communication'
-import {Quote} from '../sdk/types'
+import { findQuote, swap } from '../sdk/swap/front_communication'
+import { Quote } from '../sdk/types'
 import './Swap.scss'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
-
-const TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID
-
-const web3: Web3 = initRPCProvider(42161)
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -34,7 +30,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [tokenToPrice, setTokenToPrice] = useState(0)
   const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
-  const [quote, setQuote] = useState<Quote>();
+  const [quote, setQuote] = useState<Quote>()
   const [customToken, setCustomToken] = useState('')
 
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -42,6 +38,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingQuote, setLoadingQuote] = useState(false)
   const [loadingSwap, setLoadingSwap] = useState(false)
   const lastCallTime = useRef(0)
+
+  const web3: Web3 = initRPCProvider(chainId)
 
   useEffect(() => {
     async function getPrices() {
@@ -200,51 +198,51 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const amount = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
-    findQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount)
+    findQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount, chainId)
       .then((quote: Quote) => {
-          if (callTime < lastCallTime.current) {
-              return
-          }
-          setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
-          setLoadingQuote(false)
-          setQuote(quote)
-      }).catch((error: string) => {
+        if (callTime < lastCallTime.current) {
+          return
+        }
+        setTokenToAmount(Number(quote.quote) / 10 ** tokenTo.decimals)
+        setLoadingQuote(false)
+        setQuote(quote)
+      })
+      .catch((error: string) => {
         setLoadingQuote(false)
         console.log(error)
-    })
+      })
   }
 
   function commitSwap() {
+    let TENDERLY_FORK_ID: string | undefined
+    if (chainId === 1) {
+      TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID_MAINNET
+    } else {
+      TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID_ARBITRUM
+    }
     if (quote === undefined) return
 
     setLoadingSwap(true)
 
     const amountIn = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** Number(tokenFrom.decimals))
 
-    swap(
-        tokenFrom.address[chainId],
-        tokenTo.address[chainId],
-        quote,
-        amountIn,
-        slippage,
-        wallet,
-        chainId
-    )
-        .then((res) => {
-          res.isSuccess
-              ? notification.success({
-                message: TENDERLY_FORK_ID !== undefined ?
-                    `<a  href="https://dashboard.tenderly.co/shared/fork/${TENDERLY_FORK_ID}/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
-                    : `Tx hash: ${res.txHash}`
-              })
-              : notification.error({ message: res.errorMessage })
-          setLoadingSwap(false)
-        })
-        .catch((error: string) => {
-          console.log("Error on swap: ", error);
-          setLoadingSwap(false)
-          notification.open({ message: error })
-        })
+    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+      .then((res) => {
+        res.isSuccess
+          ? notification.success({
+              message:
+                TENDERLY_FORK_ID !== undefined
+                  ? `<a  href="https://dashboard.tenderly.co/shared/fork/${TENDERLY_FORK_ID}/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
+                  : `Tx hash: ${res.txHash}`,
+            })
+          : notification.error({ message: res.errorMessage })
+        setLoadingSwap(false)
+      })
+      .catch((error: string) => {
+        console.log('Error on swap: ', error)
+        setLoadingSwap(false)
+        notification.open({ message: error })
+      })
   }
 
   const settings = (
@@ -320,7 +318,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <DownOutlined />
           </div>
         </div>
-        <Fragment>{!loadingQuote && <RoutingDiagram quote={quote}></RoutingDiagram>}</Fragment>
+        <Fragment>{!loadingQuote && <RoutingDiagram quote={quote} chainId={chainId}></RoutingDiagram>}</Fragment>
         <Fragment>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
