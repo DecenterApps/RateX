@@ -7,9 +7,17 @@ import { Pool, PoolInfo } from '../../types'
 export default class NewDex implements DEXGraphFunctionality {
   endpoint = ''
   dexId = ''
+  chainId = 1
 
   static initialize(): DEXGraphFunctionality {
     return new NewDex()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = ''
+    }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {

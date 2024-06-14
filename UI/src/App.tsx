@@ -7,7 +7,7 @@ import './App.scss'
 import 'notyf/notyf.min.css'
 
 function App() {
-  const [chainId, setChainId] = useState<number>(42161)
+  const [chainId, setChainId] = useState<number>(1)
   const [wallet, setWallet] = useState('0x0000000000000000000000000000000000000000')
 
   return (

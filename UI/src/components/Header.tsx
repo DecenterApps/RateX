@@ -44,11 +44,11 @@ function Header({ chainIdState, walletState }: HeaderProps) {
 
   async function modifyChainButton(index: number) {
     const newChainId = chainList[index].chainId
-    setChainId(newChainId)
 
-    console.log("chainId: ", newChainId)
+    console.log('chainId: ', newChainId)
 
     await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
+    setChainId(newChainId)
     setIsOpenModal(false)
   }
 

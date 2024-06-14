@@ -2,17 +2,25 @@ import { parse } from 'graphql'
 import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
-import {dexIds} from '../dexIdsList'
+import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { UniswapState } from '../pools/uniswap/uniswapState'
 import { UniswapV3Pool } from '../pools/uniswap/UniswapV3'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
-  endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
+  endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-ethereum'
+  chainId = 1
   dexId = dexIds.UNI_V3
 
   static initialize(): DEXGraphFunctionality {
     return new UniswapV3()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
+    }
+    this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
@@ -46,9 +54,9 @@ export default class UniswapV3 implements DEXGraphFunctionality {
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     const pools = poolInfos.map((poolInfo: PoolInfo) => poolInfo.poolId)
-    console.log("Start initialization");
-    await UniswapState.initializeFreshPoolsData(pools)
-    console.log("End initialization");
+    console.log('Start initialization')
+    await UniswapState.initializeFreshPoolsData(pools, this.chainId)
+    console.log('End initialization')
     return poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens))
   }
 }
@@ -114,7 +122,7 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
       return {
         _address: token.id,
         decimals: token.decimals,
-        name: token.name
+        name: token.name,
       }
     }),
   }
