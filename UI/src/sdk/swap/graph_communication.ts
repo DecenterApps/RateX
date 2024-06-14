@@ -24,6 +24,7 @@ async function initializeDexes(chainId: number): Promise<void> {
     for (const file of files) {
       if (file.endsWith('.ts')) {
         if (chainId == 1 && file === 'CamelotV2.ts') {
+          continue
         }
         const module = await import(`../dexes/graph_queries/${file}`)
         const dex: DEXGraphFunctionality = module.default.initialize()
