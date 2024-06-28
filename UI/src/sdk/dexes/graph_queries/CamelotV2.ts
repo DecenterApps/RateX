@@ -8,152 +8,189 @@ import { dexIds } from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
 
 // Camelot is a silly place
-// Test queries on https://thegraph.com/hosted-service/subgraph/messari/camelot-v2-arbitrum
+
+const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
 export default class CamelotV2 implements DEXGraphFunctionality {
-    // Camelot is currently not working, ne
-    endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
-    dexId = dexIds.CAMELOT
-    chainId = 1
+  // Camelot is currently not working, ne
+  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
+  dexId = dexIds.CAMELOT
+  chainId = 1
 
-    static initialize(): DEXGraphFunctionality {
-        return new CamelotV2()
+  static initialize(): DEXGraphFunctionality {
+    return new CamelotV2()
+  }
+
+  setEndpoint(chainId: number): void {
+    if (chainId == 42161) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
+    }
+    this.chainId = chainId
+  }
+
+  async getTopPools(numPools: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryTopPools(numPools))
+    queryResult.pairs.forEach((lp: any) => {
+      poolsInfo.push(createPoolFromGraph(lp, this.dexId))
+    })
+
+    return poolsInfo
+  }
+
+  async getPoolsWithTokenPair(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(token1, token2, first))
+    queryResult.pairs.forEach((lp: any) => {
+      poolsInfo.push(createPoolFromGraph(lp, this.dexId))
+    })
+
+    return poolsInfo
+  }
+
+  async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
+    const poolsInfo: PoolInfo[] = []
+    const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
+    queryResult.pairs.forEach((lp: any) => {
+      poolsInfo.push(createPoolFromGraph(lp, this.dexId))
+    })
+
+    return poolsInfo
+  }
+
+  // call to Solidity for additional data
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
+    const CamelotHelperContract = CreateCamelotHelperContract(this.chainId)
+    //@ts-ignore
+    const rawData: any[][] = await CamelotHelperContract.methods.getPoolsData(poolInfos).call()
+
+    const pools: Pool[] = []
+    for (let pool of rawData) {
+      const poolId = pool[0]
+      const dexId = pool[1]
+      const tokensRaw1 = pool[2][0]
+      const tokensRaw2 = pool[2][1]
+
+      const token1: Token = {
+        _address: tokensRaw1[0],
+        decimals: Number(tokensRaw1[1]),
+      }
+
+      const token2: Token = {
+        _address: tokensRaw2[0],
+        decimals: Number(tokensRaw2[1]),
+      }
+
+      const reserves = [BigInt(pool[3][0]), BigInt(pool[3][1])]
+      const fees = [BigInt(pool[4][0]), BigInt(pool[4][1])]
+      const stableSwap = pool[5]
+
+      // do not include pools with no liquidity
+      if (reserves[0] === BigInt(0) || reserves[1] === BigInt(0)) {
+        continue
+      }
+
+      pools.push(new CamelotPool(poolId, dexId, [token1, token2], reserves, fees, stableSwap))
     }
 
-    setEndpoint(chainId: number): void {
-        if (chainId == 42161) {
-            this.endpoint = 'https://api.thegraph.com/subgraphs/name/messari/camelot-v2-arbitrum'
-        }
-        this.chainId = chainId
-    }
-
-    async getTopPools(numPools: number): Promise<PoolInfo[]> {
-        const poolsInfo: PoolInfo[] = []
-        const queryResult = await request(this.endpoint, queryTopPools(numPools))
-        queryResult.liquidityPools.forEach((lp: any) => {
-            poolsInfo.push(createPoolFromGraph(lp, this.dexId))
-        })
-
-        return poolsInfo
-    }
-
-    async getPoolsWithTokenPair(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
-        const poolsInfo: PoolInfo[] = []
-        const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(token1, token2, first))
-        queryResult.liquidityPools.forEach((lp: any) => {
-            poolsInfo.push(createPoolFromGraph(lp, this.dexId))
-        })
-
-        return poolsInfo
-    }
-
-    async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
-        const poolsInfo: PoolInfo[] = []
-        const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
-        queryResult.liquidityPools.forEach((lp: any) => {
-            poolsInfo.push(createPoolFromGraph(lp, this.dexId))
-        })
-
-        return poolsInfo
-    }
-
-    // call to Solidity for additional data
-    async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
-        const CamelotHelperContract = CreateCamelotHelperContract(this.chainId)
-        //@ts-ignore
-        const rawData: any[][] = await CamelotHelperContract.methods.getPoolsData(poolInfos).call()
-
-        const pools: Pool[] = []
-        for (let pool of rawData) {
-            const poolId = pool[0]
-            const dexId = pool[1]
-            const tokensRaw1 = pool[2][0]
-            const tokensRaw2 = pool[2][1]
-
-            const token1: Token = {
-                _address: tokensRaw1[0],
-                decimals: Number(tokensRaw1[1]),
-            }
-
-            const token2: Token = {
-                _address: tokensRaw2[0],
-                decimals: Number(tokensRaw2[1]),
-            }
-
-            const reserves = [BigInt(pool[3][0]), BigInt(pool[3][1])]
-            const fees = [BigInt(pool[4][0]), BigInt(pool[4][1])]
-            const stableSwap = pool[5]
-
-            // do not include pools with no liquidity
-            if (reserves[0] === BigInt(0) || reserves[1] === BigInt(0)) {
-                continue
-            }
-
-            pools.push(new CamelotPool(poolId, dexId, [token1, token2], reserves, fees, stableSwap))
-        }
-
-        return pools
-    }
+    return pools
+  }
 }
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
-    return parse(gql`{
-    liquidityPools(first: ${numPools}, orderBy: totalValueLockedUSD, orderDirection: desc) {
-      id
-      inputTokens {
-        id
-        decimals
+  return parse(gql`
+      {
+        pairs(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD) {
+          id
+          token0 {
+            id
+            name
+            decimals
+          }
+          token1 {
+            id
+            name
+            decimals
+          }
+        }
       }
-    }
-  }`)
+    `)
 }
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
-    return parse(gql`{
-    liquidityPools(first: ${numPools}, orderBy: totalValueLockedUSD, orderDirection: desc, 
-          where: {
-        and: [
-          {inputTokens_: {id: "${tokenA.toLowerCase()}"}},
-          {inputTokens_: {id: "${tokenB.toLowerCase()}"}}
-        ]
-      }) {
-      id
-      inputTokens {
-        id
-        decimals
+  return parse(gql`
+      {
+        pairs(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD, where: {
+          or: [
+            {and: [
+              {token0_: {id: "${tokenA.toLowerCase()}"}},
+              {token1_: {id: "${tokenB.toLowerCase()}"}}
+            ]},
+            {and: [
+              {token0_: {id: "${tokenB.toLowerCase()}"}},
+              {token1_: {id: "${tokenA.toLowerCase()}"}}
+            ]}
+          ]   
+        }) {
+          id
+          volumeUSD
+          token0 {
+            id
+            name
+            decimals
+          }
+          token1 {
+            id
+            name
+            decimals
+          }
+        }
       }
-    }
-  }`)
+    `)
 }
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
-    return parse(gql`{
-    liquidityPools(first: ${numPools}, orderBy: totalValueLockedUSD, orderDirection: desc, 
-          where: { inputTokens_: { id: "${token.toLowerCase()}" } }) {
-      id
-      inputTokens {
+  return parse(gql`
+    {
+      pairs(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD, where: {
+        or: [
+          {token0_: {id: "${token.toLowerCase()}"}},
+          {token1_: {id: "${token.toLowerCase()}"}}
+        ]
+      }) {
         id
-        decimals
+        volumeUSD
+        token0 {
+          id
+          name
+          decimals
+        }
+        token1 {
+          id
+          name
+          decimals
+        }
       }
-    }
-  }`)
+    }  
+  `)
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-    // always has 2 tokens in pool
-    const pool: PoolInfo = {
-        poolId: jsonData.id,
-        dexId: dexId,
-        tokens: [
-            {
-                _address: jsonData.inputTokens[0].id,
-                decimals: jsonData.inputTokens[0].decimals,
-            },
-            {
-                _address: jsonData.inputTokens[1].id,
-                decimals: jsonData.inputTokens[1].decimals,
-            },
-        ],
-    }
-    return pool
+  const pool: PoolInfo = {
+    poolId: jsonData.id,
+    dexId: dexId,
+    tokens: [
+      {
+        _address: jsonData.token0.id,
+        decimals: jsonData.token0.decimals,
+        name: jsonData.token0.name,
+      },
+      {
+        _address: jsonData.token1.id,
+        decimals: jsonData.token1.decimals,
+        name: jsonData.token1.name,
+      },
+    ],
+  }
+  return pool
 }
