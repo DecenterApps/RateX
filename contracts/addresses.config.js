@@ -28,11 +28,11 @@ const ARBITRUM_ADDRESSES = {
   curve: {
     curve2Pool: '0x7f90122BF0700F9E7e1F688fe926940E8839F353', // USDCE USDT pool,
 
-        poolRegistry: '0x445FE580eF8d70FF569aB36e80c647af338db351',
-        poolRegistryFactory: '0x9AF14D26075f142eb3F292D5065EB3faa646167b',
-        stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
-    },
-    
+    poolRegistry: '0x445FE580eF8d70FF569aB36e80c647af338db351',
+    poolRegistryFactory: '0x9AF14D26075f142eb3F292D5065EB3faa646167b',
+    stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+  },
+
   balancer: {
     vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
   },
@@ -54,6 +54,9 @@ const ARBITRUM_ADDRESSES = {
     wbtc_usdce_pool_0_05: '0xac70bD92F89e6739B3a08Db9B6081a923912f73D',
     weth_usdce_pool_0_05: '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
     weth_usdt_pool_0_05: '0x641c00a822e8b671738d32a431a4fb6074e5c79d',
+  },
+  uniV2: {
+    router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
   },
 
   impersonate: {
@@ -120,6 +123,9 @@ const MAINNET_ADDRESSES = {
     //   wbtc_usdce_pool_0_05: '0xac70bD92F89e6739B3a08Db9B6081a923912f73D',
     //   weth_usdce_pool_0_05: '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
     //   weth_usdt_pool_0_05: '0x641c00a822e8b671738d32a431a4fb6074e5c79d',
+  },
+  uniV2: {
+    router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
   },
 }
 

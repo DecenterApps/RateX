@@ -5,7 +5,7 @@ import './interfaces/IUniswapV2Router.sol';
 import '../rateX/interfaces/IDex.sol';
 import '../rateX/libraries/TransferHelper.sol';
 
-contract UniswapV2 is IDex {
+contract UniswapV2Dex is IDex {
   IUniswapV2Router public immutable router;
 
   constructor(address routerAddress) {
