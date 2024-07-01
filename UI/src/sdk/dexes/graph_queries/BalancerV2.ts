@@ -6,10 +6,10 @@ import { dexIds, balancerWeightedPoolTypes } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { BalancerState } from '../pools/Balancer/BalancerState'
 
-// test at: https://thegraph.com/hosted-service/subgraph/balancer-labs/balancer-arbitrum-v2
+const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
 export default class BalancerV2 implements DEXGraphFunctionality {
-  endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2'
+  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV`
   dexId = dexIds.BALANCER_V2
   chainId = 1
 
@@ -19,7 +19,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
 
   setEndpoint(chainId: number): void {
     if (chainId == 42161) {
-      this.endpoint = 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2'
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/itkjv6Vdh22HtNEPQuk5c9M3T7VeGLQtXxcH8rFi1vc`
     }
     this.chainId = chainId
   }

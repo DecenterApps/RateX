@@ -7,8 +7,10 @@ import { Pool, PoolInfo } from '../../types'
 import { UniswapState } from '../pools/uniswap/uniswapState'
 import { UniswapV3Pool } from '../pools/uniswap/UniswapV3'
 
+const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
+
 export default class UniswapV3 implements DEXGraphFunctionality {
-  endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-ethereum'
+  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`
   chainId = 1
   dexId = dexIds.UNI_V3
 
@@ -18,7 +20,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
 
   setEndpoint(chainId: number): void {
     if (chainId == 42161) {
-      this.endpoint = 'https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-arbitrum'
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM`
     }
     this.chainId = chainId
   }
@@ -26,7 +28,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools))
-    queryResult.liquidityPools.forEach((pool: any) => {
+    queryResult.pools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
@@ -36,7 +38,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithTokenPair(tokenA, tokenB, numPools))
-    queryResult.liquidityPools.forEach((pool: any) => {
+    queryResult.pools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
 
@@ -46,7 +48,7 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getPoolsWithToken(token: string, numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryPoolsWithToken(token, numPools))
-    queryResult.liquidityPools.forEach((pool: any) => {
+    queryResult.pools.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId))
     })
     return poolsInfo
@@ -64,13 +66,18 @@ export default class UniswapV3 implements DEXGraphFunctionality {
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`
     {
-      liquidityPools(first:${numPools}, orderDirection: desc, orderBy: cumulativeVolumeUSD) {
+      pools(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD) {
         id
-        cumulativeVolumeUSD
-        inputTokens {
+        volumeUSD
+        token0 {
           id
-          decimals
           name
+          decimals
+        }
+        token1 {
+          id
+          name
+          decimals
         }
       }
     }
@@ -78,53 +85,79 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
 }
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
-  return parse(gql`{
-    liquidityPools(first: ${numPools}, orderDirection: desc, orderBy: cumulativeVolumeUSD, where: {
-      and: [
-        {inputTokens_: {id: "${tokenA.toLowerCase()}"}},
-        {inputTokens_: {id: "${tokenB.toLowerCase()}"}}
-      ]
-    }
-    ) {
-      id
-      cumulativeVolumeUSD
-      inputTokens {
+  return parse(gql`
+    {
+      pools(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD, where: {
+        or: [
+          {and: [
+            {token0_: {id: "${tokenA.toLowerCase()}"}},
+            {token1_: {id: "${tokenB.toLowerCase()}"}}
+          ]},
+          {and: [
+            {token0_: {id: "${tokenB.toLowerCase()}"}},
+            {token1_: {id: "${tokenA.toLowerCase()}"}}
+          ]}
+        ]   
+      }) {
         id
-        decimals
-        name
+        volumeUSD
+        token0 {
+          id
+          name
+          decimals
+        }
+        token1 {
+          id
+          name
+          decimals
+        }
       }
     }
-  }`)
+  `)
 }
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
-  return parse(gql`{
-    liquidityPools(first: ${numPools}, orderDirection: desc, orderBy: cumulativeVolumeUSD, where: {
-      inputTokens_: { id: "${token.toLowerCase()}" }
-    }
-    ) {
+  return parse(gql`
+  {
+    pools(first: ${numPools}, orderDirection: desc, orderBy: volumeUSD, where: {
+      or: [
+        {token0_: {id: "${token.toLowerCase()}"}},
+        {token1_: {id: "${token.toLowerCase()}"}}
+      ]
+    }) {
       id
-      cumulativeVolumeUSD
-      inputTokens {
+      volumeUSD
+      token0 {
         id
-        decimals
         name
+        decimals
+      }
+      token1 {
+        id
+        name
+        decimals
       }
     }
-  }`)
+  }  
+`)
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
-    tokens: jsonData.inputTokens.map((token: any, index: any) => {
-      return {
-        _address: token.id,
-        decimals: token.decimals,
-        name: token.name,
-      }
-    }),
+    tokens: [
+      {
+        _address: jsonData.token0.id,
+        decimals: jsonData.token0.decimals,
+        name: jsonData.token0.name,
+      },
+      {
+        _address: jsonData.token1.id,
+        decimals: jsonData.token1.decimals,
+        name: jsonData.token1.name,
+      },
+    ],
   }
   return pool
 }
