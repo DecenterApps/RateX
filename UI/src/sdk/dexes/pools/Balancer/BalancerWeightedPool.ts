@@ -1,6 +1,6 @@
 // Ported from Solidity: https://github.com/balancer/balancer-v2-monorepo/blob/master/pkg/pool-weighted/contracts/WeightedMath.sol
 
-import { Token, Pool, PoolPrice } from '../../../types'
+import { Token, Pool } from '../../../types'
 import BigNumber from 'bignumber.js'
 import * as fp from '../../../utils/math/fixed-points'
 import * as math from '../../../utils/math/math'
@@ -21,8 +21,8 @@ export class BalancerWeightedPool extends Pool {
     this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
   }
 
-  calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): PoolPrice {
-    return { amountOut: calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString())), tickGasUsed: BigInt(0) }
+  calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
+    return calculateOutputAmount(this, tokenIn, tokenOut, BigNumber(amountIn.toString()))
   }
 
   update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
