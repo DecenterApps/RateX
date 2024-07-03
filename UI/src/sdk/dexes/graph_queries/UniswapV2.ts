@@ -20,7 +20,7 @@ export default class UniswapV2 implements DEXGraphFunctionality {
   // @reminder add uniswapv2 real endpoint for arbitrum
   setEndpoint(chainId: number): void {
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8yBXBTMfdhsoE5QCf7KnoPmQb7QAWtRzESfYjiCjGEM9`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/CStW6CSQbHoXsgKuVCrk3uShGA4JX3CAzzv2x9zaGf8w`
     }
     this.chainId = chainId
   }
@@ -28,7 +28,6 @@ export default class UniswapV2 implements DEXGraphFunctionality {
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
     const poolsInfo: PoolInfo[] = []
     const queryResult = await request(this.endpoint, queryTopPools(numPools, this.chainId))
-    console.log(queryResult)
 
     queryResult.pairs.forEach((pool: any) => {
       poolsInfo.push(createPoolFromGraph(pool, this.dexId, this.chainId))
@@ -64,7 +63,6 @@ export default class UniswapV2 implements DEXGraphFunctionality {
     console.log(poolInfos)
     const UniswapV2HelperContract = CreateUniswapV2HelperContract(this.chainId)
     const rawData: any[][] = await UniswapV2HelperContract.methods.getPoolsData(poolInfos).call()
-    console.log(rawData)
 
     const pools: Pool[] = []
     for (let pool of rawData) {
