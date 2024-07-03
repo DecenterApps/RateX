@@ -53,7 +53,6 @@ function calculateOutputAmount(
     const res = _calcOutGivenIn(pool.reserves[i], pool.weights[i], pool.reserves[j], pool.weights[j], tokenAmountIn)
     return BigInt(res.toFixed())
   } catch (e) {
-    console.log(e)
     return BigInt(0)
   }
 }
@@ -80,13 +79,7 @@ function _calcOutGivenIn(
   amountIn: BigNumber
 ): BigNumber {
   // Cannot exceed maximum in ratio (30% of tokenIn balance)
-  if (amountIn.gte(fp.mulDown(balanceIn, _MAX_IN_RATIO))) {
-    // console.log('Amount In: ', amountIn.toFixed())
-    // console.log('Balance In: ', balanceIn.toFixed()) // Ovo me brine
-    // console.log('MAX_IN_RATIO: ', _MAX_IN_RATIO.toFixed())
-    // console.log('MAX_IN Actual: ', fp.mulDown(balanceIn, _MAX_IN_RATIO).toFixed())
-    throw new Error('MAX_IN_RATIO')
-  }
+  if (amountIn.gte(fp.mulDown(balanceIn, _MAX_IN_RATIO))) throw new Error('MAX_IN_RATIO')
 
   const denominator = math.add(balanceIn, amountIn)
   const base = fp.divUp(balanceIn, denominator)

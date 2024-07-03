@@ -69,12 +69,10 @@ export default class BalancerV2 implements DEXGraphFunctionality {
 
 function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-    pools(first: ${numPools}, orderDirection: desc, orderBy: totalLiquidity, where: {totalLiquidity_not: "0"}) {
+    pools(first: ${numPools},  orderBy: totalLiquidity, orderDirection: desc, where: {totalLiquidity_not: "0"}) {
       id
       name
-      address
       poolType
-      poolTypeVersion
       tokens {
         id
         decimals
@@ -87,7 +85,7 @@ function queryTopPools(numPools: number): TypedDocumentNode<any, Record<string, 
 
 function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-      pools(first: ${numPools}, orderBy: totalLiquidity, where: {
+      pools(first: ${numPools}, orderBy: totalLiquidity, orderDirection: desc, where: {
           and: [
               {tokens_: {address: "${tokenA.toLowerCase()}"}},
               {tokens_: {address: "${tokenB.toLowerCase()}"}},
@@ -96,9 +94,7 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
         }
         ) {
           id
-          address
           poolType
-          poolTypeVersion
           tokens {
             id
             decimals
@@ -111,16 +107,14 @@ function queryPoolsWithTokenPair(tokenA: string, tokenB: string, numPools: numbe
 
 function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode<any, Record<string, unknown>> {
   return parse(gql`{
-      pools(first: ${numPools}, orderBy: totalLiquidity, where: 
+      pools(first: ${numPools}, orderBy: totalLiquidity, orderDirection: desc, where: 
           {
               tokens_: {address_contains: "${token.toLowerCase()}"},
               totalLiquidity_not: "0"
           }
         ) {
           id
-          address
           poolType
-          poolTypeVersion
           tokens {
             id
             decimals
@@ -135,8 +129,7 @@ function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
   // const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
   const isWeighted = balancerWeightedPoolTypes.includes(jsonData.poolType)
   if (!isWeighted) throw new Error('BALANCER: Pool type not supported')
-
-  // console.log(jsonData)
+  if (jsonData.tokens.length > 2) throw new Error('BALANCER: Pool has more then 2 tokens')
   // always has 2 tokens in pool
   // TO_DO: IMPORTANT POOL TYPE
   const pool: PoolInfo = {
