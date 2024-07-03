@@ -11,6 +11,6 @@ export function CreateUniswapV2HelperContract(chainId: number) {
   if (chainId === 1) {
     return new web3.eth.Contract(UniswapV2HelperAbi, UNISWAP_V2_HELPER_ADDRESS_MAINNET)
   } else {
-    return new web3.entract(UniswapV2HelperAbi, UNISWAP_V2_HELPER_ADDRESS_ARBITRUM)
+    return new web3.eth.Contract(UniswapV2HelperAbi, UNISWAP_V2_HELPER_ADDRESS_ARBITRUM)
   }
 }
