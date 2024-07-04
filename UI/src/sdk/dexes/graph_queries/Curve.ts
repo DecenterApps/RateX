@@ -4,10 +4,11 @@ import { CreateCurveHelperContract } from '../../../contracts/rateX/CurveHelper'
 import { CurvePool } from '../pools/Curve'
 import BigNumber from 'bignumber.js'
 import { dexIds } from '../dexIdsList'
+import CurveMainnetGraph from "./hardcoded/CurveMainnetGraph.json";
+import CurveArbitrumGraph from "./hardcoded/CurveArbitrumGraph.json"
 
 // For curve we use the official API instead of a graph query
 export default class Curve implements DEXGraphFunctionality {
-  mainPoolsEndpoint = 'https://api.curve.fi/api/getPools/ethereum/main'
   dexId = dexIds.CURVE
   chainId = 1
 
@@ -16,25 +17,25 @@ export default class Curve implements DEXGraphFunctionality {
   }
 
   setEndpoint(chainId: number): void {
-    if (chainId == 42161) {
-      this.mainPoolsEndpoint = 'https://api.curve.fi/api/getPools/arbitrum/main'
-    }
     this.chainId = chainId
   }
 
   async getTopPools(numPools: number): Promise<PoolInfo[]> {
-    const response = await fetch(this.mainPoolsEndpoint, {
-      method: 'GET',
+    return ((this.chainId == 1) ? CurveMainnetGraph : CurveArbitrumGraph).map(e => {
+      const obj = e;
+      const poolInfo: PoolInfo = {
+        poolId: obj.poolId,
+        dexId: obj.dexId,
+        tokens: obj.tokens.map((coin, index: any) => {
+          return {
+            _address: coin._address,
+            decimals: parseInt(coin.decimals),
+            name: coin.name,
+          }
+        }),
+      }
+      return poolInfo;
     })
-
-    const poolData = (await response.json()).data.poolData
-
-    const poolsInfo: PoolInfo[] = []
-    poolData.forEach((pool: any) => {
-      poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-    })
-
-    return poolsInfo
   }
 
   async getPoolsWithTokenPair(token1: string, token2: string, first: number): Promise<PoolInfo[]> {
@@ -86,20 +87,4 @@ export default class Curve implements DEXGraphFunctionality {
 
     return pools
   }
-}
-
-// Function to create a CurvePool object from a JSON object
-function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-  const pool: PoolInfo = {
-    poolId: jsonData.address,
-    dexId: dexId,
-    tokens: jsonData.coins.map((coin: any, index: any) => {
-      return {
-        _address: coin.address,
-        decimals: coin.decimals,
-        name: coin.symbol,
-      }
-    }),
-  }
-  return pool
 }

@@ -28,11 +28,20 @@ async function deployUniswapDex() {
 }
 
 async function deployCurveDex() {
-  const [addr1, addr2, addr3] = await hre.ethers.getSigners();
-  const Curve = await hre.ethers.getContractFactory("CurveDex");
-  const curve = await Curve.deploy(addresses.curve.poolRegistry, addresses.curve.poolRegistryFactory);
-  await curve.waitForDeployment();
-  return { curve, addr1, addr2, addr3};
+  if (hre.network.config.chainId == 1) {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const Curve = await hre.ethers.getContractFactory("CurveDexMainnet");
+    const curve = await Curve.deploy(addresses.curve.poolRegistry, addresses.curve.poolRegistryFactory, addresses.curve.poolRegistryFactoryNonStable);
+    await curve.waitForDeployment();
+    return { curve, addr1, addr2, addr3 };
+  }
+  else {
+    const [addr1, addr2, addr3] = await hre.ethers.getSigners();
+    const Curve = await hre.ethers.getContractFactory("CurveDex");
+    const curve = await Curve.deploy(addresses.curve.poolRegistry, addresses.curve.poolRegistryFactory);
+    await curve.waitForDeployment();
+    return { curve, addr1, addr2, addr3 };
+  }
 }
 
 async function deployBalancerDex() {

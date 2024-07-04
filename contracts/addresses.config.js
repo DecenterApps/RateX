@@ -30,7 +30,6 @@ const ARBITRUM_ADDRESSES = {
 
         poolRegistry: '0x445FE580eF8d70FF569aB36e80c647af338db351',
         poolRegistryFactory: '0x9AF14D26075f142eb3F292D5065EB3faa646167b',
-        stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
     },
     
   balancer: {
@@ -95,8 +94,8 @@ const MAINNET_ADDRESSES = {
     curve2Pool: '0x7f90122BF0700F9E7e1F688fe926940E8839F353', // USDCE USDT pool, Nije mi jasno sta je ovo, ostavljam ovako
 
     poolRegistry: '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5',
-    poolRegistryFactory: '0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5',
-    stableSwapFactory: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031', // Ni ovo ne postoji na mainnetu
+    poolRegistryFactory: '0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf',
+    poolRegistryFactoryNonStable: '0xB9fC157394Af804a3578134A6585C0dc9cc990d4'
   },
 
   balancer: {
