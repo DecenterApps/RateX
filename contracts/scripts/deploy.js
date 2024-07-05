@@ -5,7 +5,8 @@ const {
     deploySushiSwapHelper,
     deployCurveHelper,
     deployCamelotHelper,
-    deployBalancerHelper
+    deployBalancerHelper,
+    deployUniswapV2Helper
 } = require('./utils/deployment')
 
 const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
@@ -18,6 +19,7 @@ async function main() {
     const {sushiHelper} = await deploySushiSwapHelper()
     const {curveHelper} = await deployCurveHelper()
     const {camelotHelper} = await deployCamelotHelper()
+    const {uniswapV2Helper} = await deployUniswapV2Helper()
 
     const rateXAddress = await rateX.getAddress();
     console.log('RateX address: ' + rateXAddress);
@@ -37,6 +39,9 @@ async function main() {
     const balancerHelperAddress = await balancerHelper.getAddress();
     console.log("BalancerHelper address: " + balancerHelperAddress);
 
+    const uniswapV2HelperAddress = await uniswapV2Helper.getAddress();
+    console.log("UniswapV2Helper address: " + uniswapV2HelperAddress);
+
     await saveAbisToFile();
 
     saveAddresses(
@@ -45,7 +50,8 @@ async function main() {
         sushiSwapHelperAddress,
         curveHelperAddress,
         camelotHelperAddress,
-        balancerHelperAddress
+        balancerHelperAddress,
+        uniswapV2HelperAddress
     );
 }
 
@@ -56,6 +62,7 @@ async function saveAbisToFile() {
     await saveAbiToFile((await hre.artifacts.readArtifact('CurveHelper')).abi, 'CurveHelper');
     await saveAbiToFile((await hre.artifacts.readArtifact('CamelotHelper')).abi, 'CamelotHelper');
     await saveAbiToFile((await hre.artifacts.readArtifact('BalancerHelper')).abi, 'BalancerHelper');
+    await saveAbiToFile((await hre.artifacts.readArtifact('UniswapV2Helper')).abi, 'UniswapV2Helper');
 }
 
 main().catch((error) => {

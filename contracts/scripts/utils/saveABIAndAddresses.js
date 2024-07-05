@@ -22,7 +22,8 @@ function saveAddresses(
     sushiSwapHelperAddress,
     curveHelperAddress,
     camelotHelperAddress,
-    balancerHelperAddress
+    balancerHelperAddress,
+    uniswapV2HelperAddress
 ) {
     const content = `
 // chainId: ${hre.network.config.chainId}    
@@ -31,7 +32,8 @@ export const UNISWAP_HELPER_ADDRESS = "${uniswapHelperAddress}"
 export const SUSHISWAP_HELPER_ADDRESS = "${sushiSwapHelperAddress}"
 export const CURVE_HELPER_ADDRESS = "${curveHelperAddress}"
 export const CAMELOT_HELPER_ADDRESS = "${camelotHelperAddress}"
-export const BALANCER_HELPER_ADDRESS = "${balancerHelperAddress}"`
+export const BALANCER_HELPER_ADDRESS = "${balancerHelperAddress}"
+export const UNISWAP_V2_HELPER_ADDRESS = "${uniswapV2HelperAddress}"`
 
     const dir_path = resolve(__dirname, '../../../UI/src/contracts')
     let filePath

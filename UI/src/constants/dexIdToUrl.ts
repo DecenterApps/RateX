@@ -11,6 +11,8 @@ export function dexIdToUrl(dexId: string, chainId: Number): string {
       return `https://info.camelot.exchange/pair/v2/ADDRESS`
     case 'BALANCER_V2':
       return `https://app.balancer.fi/#/${networkName}/pool/ADDRESS`
+    case 'UNI_V2':
+      return `https://app.uniswap.org/explore/pools/${networkName}/ADDRESS`
   }
   return ''
 }
