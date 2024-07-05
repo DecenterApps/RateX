@@ -12,7 +12,7 @@ function RouteComponent({ route, chainId }: { route: Route; chainId: Number }) {
       <TokenComponent token={route.swaps[0]?.tokenIn} chainId={chainId}></TokenComponent>
       {route.swaps.map((swap, index) => (
         <Fragment key={index}>
-          <TokenArrow swap={swap}></TokenArrow>
+          <TokenArrow swap={swap} chainId={chainId}></TokenArrow>
           <TokenComponent token={swap.tokenOut} chainId={chainId}></TokenComponent>
         </Fragment>
       ))}
@@ -20,10 +20,10 @@ function RouteComponent({ route, chainId }: { route: Route; chainId: Number }) {
   )
 }
 
-function TokenArrow({ swap }: { swap: SwapStep }) {
+function TokenArrow({ swap, chainId }: { swap: SwapStep; chainId: Number }) {
   return (
     <div className="routingDiagramArrow">
-      <a href={dexIdToUrl[swap.dexId].replace('ADDRESS', swap.poolId)} target="_blank">
+      <a href={dexIdToUrl(swap.dexId, chainId).replace('ADDRESS', swap.poolId)} target="_blank">
         <div className="arrow">
           <ArrowRightOutlined />
         </div>
