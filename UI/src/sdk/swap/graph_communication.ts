@@ -15,15 +15,16 @@ async function initializeDexes(chainId: number): Promise<void> {
     // CHANGE DEXES FOR ALGORITHM
     const files = [
       //'SushiSwapV2.ts',
-      'UniswapV3.ts',
+      //'UniswapV3.ts',
       //'BalancerV2.ts',
       //'Curve.ts',
-      // 'CamelotV2.ts'
+      // 'CamelotV2.ts',
+      'UniswapV2.ts',
     ]
 
     for (const file of files) {
       if (file.endsWith('.ts')) {
-        if (chainId == 1 && file === 'CamelotV2.ts') {
+        if (chainId === 1 && file === 'CamelotV2.ts') {
           continue
         }
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -142,7 +143,6 @@ async function fetchPoolsData(
   promises.push(getTopPools(numTopPools, chainId))
   promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools, chainId))
   await Promise.all(promises)
-
   filterDuplicatePools()
 
   // call Solidity for additional pool data
