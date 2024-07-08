@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "crypto": "^1.0.1",
-    "ethers": "^6.12.1",
+    "ethers": "^6.13.1",
     "prettier": "^3.0.1",
     "web3": "^4.9.0"
   }

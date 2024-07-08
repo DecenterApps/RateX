@@ -78,7 +78,7 @@ async function executeSwap(
  * @param quote: The quote to be transformed
  * @returns The transformed quote
  */
-function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
+export function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
   quote.routes.forEach((route) =>
     route.swaps.map((swap) => {
       if (swap.poolId.length === 66) {
