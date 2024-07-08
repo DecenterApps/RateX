@@ -31,8 +31,20 @@ async function executeSwap(
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
 
+  const WETH_ADDRESS = chainId === 1 ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
+
   if (balance < amountIn) {
-    return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
+    if (tokenInContract.options.address?.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
+      // Wrap ETH
+      const amountToWrap = amountIn - balance
+      try {
+        await tokenInContract.methods.deposit().send({ from: signer, value: amountToWrap.toString() })
+      } catch (err: any) {
+        return { isSuccess: false, errorMessage: 'Failed to wrap ETH' } as ResponseType
+      }
+    } else {
+      return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
+    }
   }
 
   try {
