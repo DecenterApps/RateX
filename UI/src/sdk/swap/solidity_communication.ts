@@ -63,12 +63,14 @@ async function executeSwap(
  * @returns The transformed quote
  */
 function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
-  quote.routes[0].swaps.map((swap) => {
-    if (swap.poolId.length === 66) {
-      swap.poolId = swap.poolId.slice(0, 42) // convert to address
-    }
-    return swap
-  })
+  quote.routes.forEach((route) =>
+    route.swaps.map((swap) => {
+      if (swap.poolId.length === 66) {
+        swap.poolId = swap.poolId.slice(0, 42) // convert to address
+      }
+      return swap
+    })
+  )
 
   return quote
 }

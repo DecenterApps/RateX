@@ -55,6 +55,9 @@ const ARBITRUM_ADDRESSES = {
     weth_usdce_pool_0_05: '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
     weth_usdt_pool_0_05: '0x641c00a822e8b671738d32a431a4fb6074e5c79d',
   },
+  uniV2: {
+    router: '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24',
+  },
 
   impersonate: {
     WETH: '0x940a7ed683a60220de573ab702ec8f789ef0a402',
@@ -120,6 +123,9 @@ const MAINNET_ADDRESSES = {
     //   wbtc_usdce_pool_0_05: '0xac70bD92F89e6739B3a08Db9B6081a923912f73D',
     //   weth_usdce_pool_0_05: '0xc31e54c7a869b9fcbecc14363cf510d1c41fa443',
     //   weth_usdt_pool_0_05: '0x641c00a822e8b671738d32a431a4fb6074e5c79d',
+  },
+  uniV2: {
+    router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
   },
 }
 
