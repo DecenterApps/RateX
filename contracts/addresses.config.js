@@ -32,7 +32,6 @@ const ARBITRUM_ADDRESSES = {
     poolRegistryFactory: '0x9AF14D26075f142eb3F292D5065EB3faa646167b',
     poolRegistryFactoryNonStable: '0xb17b674D9c5CB2e441F8e196a2f048A81355d031'
   },
-
   balancer: {
     vault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
   },
