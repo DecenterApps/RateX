@@ -6,15 +6,17 @@ import Web3 from 'web3'
 import { CreateRateXContract } from '../../contracts/rateX/RateX'
 import { findRoute } from '../routing/main'
 
-async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
+async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number, setRouteFindingStep: Function): Promise<Quote> {
   console.log('tokenIn: ', tokenIn)
   console.log('tokenOut: ', tokenOut)
-
+  setRouteFindingStep("Fetching Pools Data")
   const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5, chainId)
+  setRouteFindingStep("Done Fetching Pools Data")
+
   console.log('Fetched pools:', pools)
   console.log('Pool size: ', pools.length)
 
-  return findRoute(tokenIn, tokenOut, amountIn, pools)
+  return findRoute(tokenIn, tokenOut, amountIn, pools, setRouteFindingStep)
 }
 
 async function executeSwap(

@@ -13,6 +13,8 @@ import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+import LoadingQuoteComponent from './LoadingQuoteComponent'
+import { useGlobalState } from '../context/GlobalStateProvider'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -20,6 +22,10 @@ interface SwapProps {
 }
 
 function Swap({ chainIdState, walletState }: SwapProps) {
+
+  const { routeFindingStep, setRouteFindingStep } = useGlobalState();
+
+
   const [chainId] = chainIdState
   const [wallet] = walletState
 
@@ -198,7 +204,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     const amount = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** tokenFrom.decimals)
 
     setLoadingQuote(true)
-    findQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount, chainId)
+    findQuote(tokenFrom.address[chainId], tokenTo.address[chainId], amount, chainId, setRouteFindingStep)
       .then((quote: Quote) => {
         if (callTime < lastCallTime.current) {
           return
@@ -295,15 +301,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
             <ArrowDownOutlined className="switchArrow" />
           </div>
         </div>
+        {loadingQuote && 
+            <LoadingQuoteComponent from={tokenFrom.ticker} to={tokenTo.ticker}/>
+          }
+          <br/>
         <div className="input">
-          {loadingQuote ? (
-            <div className="lds-ellipsis">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          ) : (
+         
             <Fragment>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
@@ -311,7 +314,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
                 <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
               </div>
             </Fragment>
-          )}
+          
           <div className="assetTo" onClick={() => openModal(2)}>
             <img src={tokenTo.img} alt="assetFromLogo" className="assetLogo" />
             {tokenTo.ticker}
@@ -330,7 +333,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 1}>
               Swap
             </button>
           )}

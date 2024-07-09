@@ -7,7 +7,7 @@ import objectHash from "object-hash";
     (code is seen in ./multiHopSwap.ts)
     After each iteration, the pools are updated with the amounts that passed through them.
 */
-function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[]): Quote {
+function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[], setRouteFindingStep: Function): Quote {
     const graph = createGraph(pools)
 
     // percentage of the amountIn that we split into

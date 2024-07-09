@@ -10,11 +10,15 @@ export function findRouteUniLikeAlgo(
     tokenIn: string,
     tokenOut: string,
     amountIn: bigint,
-    pools: Pool[]
+    pools: Pool[],
+    setRouteFindingStep: Function
 ): Quote {
 
+    setRouteFindingStep("Computing routes")
     const routes: TRoute[] = computeRoutes(tokenIn, tokenOut, pools, algoParams.maxHops);
     const amounts = calculateAmountDistribution(amountIn, algoParams.distributionPercentage);
+    setRouteFindingStep("Computing amounts")
+
     console.log("Amounts:", amounts);
     console.log("Amounts size:", amounts.length);
     console.log("Routes size:", routes.length);
@@ -29,6 +33,7 @@ export function findRouteUniLikeAlgo(
     );
     const quote = swapFinder.findBestRoute();
     console.log("UniLikeQuote:", quote);
+    setRouteFindingStep("Almost done...")
 
     return convertResponseToFoundQuoteType(quote);
 }

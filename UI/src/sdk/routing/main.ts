@@ -12,11 +12,11 @@ import {findRouteWithIterativeSplitting} from "./iterative_spliting/main";
  * */
 const UNI_LIKE_ALGO_ACTIVE = false;
 
-export function findRoute(tokenIn: string, tokenOut: string, amountIn: bigint, pools: Pool[]): Quote {
+export function findRoute(tokenIn: string, tokenOut: string, amountIn: bigint, pools: Pool[], setRouteFindingStep: Function): Quote {
 
     if (UNI_LIKE_ALGO_ACTIVE) {
-        return findRouteUniLikeAlgo(tokenIn, tokenOut, amountIn, pools);
+        return findRouteUniLikeAlgo(tokenIn, tokenOut, amountIn, pools, setRouteFindingStep);
     } else {
-        return findRouteWithIterativeSplitting(tokenIn, tokenOut, amountIn, pools);
+        return findRouteWithIterativeSplitting(tokenIn, tokenOut, amountIn, pools, setRouteFindingStep);
     }
 }
