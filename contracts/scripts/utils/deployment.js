@@ -158,6 +158,7 @@ module.exports = {
   deployCurveDex,
   deployCurveHelper,
   deployUniswapDex,
+  deployUniswapV2Dex,
   deployUniswapHelper,
   deployBalancerDex,
   deployBalancerHelper,
