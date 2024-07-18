@@ -126,27 +126,18 @@ function queryPoolsWithToken(token: string, numPools: number): TypedDocumentNode
 }
 
 function createPoolFromGraph(jsonData: any, dexId: string): PoolInfo {
-  // const isStable = balancerStablePoolTypes.includes(jsonData.poolType)
   const isWeighted = balancerWeightedPoolTypes.includes(jsonData.poolType)
   if (!isWeighted) throw new Error('BALANCER: Pool type not supported')
-  if (jsonData.tokens.length > 2) throw new Error('BALANCER: Pool has more then 2 tokens')
-  // always has 2 tokens in pool
-  // TO_DO: IMPORTANT POOL TYPE
   const pool: PoolInfo = {
     poolId: jsonData.id,
     dexId: dexId,
-    tokens: [
-      {
-        _address: jsonData.tokens[0].id,
-        decimals: jsonData.tokens[0].decimals,
-        name: jsonData.tokens[0].name,
-      },
-      {
-        _address: jsonData.tokens[1].id,
-        decimals: jsonData.tokens[1].decimals,
-        name: jsonData.tokens[1].name,
-      },
-    ],
+    tokens: jsonData.tokens.map((token: any) => {
+      return {
+        _address: token.id,
+        decimals: token.decimals,
+        name: token.name,
+      }
+    }),
   }
   return pool
 }
