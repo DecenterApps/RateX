@@ -2,24 +2,16 @@
 
 import { ethers } from "ethers";
 import Curve from "../sdk/dexes/graph_queries/Curve";
-import { findRouteWithIterativeSplitting } from "../sdk/routing/iterative_spliting/main";
+import { findRouteWithIterativeSplitting, getDex } from "../sdk/routing/iterative_spliting/main";
 import { ERC20_ABI } from "../contracts/abi/common/ERC20_ABI";
 import { RATE_X_ADDRESS as RATE_X_ADDRESS_MAINNET } from '../contracts/addresses-mainnet'
 import { RATE_X_ADDRESS as RATE_X_ADDRESS_ARBITRUM } from '../contracts/addresses-arbitrum'
 import { RateXAbi } from "../contracts/abi/RateXAbi";
 import { transferQuoteWithBalancerPoolIdToAddress } from "../sdk/swap/solidity_communication";
 import UniswapV3 from "../sdk/dexes/graph_queries/UniswapV3";
+import UniswapV2 from "../sdk/dexes/graph_queries/UniswapV2";
 
 const privateKey = 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e';
-
-const getDex = async (dexId) => {
-    if (dexId === 'CURVE') {
-        return Curve.initialize();
-    }
-    if(dexId==="UNIV3"){
-        return UniswapV3.initialize();
-    }
-}
 
 async function setErc20Balance(tokenAddress, walletAddress, tokenAmount, networkId) {
     const amountBigInt = ethers.parseUnits(tokenAmount.toString(), 18);
@@ -122,9 +114,10 @@ async function executeSwapEthers(
     }
 }
 
-export const testPool = async (poolInfo, wallet, networkId, dexId) => {
+export const testPool = async (poolInfo, wallet, networkId) => {
     try {
-        const dex = await getDex(dexId);
+        const dex = await getDex(poolInfo.dexId);
+        localStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo));
         const [pool] = await dex.getAdditionalPoolDataFromSolidity([poolInfo])
         if (!pool) {
             return false;
@@ -137,7 +130,7 @@ export const testPool = async (poolInfo, wallet, networkId, dexId) => {
 
             const [tokenA, tokenB] = tokenPair;
             const amountIn = 10n ** BigInt(tokenA.decimals);
-            const route = findRouteWithIterativeSplitting(tokenA._address, tokenB._address, amountIn, [pool])
+            const route = await findRouteWithIterativeSplitting(tokenA._address, tokenB._address, amountIn, [pool])
             const quote = route.quote;
             const razl = Number(10n ** BigInt(tokenB.decimals) - quote) / Number(10n ** BigInt(tokenB.decimals));
 
@@ -163,12 +156,11 @@ export const testPool = async (poolInfo, wallet, networkId, dexId) => {
 
                     console.log("Expected amount out: ", expectedAmountOut)
                     console.log("Real amount out:     ", realAmountOut)
-                    // 1% acceptable difference
-                    if (realAmountOut < expectedAmountOut * 99n / 100n) {
+                    if (realAmountOut < expectedAmountOut) {
                         console.log("Bad quote (bad)");
                         return false;
                     }
-                    if (realAmountOut > expectedAmountOut * 101n / 100n) {
+                    if (realAmountOut > expectedAmountOut) {
                         console.log("Bad quote (good)");
                         return false;
                     }

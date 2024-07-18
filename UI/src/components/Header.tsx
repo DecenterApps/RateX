@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal } from 'antd'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import chainList from '../constants/chainList.json'
-import detectEthereumProvider from '@metamask/detect-provider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
 
@@ -22,17 +22,11 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     const web3: Web3 = initRPCProvider(chainId)
 
     async function checkWalletConnection() {
-      // window.ethereum.on("accountsChanged", refreshAccounts)
-      const provider = await detectEthereumProvider()
-      if (!provider) return
-
       const accountsRes = await window.ethereum.request({ method: 'eth_accounts' })
 
       await switchMetamaskChain(web3, chainId)
       if (accountsRes.length) {
         setWallet(accountsRes[0])
-      } else {
-        console.log('Metamask is not already connected')
       }
     }
 
@@ -45,8 +39,6 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   async function modifyChainButton(index: number) {
     const newChainId = chainList[index].chainId
 
-    console.log('chainId: ', newChainId)
-
     await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
     setChainId(newChainId)
     setIsOpenModal(false)
@@ -57,8 +49,12 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   }
 
   async function connectWallet() {
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-    setWallet(accounts[0])
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+      setWallet(accounts[0])
+    } else {
+      window.open('https://metamask.io/download.html')
+    }
   }
 
   async function refreshAccounts() {
@@ -66,7 +62,6 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     if (resAccounts.length !== 0 && resAccounts[0] === wallet) {
       setWallet(resAccounts[0])
     }
-    console.log('refreshedAccounts', wallet)
   }
 
   async function addMetamaskChain(web3: Web3, chainId: number) {
@@ -120,13 +115,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
           </Link>
         </div>
         <div className="rightHeader">
-          <button className="chooseChain" onClick={() => setIsOpenModal(true)}>
-            {' '}
-            {currentChainData?.name}{' '}
-          </button>
-          <button className="connectButton" onClick={connectWallet}>
-            {isWalletConnected() ? `Connected: ${wallet}` : 'Connect Wallet'}
-          </button>
+        <ConnectButton />
         </div>
       </header>
     </>
