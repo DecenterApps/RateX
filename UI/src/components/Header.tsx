@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal } from 'antd'
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import chainList from '../constants/chainList.json'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
@@ -114,13 +115,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
           </Link>
         </div>
         <div className="rightHeader">
-          <button className="chooseChain" onClick={() => setIsOpenModal(true)}>
-            {' '}
-            {currentChainData?.name}{' '}
-          </button>
-          <button className="connectButton" onClick={connectWallet}>
-            {isWalletConnected() ? `Connected: ${wallet}` : 'Connect Wallet'}
-          </button>
+        <ConnectButton />
         </div>
       </header>
     </>
