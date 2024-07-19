@@ -10,18 +10,6 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 ///and it is only contract users directly interacts with
 ///@dev This is first version of the contract, it does not have any optimizations
 contract RateX is Ownable {
-  ///@notice Event emitted when swap is executed
-  event SwapEvent(address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, address recipient);
-
-  ///@notice Event emitted when new dex is added
-  event DexAdded(string dexId, address dexAddress);
-
-  ///@notice Event emitted when dex is replaced
-  event DexReplaced(string dexId, address oldAddress, address newAddress);
-
-  ///@notice Event emitted when dex is removed
-  event DexRemoved(string dexId);
-
   ///@notice Struct for single dex
   struct DexType {
     string dexId;
@@ -47,10 +35,22 @@ contract RateX is Ownable {
     uint256 amountIn;
   }
 
+  bool private locked;
+
   ///@notice Mapping of dexId to dexAddress
   mapping(string => address) public dexes;
 
-  bool private locked;
+  ///@notice Event emitted when swap is executed
+  event SwapEvent(address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, address recipient);
+
+  ///@notice Event emitted when new dex is added
+  event DexAdded(string dexId, address dexAddress);
+
+  ///@notice Event emitted when dex is replaced
+  event DexReplaced(string dexId, address oldAddress, address newAddress);
+
+  ///@notice Event emitted when dex is removed
+  event DexRemoved(string dexId);
 
   modifier noReentrancy() {
     require(!locked, 'No reentrancy');
@@ -134,14 +134,6 @@ contract RateX is Ownable {
     emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
   }
 
-  function checkAmountIn(Route[] calldata _foundRoutes, uint256 _amountIn) private pure {
-    uint256 totalAmountIn = 0;
-    for (uint256 i = 0; i < _foundRoutes.length; ++i) {
-      totalAmountIn += _foundRoutes[i].amountIn;
-    }
-    require(totalAmountIn == _amountIn, 'Amount in does not match');
-  }
-
   function swapForTotalAmountOut(Route[] calldata _foundRoutes) internal returns (uint256 amountOut) {
     amountOut = 0;
     for (uint256 i = 0; i < _foundRoutes.length; ++i) {
@@ -161,5 +153,13 @@ contract RateX is Ownable {
 
       amountOut = IDex(dexes[swapStep.dexId]).swap(swapStep.poolId, swapStep.tokenIn, swapStep.tokenOut, amountOut, 0, address(this));
     }
+  }
+
+  function checkAmountIn(Route[] calldata _foundRoutes, uint256 _amountIn) private pure {
+    uint256 totalAmountIn = 0;
+    for (uint256 i = 0; i < _foundRoutes.length; ++i) {
+      totalAmountIn += _foundRoutes[i].amountIn;
+    }
+    require(totalAmountIn == _amountIn, 'Amount in does not match');
   }
 }
