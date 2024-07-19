@@ -40,14 +40,15 @@ function App() {
 
 
   const fetchChainId = async () => {
-    const chainId = await getChainId(config);
-    setChainId(chainId);
+    const chainIdNew = await getChainId(config);
+    if(chainIdNew != chainId)
+    setChainId(chainIdNew);
   };
 
   useEffect(() => {
     // Poll the chain ID every 5 seconds
     fetchChainId(); // Fetch initially
-    const interval = setInterval(fetchChainId, 5000);
+    const interval = setInterval(fetchChainId, 3000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
