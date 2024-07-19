@@ -50,9 +50,6 @@ contract RateX is Ownable {
   ///@notice Mapping of dexId to dexAddress
   mapping(string => address) public dexes;
 
-  ///@notice Array of supported dexes
-  DexType[] public supportedDexes;
-
   bool private locked;
 
   modifier noReentrancy() {
@@ -65,12 +62,7 @@ contract RateX is Ownable {
   ///@dev we have predefined dexes to add
   constructor(DexType[] memory _initialDexes) {
     for (uint256 i = 0; i < _initialDexes.length; ++i) {
-      supportedDexes.push(DexType({dexId: _initialDexes[i].dexId, dexAddress: _initialDexes[i].dexAddress}));
-    }
-
-    for (uint256 i = 0; i < _initialDexes.length; ++i) {
       dexes[_initialDexes[i].dexId] = _initialDexes[i].dexAddress;
-      supportedDexes[i] = _initialDexes[i];
     }
   }
 
@@ -79,7 +71,6 @@ contract RateX is Ownable {
   function addDex(DexType memory _dex) external onlyOwner {
     require(dexes[_dex.dexId] == address(0), 'Dex already exists');
     dexes[_dex.dexId] = _dex.dexAddress;
-    supportedDexes.push(_dex);
 
     emit DexAdded(_dex.dexId, _dex.dexAddress);
   }
@@ -94,12 +85,6 @@ contract RateX is Ownable {
     address oldAddress = dexes[_dex.dexId];
     dexes[_dex.dexId] = _dex.dexAddress;
 
-    for (uint256 i = 0; i < supportedDexes.length; ++i) {
-      if (keccak256(abi.encodePacked(supportedDexes[i].dexId)) == keccak256(abi.encodePacked(_dex.dexId))) {
-        supportedDexes[i] = _dex;
-      }
-    }
-
     emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
   }
 
@@ -110,24 +95,7 @@ contract RateX is Ownable {
     require(dexes[_dexId] != address(0), 'Dex does not exist');
     delete dexes[_dexId];
 
-    DexType memory forRemoval;
-
-    for (uint256 i = 0; i < supportedDexes.length; ++i) {
-      if (keccak256(abi.encodePacked(supportedDexes[i].dexId)) == keccak256(abi.encodePacked(_dexId))) {
-        forRemoval = supportedDexes[i];
-        supportedDexes[i] = supportedDexes[supportedDexes.length - 1];
-        supportedDexes[supportedDexes.length - 1] = forRemoval;
-      }
-    }
-
-    supportedDexes.pop();
-
     emit DexRemoved(_dexId);
-  }
-
-  ///@notice Function for getting all supported dexes
-  function getSupportedDexes() external view returns (DexType[] memory) {
-    return supportedDexes;
   }
 
   ///@notice main function for executing swap
