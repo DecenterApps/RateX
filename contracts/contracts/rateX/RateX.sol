@@ -7,12 +7,12 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 ///@title Main contract for RateX dex aggregator
 ///@notice This contract aggregates multiple dexes
-///and it is only contract users directly interacts with
-///@dev This is first version of the contract, it does not have any optimizations
+///and it is the only contract users directly interact with
+///@dev This is the first version of the contract, it does not have any optimizations
 contract RateX is Ownable {
   ///@notice Struct for single dex
   struct DexType {
-    string dexId;
+    uint32 dexId;
     address dexAddress;
   }
 
@@ -23,7 +23,7 @@ contract RateX is Ownable {
     address poolId;
     address tokenIn;
     address tokenOut;
-    string dexId;
+    uint32 dexId;
   }
 
   ///@notice Single route for swap
@@ -38,19 +38,19 @@ contract RateX is Ownable {
   bool private locked;
 
   ///@notice Mapping of dexId to dexAddress
-  mapping(string => address) public dexes;
+  mapping(uint32 => address) public dexes;
 
   ///@notice Event emitted when swap is executed
   event SwapEvent(address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, address recipient);
 
   ///@notice Event emitted when new dex is added
-  event DexAdded(string dexId, address dexAddress);
+  event DexAdded(uint32 dexId, address dexAddress);
 
   ///@notice Event emitted when dex is replaced
-  event DexReplaced(string dexId, address oldAddress, address newAddress);
+  event DexReplaced(uint32 dexId, address oldAddress, address newAddress);
 
   ///@notice Event emitted when dex is removed
-  event DexRemoved(string dexId);
+  event DexRemoved(uint32 dexId);
 
   ///@notice Error thrown when provided address is zero address
   error RateX__ZeroAddress();
@@ -126,7 +126,7 @@ contract RateX is Ownable {
   ///@notice Function for removing existing dex, only owner can call it
   ///@dev To save gas costs, this function will not preserve order of supportedDexes array
   /// Same as replacement and adding, think about how users should be notified
-  function removeDex(string memory _dexId) external onlyOwner {
+  function removeDex(uint32 _dexId) external onlyOwner {
     if (dexes[_dexId] == address(0)) {
       revert RateX__DexDoesNotExist();
     }

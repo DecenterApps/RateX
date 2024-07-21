@@ -1,5 +1,7 @@
 hre = require('hardhat')
 const { config } = require('../../addresses.config')
+const {stringToUint32} = require("./contract");
+
 
 const addresses = config[hre.network.config.chainId]
 
@@ -70,27 +72,27 @@ async function deployRateX() {
 
   const initialDexes = [
     {
-      dexId: 'SUSHI_V2',
+      dexId: stringToUint32('SUSHI_V2'),
       dexAddress: sushiSwapAddress,
     },
     {
-      dexId: 'UNI_V3',
+      dexId: stringToUint32('UNI_V3'),
       dexAddress: uniswapAddress,
     },
     {
-      dexId: 'CURVE',
+      dexId: stringToUint32('CURVE'),
       dexAddress: curveAddress,
     },
     {
-      dexId: 'BALANCER_V2',
+      dexId: stringToUint32('BALANCER_V2'),
       dexAddress: balancerAddress,
     },
     {
-      dexId: 'CAMELOT',
+      dexId: stringToUint32('CAMELOT'),
       dexAddress: camelotAddress,
     },
     {
-      dexId: 'UNI_V2',
+      dexId: stringToUint32('UNI_V2'),
       dexAddress: uniswapV2Address,
     },
   ]
