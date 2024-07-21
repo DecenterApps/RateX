@@ -3,13 +3,13 @@ pragma solidity ^0.8.0;
 
 import './interfaces/IDex.sol';
 import './libraries/TransferHelper.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/access/Ownable2Step.sol';
 
 ///@title Main contract for RateX dex aggregator
 ///@notice This contract aggregates multiple dexes
 ///and it is the only contract users directly interact with
 ///@dev This is the first version of the contract, it does not have any optimizations
-contract RateX is Ownable {
+contract RateX is Ownable2Step {
   ///@notice Struct for single dex
   struct DexType {
     uint32 dexId;
