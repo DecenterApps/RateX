@@ -52,6 +52,27 @@ contract RateX is Ownable {
   ///@notice Event emitted when dex is removed
   event DexRemoved(string dexId);
 
+  ///@notice Error thrown when provided address is zero address
+  error RateX__ZeroAddress();
+
+  ///@notice Error thrown when dex already exists
+  error RateX__DexAlreadyExists();
+
+  ///@notice Error thrown when dex does not exist
+  error RateX__DexDoesNotExist();
+
+  ///@notice Error thrown when routes length is 0
+  error RateX__NoRoutes();
+
+  ///@notice Error thrown when amount in does not match
+  error RateX__AmountInDoesNotMatch();
+
+  ///@notice Error thrown when amount out does not match
+  error RateX__AmountOutDoesNotMatch();
+
+  ///@notice Error thrown when amount is below slippage protection
+  error RateX__AmountLesserThanMinAmount();
+
   modifier noReentrancy() {
     require(!locked, 'No reentrancy');
     locked = true;
@@ -62,6 +83,9 @@ contract RateX is Ownable {
   ///@dev we have predefined dexes to add
   constructor(DexType[] memory _initialDexes) {
     for (uint256 i = 0; i < _initialDexes.length; ++i) {
+      if (_initialDexes[i].dexAddress == address(0)) {
+        revert RateX__ZeroAddress();
+      }
       dexes[_initialDexes[i].dexId] = _initialDexes[i].dexAddress;
     }
   }
@@ -69,7 +93,13 @@ contract RateX is Ownable {
   ///@notice Function for adding new dex, only owner can call it
   ///@dev Address of new dex should implement IDex interface
   function addDex(DexType memory _dex) external onlyOwner {
-    require(dexes[_dex.dexId] == address(0), 'Dex already exists');
+    if (_dex.dexAddress == address(0)) {
+      revert RateX__ZeroAddress();
+    }
+    if (dexes[_dex.dexId] != address(0)) {
+      revert RateX__DexAlreadyExists();
+    }
+
     dexes[_dex.dexId] = _dex.dexAddress;
 
     emit DexAdded(_dex.dexId, _dex.dexAddress);
@@ -80,7 +110,12 @@ contract RateX is Ownable {
   /// think later about how to notify users if new dex is replaced
   /// and if they can vote for that
   function replaceDex(DexType memory _dex) external onlyOwner {
-    require(dexes[_dex.dexId] != address(0), 'Dex does not exist');
+    if (_dex.dexAddress == address(0)) {
+      revert RateX__ZeroAddress();
+    }
+    if (dexes[_dex.dexId] == address(0)) {
+      revert RateX__DexDoesNotExist();
+    }
 
     address oldAddress = dexes[_dex.dexId];
     dexes[_dex.dexId] = _dex.dexAddress;
@@ -92,7 +127,10 @@ contract RateX is Ownable {
   ///@dev To save gas costs, this function will not preserve order of supportedDexes array
   /// Same as replacement and adding, think about how users should be notified
   function removeDex(string memory _dexId) external onlyOwner {
-    require(dexes[_dexId] != address(0), 'Dex does not exist');
+    if (dexes[_dexId] == address(0)) {
+      revert RateX__DexDoesNotExist();
+    }
+
     delete dexes[_dexId];
 
     emit DexRemoved(_dexId);
@@ -115,7 +153,9 @@ contract RateX is Ownable {
     uint256 _quotedAmountWithSlippageProtection,
     address _recipient
   ) external noReentrancy returns (uint256 amountOut) {
-    require(_foundRoutes.length > 0, 'No routes in split route');
+    if (_foundRoutes.length == 0) {
+      revert RateX__NoRoutes();
+    }
 
     checkAmountIn(_foundRoutes, _amountIn);
 
@@ -125,9 +165,13 @@ contract RateX is Ownable {
     amountOut = swapForTotalAmountOut(_foundRoutes);
     uint256 balanceAfter = IERC20(_tokenOut).balanceOf(address(this));
 
-    require(balanceAfter - balanceBefore == amountOut, 'Amount out does not match');
+    if (balanceAfter - balanceBefore != amountOut) {
+      revert RateX__AmountOutDoesNotMatch();
+    }
 
-    require(amountOut >= _quotedAmountWithSlippageProtection, 'Amount lesser than min amount');
+    if (amountOut < _quotedAmountWithSlippageProtection) {
+      revert RateX__AmountLesserThanMinAmount();
+    }
 
     TransferHelper.safeTransfer(_tokenOut, _recipient, amountOut);
 
@@ -147,7 +191,9 @@ contract RateX is Ownable {
     for (uint256 i = 0; i < _route.swaps.length; ++i) {
       SwapStep memory swapStep = _route.swaps[i];
 
-      require(dexes[swapStep.dexId] != address(0), 'Dex does not exist');
+      if (dexes[swapStep.dexId] == address(0)) {
+        revert RateX__DexDoesNotExist();
+      }
 
       TransferHelper.safeApprove(swapStep.tokenIn, dexes[swapStep.dexId], amountOut);
 
@@ -160,6 +206,8 @@ contract RateX is Ownable {
     for (uint256 i = 0; i < _foundRoutes.length; ++i) {
       totalAmountIn += _foundRoutes[i].amountIn;
     }
-    require(totalAmountIn == _amountIn, 'Amount in does not match');
+    if (totalAmountIn != _amountIn) {
+      revert RateX__AmountInDoesNotMatch();
+    }
   }
 }
