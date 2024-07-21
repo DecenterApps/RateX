@@ -157,12 +157,12 @@ contract RateX is Ownable2Step {
       revert RateX__NoRoutes();
     }
 
-    checkAmountIn(_foundRoutes, _amountIn);
+    _checkAmountIn(_foundRoutes, _amountIn);
 
     TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
 
     uint256 balanceBefore = IERC20(_tokenOut).balanceOf(address(this));
-    amountOut = swapForTotalAmountOut(_foundRoutes);
+    amountOut = _swapForTotalAmountOut(_foundRoutes);
     uint256 balanceAfter = IERC20(_tokenOut).balanceOf(address(this));
 
     if (balanceAfter - balanceBefore != amountOut) {
@@ -178,14 +178,14 @@ contract RateX is Ownable2Step {
     emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
   }
 
-  function swapForTotalAmountOut(Route[] calldata _foundRoutes) internal returns (uint256 amountOut) {
+  function _swapForTotalAmountOut(Route[] calldata _foundRoutes) internal returns (uint256 amountOut) {
     amountOut = 0;
     for (uint256 i = 0; i < _foundRoutes.length; ++i) {
-      amountOut += swapOnOneRoute(_foundRoutes[i]);
+      amountOut += _swapOnOneRoute(_foundRoutes[i]);
     }
   }
 
-  function swapOnOneRoute(Route calldata _route) internal returns (uint256 amountOut) {
+  function _swapOnOneRoute(Route calldata _route) internal returns (uint256 amountOut) {
     amountOut = _route.amountIn;
 
     for (uint256 i = 0; i < _route.swaps.length; ++i) {
@@ -201,7 +201,7 @@ contract RateX is Ownable2Step {
     }
   }
 
-  function checkAmountIn(Route[] calldata _foundRoutes, uint256 _amountIn) private pure {
+  function _checkAmountIn(Route[] calldata _foundRoutes, uint256 _amountIn) private pure {
     uint256 totalAmountIn = 0;
     for (uint256 i = 0; i < _foundRoutes.length; ++i) {
       totalAmountIn += _foundRoutes[i].amountIn;
