@@ -22,8 +22,6 @@ contract UniswapV3Dex is IDex {
         uint _amountOutMin,
         address _to
     ) external returns(uint256 amountOut) {
-
-        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
 
         amountOut = swapRouter.exactInputSingle(

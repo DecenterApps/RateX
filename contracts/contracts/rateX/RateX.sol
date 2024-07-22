@@ -76,8 +76,11 @@ contract RateX is Ownable2Step {
   ///@notice Error thrown when reentrant call is detected
   error RateX__ReentrantCall();
 
+  ///@notice Error thrown when delegate call failed
+  error RateX__DelegateCallFailed();
+
   modifier nonReentrant() {
-    if(locked) {
+    if (locked) {
       revert RateX__ReentrantCall();
     }
     locked = true;
@@ -200,9 +203,23 @@ contract RateX is Ownable2Step {
         revert RateX__DexDoesNotExist();
       }
 
-      TransferHelper.safeApprove(swapStep.tokenIn, dexes[swapStep.dexId], amountOut);
+      // Delegate call to the DEX contract's swap function
+      (bool success, bytes memory result) = dexes[swapStep.dexId].delegatecall(
+        abi.encodeWithSignature(
+          'swap(address,address,address,uint256,uint256,address)',
+          swapStep.poolId,
+          swapStep.tokenIn,
+          swapStep.tokenOut,
+          amountOut,
+          0,
+          address(this)
+        )
+      );
 
-      amountOut = IDex(dexes[swapStep.dexId]).swap(swapStep.poolId, swapStep.tokenIn, swapStep.tokenOut, amountOut, 0, address(this));
+      if (!success) {
+        revert RateX__DelegateCallFailed();
+      }
+      amountOut = abi.decode(result, (uint256));
     }
   }
 

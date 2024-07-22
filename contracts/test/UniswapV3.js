@@ -2,7 +2,7 @@ hre = require("hardhat");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployUniswapDex} = require("../scripts/utils/deployment");
-const {sendWethTokensToUser, approveToContract} = require("../scripts/utils/contract");
+const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
 
 describe("Tests for swapping on uniswap v3", async function () {
 
@@ -21,13 +21,13 @@ describe("Tests for swapping on uniswap v3", async function () {
     it("Should swap eth for wbtc", async function () {
 
         const {uniswap, addr1} = await deployUniswapDex();
+        const uniswapAddress = await uniswap.getAddress();
         const WBTC = await hre.ethers.getContractAt("IERC20", addresses.tokens.WBTC);
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
 
-        await sendWethTokensToUser(addr1, hre.ethers.parseEther("2"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("1"));
+        await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, uniswapAddress, hre.ethers.parseEther("2"));
 
-        const wethBalanceBefore = await WETH.balanceOf(addr1);
+        const wethBalanceBefore = await WETH.balanceOf(uniswapAddress);
         const amountIn = hre.ethers.parseEther("1");
 
         const tx = await uniswap.swap(
@@ -42,7 +42,7 @@ describe("Tests for swapping on uniswap v3", async function () {
         const event = txReceipt.logs[txReceipt.logs.length - 1];
         const amountOut = event.args[0];
 
-        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        const wethBalanceAfter = await WETH.balanceOf(uniswapAddress);
         const wbtcBalanceAfter = await WBTC.balanceOf(addr1);
 
         expect(wbtcBalanceAfter).to.be.equal(amountOut);
@@ -52,8 +52,9 @@ describe("Tests for swapping on uniswap v3", async function () {
     it("Should revert because of slippage", async function () {
         const {uniswap, addr1} = await deployUniswapDex();
 
-        await sendWethTokensToUser(addr1, hre.ethers.parseEther("2"))
-        await approveToContract(addr1, await uniswap.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("2"));
+        const uniswapAddress = await uniswap.getAddress();
+
+        await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, uniswapAddress, hre.ethers.parseEther("2"));
 
         const amountIn = hre.ethers.parseEther("1");
 

@@ -20,15 +20,16 @@ describe("Tests for swapping on Curve", async function () {
     it("Should swap with curve2pool", async function () {
         const {curve, addr1} = await deployCurveDex();
 
+        const curveAddress = await curve.getAddress();
+
         const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
         const USDCE = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDCE);
 
         const amountIn = hre.ethers.parseUnits("1000", 6);
 
-        await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, addr1, amountIn);
-        await approveToContract(addr1, await curve.getAddress(), addresses.tokens.USDT, amountIn);
+        await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, curveAddress, amountIn);
 
-        const balanceUSDTBefore = await USDT.balanceOf(addr1);
+        const balanceUSDTBefore = await USDT.balanceOf(curveAddress);
 
         const tx = await curve.swap(
             addresses.curve.curve2Pool,
@@ -42,7 +43,7 @@ describe("Tests for swapping on Curve", async function () {
         const event = txReceipt.logs[txReceipt.logs.length - 1];
         const amountOut = event.args[0];
 
-        const balanceUSDTAfter = await USDT.balanceOf(addr1);
+        const balanceUSDTAfter = await USDT.balanceOf(curveAddress);
         const balanceUSDCEAfter = await USDCE.balanceOf(addr1);
 
         expect(balanceUSDCEAfter).to.equal(amountOut);

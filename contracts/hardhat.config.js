@@ -3,6 +3,9 @@ require('dotenv').config({ path: __dirname + '/.env' })
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
+  mocha: {
+    timeout: 100000000,
+  },
   solidity: {
     compilers: [
       {

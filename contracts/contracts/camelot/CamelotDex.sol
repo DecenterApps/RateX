@@ -14,7 +14,7 @@ contract CamelotDex is IDex {
     }
 
     function swap(
-        address _poolAddress,
+        address /*_poolAddress*/,
         address _tokenIn,
         address _tokenOut,
         uint _amountIn,

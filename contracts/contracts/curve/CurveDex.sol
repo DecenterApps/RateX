@@ -24,7 +24,6 @@ contract CurveDex is IDex {
     uint _amountOutMin,
     address _to
   ) external override returns (uint256 amountOut) {
-    TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
     TransferHelper.safeApprove(_tokenIn, _poolAddress, _amountIn);
 
     (int128 i, int128 j) = findTokenIndexes(_poolAddress, _tokenIn, _tokenOut);

@@ -283,7 +283,7 @@ describe("Tests for main RateX contract", async function () {
             hre.ethers.parseEther("8"),
             0,
             await addr1.getAddress()
-        )).to.be.revertedWith("STF");
+        )).to.be.revertedWithCustomError(rateX, "RateX__DelegateCallFailed");
     });
 
     it("Should revert when amount out does not match", async function () {

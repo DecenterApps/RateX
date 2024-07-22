@@ -14,7 +14,7 @@ contract SushiSwapDex is IDex {
     }
 
     function swap(
-        address _poolAddress,
+        address /*_poolAddress*/,
         address _tokenIn,
         address _tokenOut,
         uint _amountIn,
@@ -23,7 +23,6 @@ contract SushiSwapDex is IDex {
     )
     external override returns(uint256)
     {
-        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_tokenIn, address(sushiRouter), _amountIn);
 
         address[] memory path = new address[](2);
