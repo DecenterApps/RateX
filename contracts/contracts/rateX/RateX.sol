@@ -73,8 +73,13 @@ contract RateX is Ownable2Step {
   ///@notice Error thrown when amount is below slippage protection
   error RateX__AmountLesserThanMinAmount();
 
-  modifier noReentrancy() {
-    require(!locked, 'No reentrancy');
+  ///@notice Error thrown when reentrant call is detected
+  error RateX__ReentrantCall();
+
+  modifier nonReentrant() {
+    if(locked) {
+      revert RateX__ReentrantCall();
+    }
     locked = true;
     _;
     locked = false;
@@ -117,7 +122,7 @@ contract RateX is Ownable2Step {
     if (oldAddress == address(0)) {
       revert RateX__DexDoesNotExist();
     }
-    
+
     dexes[_dex.dexId] = _dex.dexAddress;
 
     emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
@@ -152,7 +157,7 @@ contract RateX is Ownable2Step {
     uint256 _amountIn,
     uint256 _quotedAmountWithSlippageProtection,
     address _recipient
-  ) external noReentrancy returns (uint256 amountOut) {
+  ) external nonReentrant returns (uint256 amountOut) {
     if (_foundRoutes.length == 0) {
       revert RateX__NoRoutes();
     }
