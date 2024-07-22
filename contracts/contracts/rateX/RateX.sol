@@ -113,11 +113,11 @@ contract RateX is Ownable2Step {
     if (_dex.dexAddress == address(0)) {
       revert RateX__ZeroAddress();
     }
-    if (dexes[_dex.dexId] == address(0)) {
+    address oldAddress = dexes[_dex.dexId];
+    if (oldAddress == address(0)) {
       revert RateX__DexDoesNotExist();
     }
-
-    address oldAddress = dexes[_dex.dexId];
+    
     dexes[_dex.dexId] = _dex.dexAddress;
 
     emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
