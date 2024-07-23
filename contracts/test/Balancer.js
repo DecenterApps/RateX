@@ -23,7 +23,7 @@ describe("Tests for Balancer", async function () {
     it("Should get weighted pool info", async function () {
         const {balancerHelper} = await deployBalancerHelper();
 
-        const [decimals, invariant, tokens, balances, weights, swapFeePercentage] =
+        const [decimals, tokens, balances, weights, swapFeePercentage] =
             await balancerHelper.getWeightedPoolInfo(examplePoolId);
 
         expect(decimals).to.equals(18);

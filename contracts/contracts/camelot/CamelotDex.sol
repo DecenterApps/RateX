@@ -2,43 +2,34 @@
 pragma solidity ^0.8.0;
 
 import {ICamelotRouter} from './interfaces/ICamelotRouter.sol';
-import {IDex} from "../rateX/interfaces/IDex.sol";
-import {TransferHelper} from "../rateX/libraries/TransferHelper.sol";
+import {IDex} from '../rateX/interfaces/IDex.sol';
+import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
 contract CamelotDex is IDex {
+  ICamelotRouter private immutable camelotRouter;
 
-    ICamelotRouter private immutable camelotRouter;
+  constructor(address _routerAddress) {
+    camelotRouter = ICamelotRouter(_routerAddress);
+  }
 
-    constructor(address _routerAddress) {
-        camelotRouter = ICamelotRouter(_routerAddress);
-    }
+  function swap(
+    address /*_poolAddress*/,
+    address _tokenIn,
+    address _tokenOut,
+    uint _amountIn,
+    uint _amountOutMin,
+    address _to
+  ) external returns (uint256 amountOut) {
+    TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
 
-    function swap(
-        address /*_poolAddress*/,
-        address _tokenIn,
-        address _tokenOut,
-        uint _amountIn,
-        uint _amountOutMin,
-        address _to
-    ) external returns(uint256 amountOut) {
+    address[] memory path = new address[](2);
+    path[0] = _tokenIn;
+    path[1] = _tokenOut;
 
-        TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
+    amountOut = camelotRouter.getAmountsOut(_amountIn, path)[1];
 
-        address[] memory path = new address[](2);
-        path[0] = _tokenIn;
-        path[1] = _tokenOut;
+    camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(_amountIn, _amountOutMin, path, _to, msg.sender, block.timestamp);
 
-        amountOut = camelotRouter.getAmountsOut(_amountIn, path)[1];
-
-        camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            _amountIn, 
-            _amountOutMin, 
-            path, 
-            _to,
-            msg.sender,
-            block.timestamp
-        );
-
-        emit TestAmountOutEvent(amountOut);
-    }
+    emit TestAmountOutEvent(amountOut);
+  }
 }
