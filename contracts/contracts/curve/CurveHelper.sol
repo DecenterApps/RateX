@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/ICurvePool.sol";
-import "../rateX/interfaces/IHelperState.sol";
+import {ICurvePool} from "./interfaces/ICurvePool.sol";
+import {IHelperState} from "../rateX/interfaces/IHelperState.sol";
 
 contract CurveHelper is IHelperState {
 

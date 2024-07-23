@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 pragma abicoder v2;
 
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol";
+import {IUniswapV3Factory} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {IUniswapV3PoolImmutables} from "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol";
 
 import {TickBitmap} from "./libraries/TickBitmap.sol";
 import {TickMath} from "./libraries/TickMath.sol";
@@ -13,8 +13,8 @@ import {LiquidityMath} from "./libraries/LiquidityMath.sol";
 import {SwapMath} from "./libraries/SwapMath.sol";
 import {SafeCast} from "./libraries/SafeCast.sol";
 
-import "./interfaces/IUniswapState.sol";
-import "./interfaces/IUniswapHelper.sol";
+import {IUniswapState} from "./interfaces/IUniswapState.sol";
+import {IUniswapHelper, IUniswapViewQuoter} from "./interfaces/IUniswapHelper.sol";
 
 abstract contract UniViewQuoter is IUniswapState, IUniswapViewQuoter {
     using LowGasSafeMath for uint256;

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '../rateX/interfaces/IHelperState.sol';
-import './UniswapV2Library.sol';
+import {IHelperState} from '../rateX/interfaces/IHelperState.sol';
+import {UniswapV2Library} from './UniswapV2Library.sol';
 
 contract UniswapV2Helper is IHelperState {
   struct UniswapV2Pool {

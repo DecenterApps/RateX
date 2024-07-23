@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '../rateX/interfaces/IDex.sol';
-import './interfaces/ICurvePool.sol';
-import './interfaces/ICurvePoolRegistry.sol';
-import './interfaces/IFactoryCurvePoolRegistry.sol';
-import '../rateX/libraries/TransferHelper.sol';
+import {IDex} from '../rateX/interfaces/IDex.sol';
+import {ICurvePool} from './interfaces/ICurvePool.sol';
+import {ICurvePoolRegistry} from './interfaces/ICurvePoolRegistry.sol';
+import {IFactoryCurvePoolRegistry} from './interfaces/IFactoryCurvePoolRegistry.sol';
+import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
 contract CurveDex is IDex {
   ICurvePoolRegistry private immutable curvePoolRegistry;

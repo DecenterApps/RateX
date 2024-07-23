@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './interfaces/IWeightedPool.sol';
-import './interfaces/IStablePool.sol';
-import "./interfaces/IVault.sol";
+import {IWeightedPool} from './interfaces/IWeightedPool.sol';
+import {IStablePool} from './interfaces/IStablePool.sol';
+import {IVault} from "./interfaces/IVault.sol";
 
 contract BalancerHelper {
 

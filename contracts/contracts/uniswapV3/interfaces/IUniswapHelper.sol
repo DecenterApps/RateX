@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./IUniswapState.sol";
-import "./IUniswapViewQuoter.sol";
+import {IUniswapState} from "./IUniswapState.sol";
+import {IUniswapViewQuoter} from "./IUniswapViewQuoter.sol";
 
 interface IUniswapHelper is IUniswapState, IUniswapViewQuoter {
 

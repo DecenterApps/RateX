@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './interfaces/ICamelotRouter.sol';
-import "../rateX/interfaces/IDex.sol";
-import "../rateX/libraries/TransferHelper.sol";
+import {ICamelotRouter} from './interfaces/ICamelotRouter.sol';
+import {IDex} from "../rateX/interfaces/IDex.sol";
+import {TransferHelper} from "../rateX/libraries/TransferHelper.sol";
 
 contract CamelotDex is IDex {
 

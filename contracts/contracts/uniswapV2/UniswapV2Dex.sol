@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './interfaces/IUniswapV2Router.sol';
-import '../rateX/interfaces/IDex.sol';
-import '../rateX/libraries/TransferHelper.sol';
+import {IUniswapV2Router} from './interfaces/IUniswapV2Router.sol';
+import {IDex} from '../rateX/interfaces/IDex.sol';
+import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
 contract UniswapV2Dex is IDex {
   IUniswapV2Router public immutable router;
@@ -13,7 +13,7 @@ contract UniswapV2Dex is IDex {
   }
 
   function swap(
-    address,
+    address /*_poolAddress*/,
     address _tokenIn,
     address _tokenOut,
     uint _amountIn,

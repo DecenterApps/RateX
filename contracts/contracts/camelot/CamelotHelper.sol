@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/ICamelotPair.sol";
-import "../rateX/interfaces/IHelperState.sol";
+import {ICamelotPair} from "./interfaces/ICamelotPair.sol";
+import {IHelperState} from "../rateX/interfaces/IHelperState.sol";
 
 contract CamelotHelper is IHelperState {
 

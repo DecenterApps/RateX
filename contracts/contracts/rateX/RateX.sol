@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './interfaces/IDex.sol';
-import './libraries/TransferHelper.sol';
-import '@openzeppelin/contracts/access/Ownable2Step.sol';
+import {IDex} from './interfaces/IDex.sol';
+import {TransferHelper, IERC20} from './libraries/TransferHelper.sol';
+import {Ownable2Step} from '@openzeppelin/contracts/access/Ownable2Step.sol';
 
 ///@title Main contract for RateX dex aggregator
 ///@notice This contract aggregates multiple dexes

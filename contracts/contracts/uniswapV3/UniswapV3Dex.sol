@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
-import "../rateX/interfaces/IDex.sol";
-import "../rateX/libraries/TransferHelper.sol";
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {ISwapRouter} from "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import {IDex} from "../rateX/interfaces/IDex.sol";
+import {TransferHelper} from "../rateX/libraries/TransferHelper.sol";
 
 contract UniswapV3Dex is IDex {
 

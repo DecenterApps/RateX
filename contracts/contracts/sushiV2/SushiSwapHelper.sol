@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./SushiSwapV2Library.sol";
-import "../rateX/interfaces/IHelperState.sol";
+import {SushiSwapV2Library} from "./SushiSwapV2Library.sol";
+import {IHelperState} from "../rateX/interfaces/IHelperState.sol";
 
 contract SushiSwapHelper is IHelperState {
 

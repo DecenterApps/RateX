@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 pragma abicoder v2;
 
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-import "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol";
+import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import {IUniswapV3PoolImmutables} from "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol";
 
 import {TickBitmap} from "./libraries/TickBitmap.sol";
 import {TickMath} from "./libraries/TickMath.sol";
@@ -12,8 +12,8 @@ import {LiquidityMath} from "./libraries/LiquidityMath.sol";
 import {SwapMath} from "./libraries/SwapMath.sol";
 import {SafeCast} from "./libraries/SafeCast.sol";
 
-import "./interfaces/IUniswapHelper.sol";
-import "./UniViewQuoter.sol";
+import {IUniswapHelper} from "./interfaces/IUniswapHelper.sol";
+import {UniViewQuoter} from "./UniViewQuoter.sol";
 
 contract UniswapHelper is UniViewQuoter, IUniswapHelper {
 
