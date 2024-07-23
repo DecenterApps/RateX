@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 import {IHelperState} from '../rateX/interfaces/IHelperState.sol';
 import {UniswapV2Library} from './UniswapV2Library.sol';

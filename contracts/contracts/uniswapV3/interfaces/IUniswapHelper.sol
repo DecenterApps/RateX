@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 import {IUniswapState} from "./IUniswapState.sol";
 import {IUniswapViewQuoter} from "./IUniswapViewQuoter.sol";

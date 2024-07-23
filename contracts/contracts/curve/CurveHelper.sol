@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 import {ICurvePool} from './interfaces/ICurvePool.sol';
 import {IHelperState} from '../rateX/interfaces/IHelperState.sol';

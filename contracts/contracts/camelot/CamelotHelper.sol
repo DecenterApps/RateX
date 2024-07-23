@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 import {ICamelotPair} from './interfaces/ICamelotPair.sol';
 import {IHelperState} from '../rateX/interfaces/IHelperState.sol';

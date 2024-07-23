@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 import {IDex} from './interfaces/IDex.sol';
 import {TransferHelper, IERC20} from './libraries/TransferHelper.sol';
