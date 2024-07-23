@@ -22,7 +22,6 @@ contract CamelotDex is IDex {
         address _to
     ) external returns(uint256 amountOut) {
 
-        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
 
         address[] memory path = new address[](2);

@@ -28,7 +28,6 @@ contract BalancerDex is IDex {
         address _to
     ) external override returns (uint amountOut) {
 
-        TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
         TransferHelper.safeApprove(_tokenIn, address(balancerVault), _amountIn);
 
         IWeightedPool pool = IWeightedPool(_poolAddress);
