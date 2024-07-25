@@ -148,6 +148,9 @@ async function fetchPoolsData(
   // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
+    for(const poolInfo of poolInfos){
+      localStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo))
+    }
     dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos))
   }
   const allPoolsData = await Promise.all(dexPoolsPromises)
