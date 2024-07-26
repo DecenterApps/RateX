@@ -59,9 +59,6 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider  theme={darkTheme()} >
     <div className="App">
-      <a>{getChainId(config)}</a>
-      <a>,{chainId}</a>
-
       <Header chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />
       <div className="mainWindow">
         <Routes>
