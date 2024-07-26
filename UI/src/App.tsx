@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Swap from './components/Swap'
 import Header from './components/Header'
@@ -22,9 +22,10 @@ import {
 
 import './App.scss'
 import 'notyf/notyf.min.css'
+import { testPool } from './tests/poolTest'
 import '@rainbow-me/rainbowkit/styles.css';
 import { getChainId } from '@wagmi/core'
-import { useEffect } from 'react';
+let run = false;
 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
@@ -41,11 +42,45 @@ function App() {
 
   const fetchChainId = async () => {
     const chainIdNew = await getChainId(config);
-    if(chainIdNew != chainId)
-    setChainId(chainIdNew);
+    if (chainIdNew != chainId)
+      setChainId(chainIdNew);
   };
 
   useEffect(() => {
+    /*setTimeout(async () => {
+          const NETWORK_ID = 1;
+          if (run)
+            return;
+          run = true;
+          const wallet = new ethers.Wallet("df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e");
+          //@ts-ignore
+          const provider = new ethers.JsonRpcProvider((NETWORK_ID == 1) ? "https://rpc.tenderly.co/fork/5424345d-f910-421b-8993-621a614c7f47" : "https://rpc.tenderly.co/fork/91d949da-3eb9-4766-a2b9-3e4d11c5260f");
+          const walletWithProvider = wallet.connect(provider);
+    
+          const poolObject = {
+            "poolId": "0x11b815efb8f581194ae79006d24e0d814b7697f6",
+            "dexId": "UNI_V3",
+            "tokens": [
+                {
+                    "_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                    "decimals": "18",
+                    "name": "Wrapped Ether"
+                },
+                {
+                    "_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                    "decimals": "6",
+                    "name": "Tether USD"
+                }
+            ]
+        };
+    
+          console.log("poolObject je (App.tsx)")
+          console.log(poolObject)
+          const result = await testPool(poolObject, walletWithProvider, 1);
+          console.log("Test result: ")
+          console.log(result);
+        }, 2000)*/
+
     // Poll the chain ID every 5 seconds
     fetchChainId(); // Fetch initially
     const interval = setInterval(fetchChainId, 3000);
