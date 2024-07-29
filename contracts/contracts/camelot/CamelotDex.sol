@@ -28,7 +28,7 @@ contract CamelotDex is IDex {
 
     amountOut = camelotRouter.getAmountsOut(_amountIn, path)[1];
 
-    camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(_amountIn, _amountOutMin, path, _to, msg.sender, block.timestamp);
+    camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(_amountIn, _amountOutMin, path, _to, address(this), block.timestamp);
 
     emit TestAmountOutEvent(amountOut);
   }
