@@ -31,7 +31,7 @@ export const getDex = (dexId: string) : DEXGraphFunctionality => {
     (code is seen in ./multiHopSwap.ts)
     After each iteration, the pools are updated with the amounts that passed through them.
 */
-async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[]): Promise<Quote> {
+async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[], chainId: number): Promise<Quote> {
     const graph = createGraph(pools)
 
     // percentage of the amountIn that we split into
@@ -73,6 +73,7 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         let progress = route.amountIn;
         for (const swap of route.swaps) {
             const dex = getDex(swap.dexId);
+            dex.setEndpoint(chainId)
             const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(localStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
             progress = amount;

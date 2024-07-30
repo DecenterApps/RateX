@@ -14,7 +14,7 @@ async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, cha
   console.log('Fetched pools:', pools)
   console.log('Pool size: ', pools.length)
 
-  return await findRoute(tokenIn, tokenOut, amountIn, pools)
+  return await findRoute(tokenIn, tokenOut, amountIn, pools, chainId)
 }
 
 async function executeSwap(
