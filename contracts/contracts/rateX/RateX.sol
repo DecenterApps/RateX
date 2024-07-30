@@ -34,7 +34,7 @@ contract RateX is Ownable2Step {
     SwapStep[] swaps;
     uint256 amountIn;
   }
-  
+
   // uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1;
   uint256 private constant REENTRANCY_GUARD_SLOT = 10176365415448536267786959035014641849020047300636800306623756021601666631018;
 
@@ -150,6 +150,14 @@ contract RateX is Ownable2Step {
     delete dexes[_dexId];
 
     emit DexRemoved(_dexId);
+  }
+
+  ///@notice Function for withdrawing funds from contract in case of stuck tokens, only owner can call it
+  ///@param _token Address of token we are withdrawing
+  ///@param _recipient Address of recipient
+  ///@param _amount Amount of token we are withdrawing
+  function rescueFunds(address _token, address _recipient, uint256 _amount) external onlyOwner {
+    TransferHelper.safeTransfer(_token, _recipient, _amount);
   }
 
   ///@notice main function for executing swap

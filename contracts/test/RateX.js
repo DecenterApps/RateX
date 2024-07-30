@@ -419,4 +419,27 @@ describe("Tests for main RateX contract", async function () {
         expect(balanceInUsdtAfter).to.equal(argAmountOut);
         expect(BigInt(balanceInWethBefore) - BigInt(balanceInWethAfter)).to.equal(BigInt(argAmountIn));
     });
+
+    it("Should rescue stuck tokens", async function () {
+        const {rateX, addr1} = await loadFixture(deployRateXFixture);
+
+        const WETH = await hre.ethers.getContractAt("IERC20", addresses.tokens.WETH);
+        const rateXAddress = await rateX.getAddress();
+        const amount = hre.ethers.parseEther("10");
+
+        await sendWethTokensToUser(addr1, amount);
+        await WETH.transfer(rateXAddress, amount);
+
+        const balanceInWethBefore = await WETH.balanceOf(addr1);
+        const balanceInWethBeforeContract = await WETH.balanceOf(rateXAddress);
+       
+        const tx = await rateX.rescueFunds(addresses.tokens.WETH, addr1, amount);
+        const txReceipt = await tx.wait();
+
+        const balanceInWethAfter = await WETH.balanceOf(addr1);
+        const balanceInWethAfterContract = await WETH.balanceOf(rateXAddress);
+
+        expect(balanceInWethAfter).to.equal(balanceInWethBefore + amount);
+        expect(balanceInWethAfterContract).to.equal(balanceInWethBeforeContract - amount);
+    });
 })
