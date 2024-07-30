@@ -34,8 +34,9 @@ contract RateX is Ownable2Step {
     SwapStep[] swaps;
     uint256 amountIn;
   }
-
-  bool private locked;
+  
+  // uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1;
+  uint256 private constant REENTRANCY_GUARD_SLOT = 10176365415448536267786959035014641849020047300636800306623756021601666631018;
 
   ///@notice Mapping of dexId to dexAddress
   mapping(uint32 => address) public dexes;
@@ -80,12 +81,19 @@ contract RateX is Ownable2Step {
   error RateX__DelegateCallFailed();
 
   modifier nonReentrant() {
-    if (locked) {
-      revert RateX__ReentrantCall();
+    bytes4 errorSelector = RateX__ReentrantCall.selector;
+
+    assembly {
+      if tload(REENTRANCY_GUARD_SLOT) {
+        mstore(0, errorSelector)
+        revert(0, 4)
+      }
+      tstore(REENTRANCY_GUARD_SLOT, 1)
     }
-    locked = true;
     _;
-    locked = false;
+    assembly {
+      tstore(REENTRANCY_GUARD_SLOT, 0)
+    }
   }
 
   ///@dev we have predefined dexes to add
