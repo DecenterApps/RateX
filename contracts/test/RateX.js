@@ -420,6 +420,24 @@ describe("Tests for main RateX contract", async function () {
         expect(BigInt(balanceInWethBefore) - BigInt(balanceInWethAfter)).to.equal(BigInt(argAmountIn));
     });
 
+    it("Should revert when contract is paused", async function () {
+        const {rateX, addr1} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+
+        await sendWethTokensToUser(addr1, hre.ethers.parseEther("10"));
+        await approveToContract(addr1, await rateX.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10"));
+
+        await expect(rateX.swap(
+            [{swaps: [wethWbtcSwapOnSushi], amountIn: hre.ethers.parseEther("4")}],
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
+            hre.ethers.parseEther("4"),
+            0,
+            await addr1.getAddress()
+        )).to.be.revertedWithCustomError(rateX, "RateX__Paused");
+    })
+
     it("Should rescue stuck tokens", async function () {
         const {rateX, addr1} = await loadFixture(deployRateXFixture);
 
@@ -442,4 +460,48 @@ describe("Tests for main RateX contract", async function () {
         expect(balanceInWethAfter).to.equal(balanceInWethBefore + amount);
         expect(balanceInWethAfterContract).to.equal(balanceInWethBeforeContract - amount);
     });
+
+    it("Should pause the contract", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+        expect(await rateX.isPaused()).to.equal(true);
+    });
+
+    it("Should emit event when pausing the contract", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await expect(rateX.pause()).to.emit(rateX, "Paused");
+    });
+
+    it("Should revert when pausing the contract without authorization", async function () {
+        const {rateX, addr2} = await loadFixture(deployRateXFixture);
+
+        await expect(rateX.connect(addr2).pause())
+            .to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
+    it("Should unpause the contract", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+        await rateX.unpause();
+        expect(await rateX.isPaused()).to.equal(false);
+    });
+
+    it("Should emit event when unpausing the contract", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+        await expect(rateX.unpause()).to.emit(rateX, "Unpaused");
+    });
+
+    it("Should revert when unpausing the contract without authorization", async function () {
+        const {rateX, addr2} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+        await expect(rateX.connect(addr2).unpause())
+            .to.be.revertedWith("Ownable: caller is not the owner");
+    });
+    
 })

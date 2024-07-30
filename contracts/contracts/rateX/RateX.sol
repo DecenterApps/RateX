@@ -35,8 +35,11 @@ contract RateX is Ownable2Step {
     uint256 amountIn;
   }
 
-  // uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1;
+  ///@notice uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1;
   uint256 private constant REENTRANCY_GUARD_SLOT = 10176365415448536267786959035014641849020047300636800306623756021601666631018;
+
+  ///@notice bool for pausing contract
+  bool private _paused;
 
   ///@notice Mapping of dexId to dexAddress
   mapping(uint32 => address) public dexes;
@@ -52,6 +55,12 @@ contract RateX is Ownable2Step {
 
   ///@notice Event emitted when dex is removed
   event DexRemoved(uint32 dexId);
+
+  ///@notice Event emitted when contract is paused
+  event Paused();
+
+  ///@notice Event emitted when contract is unpaused
+  event Unpaused();
 
   ///@notice Error thrown when provided address is zero address
   error RateX__ZeroAddress();
@@ -77,6 +86,12 @@ contract RateX is Ownable2Step {
   ///@notice Error thrown when reentrant call is detected
   error RateX__ReentrantCall();
 
+  ///@notice Error thrown when contract is paused
+  error RateX__Paused();
+
+  ///@notice Error thrown when contract is not paused
+  error RateX__NotPaused();
+
   ///@notice Error thrown when delegate call failed
   error RateX__DelegateCallFailed();
 
@@ -94,6 +109,20 @@ contract RateX is Ownable2Step {
     assembly {
       tstore(REENTRANCY_GUARD_SLOT, 0)
     }
+  }
+
+  modifier whenNotPaused() {
+    if (_paused) {
+      revert RateX__Paused();
+    }
+    _;
+  }
+
+  modifier whenPaused() {
+    if (!_paused) {
+      revert RateX__NotPaused();
+    }
+    _;
   }
 
   ///@dev we have predefined dexes to add
@@ -160,6 +189,24 @@ contract RateX is Ownable2Step {
     TransferHelper.safeTransfer(_token, _recipient, _amount);
   }
 
+  ///@notice Function for pausing contract, only owner can call it
+  function pause() external onlyOwner {
+    _paused = true;
+    emit Paused();
+  }
+
+  ///@notice Function for unpausing contract, only owner can call it
+  function unpause() external onlyOwner whenPaused {
+    _paused = false;
+    emit Unpaused();
+  }
+
+  ///@notice Function for getting paused status
+  ///@return paused Paused status
+  function isPaused() external view returns (bool paused) {
+    paused = _paused;
+  }
+
   ///@notice main function for executing swap
   ///@param _foundRoutes Array of routes for swap
   ///@param _tokenIn Address of token we are swapping from
@@ -176,7 +223,7 @@ contract RateX is Ownable2Step {
     uint256 _amountIn,
     uint256 _quotedAmountWithSlippageProtection,
     address _recipient
-  ) external nonReentrant returns (uint256 amountOut) {
+  ) external nonReentrant whenNotPaused returns (uint256 amountOut) {
     if (_foundRoutes.length == 0) {
       revert RateX__NoRoutes();
     }
