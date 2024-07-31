@@ -214,6 +214,7 @@ contract RateX is Ownable2Step {
   ///@param _amountIn Amount of tokenIn for swap
   ///@param _quotedAmountWithSlippageProtection min amount of tokenOut we want to get
   ///@param _recipient Address of recipient
+  ///@param _deadline Deadline for swap
   ///@return amountOut Amount of tokenOut we got
   ///@dev Right now we don't have any optimizations for gas costs and calldata size
   function swap(
@@ -222,7 +223,8 @@ contract RateX is Ownable2Step {
     address _tokenOut,
     uint256 _amountIn,
     uint256 _quotedAmountWithSlippageProtection,
-    address _recipient
+    address _recipient,
+    uint256 _deadline
   ) external nonReentrant whenNotPaused returns (uint256 amountOut) {
     if (_foundRoutes.length == 0) {
       revert RateX__NoRoutes();
@@ -233,7 +235,7 @@ contract RateX is Ownable2Step {
     TransferHelper.safeTransferFrom(_tokenIn, msg.sender, address(this), _amountIn);
 
     uint256 balanceBefore = IERC20(_tokenOut).balanceOf(address(this));
-    amountOut = _swapForTotalAmountOut(_foundRoutes);
+    amountOut = _swapForTotalAmountOut(_foundRoutes, _deadline);
     uint256 balanceAfter = IERC20(_tokenOut).balanceOf(address(this));
 
     if (balanceAfter - balanceBefore != amountOut) {
@@ -249,14 +251,14 @@ contract RateX is Ownable2Step {
     emit SwapEvent(_tokenIn, _tokenOut, _amountIn, amountOut, _recipient);
   }
 
-  function _swapForTotalAmountOut(Route[] calldata _foundRoutes) internal returns (uint256 amountOut) {
+  function _swapForTotalAmountOut(Route[] calldata _foundRoutes, uint256 _deadline) internal returns (uint256 amountOut) {
     amountOut = 0;
     for (uint256 i = 0; i < _foundRoutes.length; ++i) {
-      amountOut += _swapOnOneRoute(_foundRoutes[i]);
+      amountOut += _swapOnOneRoute(_foundRoutes[i], _deadline);
     }
   }
 
-  function _swapOnOneRoute(Route calldata _route) internal returns (uint256 amountOut) {
+  function _swapOnOneRoute(Route calldata _route, uint256 _deadline) internal returns (uint256 amountOut) {
     amountOut = _route.amountIn;
 
     for (uint256 i = 0; i < _route.swaps.length; ++i) {
@@ -269,13 +271,14 @@ contract RateX is Ownable2Step {
       // Delegate call to the DEX contract's swap function
       (bool success, bytes memory result) = dexes[swapStep.dexId].delegatecall(
         abi.encodeWithSignature(
-          'swap(address,address,address,uint256,uint256,address)',
+          'swap(address,address,address,uint256,uint256,address,uint256)',
           swapStep.poolId,
           swapStep.tokenIn,
           swapStep.tokenOut,
           amountOut,
           0,
-          address(this)
+          address(this),
+          _deadline
         )
       );
 

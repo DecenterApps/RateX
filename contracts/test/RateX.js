@@ -1,5 +1,5 @@
 hre = require("hardhat");
-const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+const {loadFixture, time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai");
 const {config} = require("../addresses.config");
 const {deployRateX, deploySushiDex, deployUniswapDex} = require("../scripts/utils/deployment");
@@ -188,7 +188,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.DAI,
             1,
             1,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__NoRoutes");
     });
 
@@ -204,7 +205,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             5,
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWith("STF");
     });
 
@@ -220,7 +222,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             15,
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWith("STF");
     });
 
@@ -239,7 +242,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             30, // revert because should be 25
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__AmountInDoesNotMatch");
     });
 
@@ -262,7 +266,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             5,
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__DexDoesNotExist");
     });
 
@@ -282,7 +287,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             hre.ethers.parseEther("8"),
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__DelegateCallFailed");
     });
 
@@ -303,7 +309,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             hre.ethers.parseEther("8"),
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__AmountOutDoesNotMatch");
     });
 
@@ -319,8 +326,26 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             hre.ethers.parseEther("4"),
             hre.ethers.parseEther("4"), // should revert as we won't get this much WBTC
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__AmountLesserThanMinAmount");
+    })
+
+    it("Should revert if deadline passed", async function () {
+        const {rateX, addr1} = await loadFixture(deployRateXFixture);
+
+        await sendWethTokensToUser(addr1, hre.ethers.parseEther("10"));
+        await approveToContract(addr1, await rateX.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("10"));
+
+        await expect(rateX.swap(
+            [{swaps: [wethWbtcSwapOnSushi], amountIn: hre.ethers.parseEther("4")}],
+            addresses.tokens.WETH,
+            addresses.tokens.WBTC,
+            hre.ethers.parseEther("4"),
+            hre.ethers.parseEther("4"), // should revert as we won't get this much WBTC
+            await addr1.getAddress(),
+            await time.latest()
+        )).to.be.revertedWithCustomError(rateX, "RateX__DelegateCallFailed");
     })
 
     it("Should execute simple swap", async function () {
@@ -344,7 +369,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             amountIn,
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];
@@ -398,7 +424,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.USDT,
             amountIn,
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];
@@ -434,7 +461,8 @@ describe("Tests for main RateX contract", async function () {
             addresses.tokens.WBTC,
             hre.ethers.parseEther("4"),
             0,
-            await addr1.getAddress()
+            await addr1.getAddress(),
+            await time.latest() + 10
         )).to.be.revertedWithCustomError(rateX, "RateX__Paused");
     })
 

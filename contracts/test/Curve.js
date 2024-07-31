@@ -37,7 +37,8 @@ describe("Tests for swapping on Curve", async function () {
             addresses.tokens.USDCE,
             amountIn,
             0,
-            addr1
+            addr1,
+            0
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];
@@ -64,7 +65,8 @@ describe("Tests for swapping on Curve", async function () {
             addresses.tokens.USDC,
             amountIn,
             0,
-            addr1
+            addr1,
+            0
         )).to.be.revertedWith("Tokens not found in pool");
     });
 });

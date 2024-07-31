@@ -1,4 +1,5 @@
 hre = require("hardhat");
+const {time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployBalancerDex, deployBalancerHelper} = require("../scripts/utils/deployment");
@@ -40,6 +41,7 @@ describe("Tests for Balancer", async function () {
         const RDNT = await hre.ethers.getContractAt("IERC20", addresses.tokens.RDNT);
 
         const amountIn = hre.ethers.parseEther("1");
+        const deadline = await time.latest() + 10;
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, balancerAddress, amountIn);
 
         const wethBalanceBefore = await WETH.balanceOf(balancerAddress);
@@ -50,7 +52,8 @@ describe("Tests for Balancer", async function () {
             addresses.tokens.RDNT,
             amountIn,
             0n,
-            addr1
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];

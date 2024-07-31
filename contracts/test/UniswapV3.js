@@ -3,6 +3,7 @@ const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployUniswapDex} = require("../scripts/utils/deployment");
 const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
+const { time } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
 describe("Tests for swapping on uniswap v3", async function () {
 
@@ -29,6 +30,7 @@ describe("Tests for swapping on uniswap v3", async function () {
 
         const wethBalanceBefore = await WETH.balanceOf(uniswapAddress);
         const amountIn = hre.ethers.parseEther("1");
+        const deadline = await time.latest() + 10;
 
         const tx = await uniswap.swap(
             addresses.uniV3.wbtc_eth_pool_0_3,
@@ -36,7 +38,8 @@ describe("Tests for swapping on uniswap v3", async function () {
             addresses.tokens.WBTC,
             amountIn,
             0,
-            addr1
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];
@@ -57,6 +60,7 @@ describe("Tests for swapping on uniswap v3", async function () {
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, uniswapAddress, hre.ethers.parseEther("2"));
 
         const amountIn = hre.ethers.parseEther("1");
+        const deadline = await time.latest() + 10;
 
         await expect(uniswap.swap(
             addresses.uniV3.wbtc_eth_pool_0_05,
@@ -64,7 +68,8 @@ describe("Tests for swapping on uniswap v3", async function () {
             addresses.tokens.WBTC,
             amountIn,
             hre.ethers.parseEther("2"), // should revert because min amount is too high
-            addr1
+            addr1,
+            deadline
         )).to.be.revertedWith("Too little received");
     });
 });

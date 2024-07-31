@@ -1,4 +1,5 @@
 hre = require("hardhat");
+const {time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {sendWethTokensToUser, approveToContract, sendERCTokensToUser} = require("../scripts/utils/contract");
@@ -23,6 +24,7 @@ describe("Tests for swapping on sushiswap", async function () {
         const sushiSwapAddress = await sushiSwap.getAddress();
 
         const amountIn = hre.ethers.parseEther("100");
+        const deadline = await time.latest() + 10;
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, sushiSwapAddress, amountIn);
 
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
@@ -36,7 +38,8 @@ describe("Tests for swapping on sushiswap", async function () {
             addresses.tokens.DAI,
             amountIn,
             1,
-            addr1
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
 

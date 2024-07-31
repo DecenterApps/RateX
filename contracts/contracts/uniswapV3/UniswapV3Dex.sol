@@ -19,7 +19,8 @@ contract UniswapV3Dex is IDex {
     address _tokenOut,
     uint _amountIn,
     uint _amountOutMin,
-    address _to
+    address _to,
+    uint _deadline
   ) external returns (uint256 amountOut) {
     TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
 
@@ -29,7 +30,7 @@ contract UniswapV3Dex is IDex {
         tokenOut: _tokenOut,
         fee: IUniswapV3Pool(_poolAddress).fee(),
         recipient: _to,
-        deadline: block.timestamp,
+        deadline: _deadline,
         amountIn: _amountIn,
         amountOutMinimum: _amountOutMin,
         sqrtPriceLimitX96: 0

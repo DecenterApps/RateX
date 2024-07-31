@@ -25,7 +25,8 @@ contract BalancerDex is IDex {
     address _tokenOut,
     uint _amountIn,
     uint _amountOutMin,
-    address _to
+    address _to,
+    uint _deadline
   ) external override returns (uint amountOut) {
     TransferHelper.safeApprove(_tokenIn, address(balancerVault), _amountIn);
 
@@ -45,7 +46,7 @@ contract BalancerDex is IDex {
     fundManagement.recipient = payable(_to);
     fundManagement.toInternalBalance = false;
 
-    amountOut = balancerVault.swap(singleSwap, fundManagement, _amountOutMin, block.timestamp);
+    amountOut = balancerVault.swap(singleSwap, fundManagement, _amountOutMin, _deadline);
 
     emit TestAmountOutEvent(amountOut);
   }

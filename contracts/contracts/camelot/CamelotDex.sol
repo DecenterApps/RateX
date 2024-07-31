@@ -18,7 +18,8 @@ contract CamelotDex is IDex {
     address _tokenOut,
     uint _amountIn,
     uint _amountOutMin,
-    address _to
+    address _to,
+    uint _deadline
   ) external returns (uint256 amountOut) {
     TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
 
@@ -28,7 +29,7 @@ contract CamelotDex is IDex {
 
     amountOut = camelotRouter.getAmountsOut(_amountIn, path)[1];
 
-    camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(_amountIn, _amountOutMin, path, _to, address(this), block.timestamp);
+    camelotRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(_amountIn, _amountOutMin, path, _to, address(this), _deadline);
 
     emit TestAmountOutEvent(amountOut);
   }

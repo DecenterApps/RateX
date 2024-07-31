@@ -18,7 +18,8 @@ contract UniswapV2Dex is IDex {
     address _tokenOut,
     uint _amountIn,
     uint _amountOutMin,
-    address _to
+    address _to,
+    uint _deadline
   ) external override returns (uint256) {
     TransferHelper.safeApprove(_tokenIn, address(router), _amountIn);
 
@@ -26,7 +27,7 @@ contract UniswapV2Dex is IDex {
     path[0] = _tokenIn;
     path[1] = _tokenOut;
 
-    uint256[] memory amounts = router.swapExactTokensForTokens(_amountIn, _amountOutMin, path, _to, block.timestamp);
+    uint256[] memory amounts = router.swapExactTokensForTokens(_amountIn, _amountOutMin, path, _to, _deadline);
 
     emit TestAmountOutEvent(amounts[1]);
 

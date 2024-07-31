@@ -1,4 +1,5 @@
 hre = require("hardhat");
+const {time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployCamelotDex} = require("../scripts/utils/deployment");
@@ -26,6 +27,7 @@ describe("Tests for Camelot V2", async function () {
         const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
 
         const amountIn = hre.ethers.parseEther("100");
+        const deadline = await time.latest() + 10;
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, camelotAddress, amountIn);
 
         const wethBalanceBefore = await WETH.balanceOf(camelotAddress);
@@ -36,7 +38,8 @@ describe("Tests for Camelot V2", async function () {
             addresses.tokens.USDT,
             amountIn,
             0n,
-            addr1
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
 
