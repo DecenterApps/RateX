@@ -276,7 +276,7 @@ contract RateX is Ownable2Step {
           swapStep.tokenIn,
           swapStep.tokenOut,
           amountOut,
-          0,
+          1,
           address(this),
           _deadline
         )
