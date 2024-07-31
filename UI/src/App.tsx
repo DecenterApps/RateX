@@ -22,8 +22,6 @@ import {
 
 import './App.scss'
 import 'notyf/notyf.min.css'
-import { testPool } from './tests/poolTest'
-import { ethers } from 'ethers'
 import '@rainbow-me/rainbowkit/styles.css';
 import { getChainId } from '@wagmi/core'
 let run = false;
