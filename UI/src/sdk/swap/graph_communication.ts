@@ -28,6 +28,9 @@ async function initializeDexes(chainId: number): Promise<void> {
         if (chainId === 1 && file === 'CamelotV2.ts') {
           continue
         }
+        if (chainId === 42161 && file === 'UniswapV2.ts') {
+          continue
+        }
         const module = await import(`../dexes/graph_queries/${file}`)
         const dex: DEXGraphFunctionality = module.default.initialize()
         if (chainId !== 1) {
