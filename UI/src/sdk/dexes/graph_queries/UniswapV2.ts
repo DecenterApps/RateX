@@ -67,7 +67,6 @@ export default class UniswapV2 implements DEXGraphFunctionality {
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
-    console.log(poolInfos)
     const UniswapV2HelperContract = CreateUniswapV2HelperContract(this.chainId)
     const rawData: any[][] = await UniswapV2HelperContract.methods.getPoolsData(poolInfos).call()
 

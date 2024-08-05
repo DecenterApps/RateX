@@ -83,7 +83,6 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         total += progress;
     }
     quote.quote = total;
-    console.log("IterativeQuote: ", quote);
     return quote;
 }
 
