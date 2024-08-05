@@ -1,7 +1,14 @@
 import { PoolData, PoolState } from './types'
 import { convertInitialPoolDataToPoolState, convertRowPoolData } from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
-import { CreateUniswapHelperContract } from '../../../../contracts/rateX/UniswapHelper'
+
+let CreateUniswapHelperContract: any;
+
+(async () => {
+  import('../../../../contracts/rateX/UniswapHelper').then((module) => {
+    CreateUniswapHelperContract = module.CreateUniswapHelperContract;
+  });
+})()
 
 export class UniswapState {
   private static poolStateMap: Map<string, PoolState> = new Map<string, PoolState>()

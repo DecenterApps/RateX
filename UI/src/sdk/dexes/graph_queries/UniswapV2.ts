@@ -4,8 +4,15 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CreateUniswapV2HelperContract } from '../../../contracts/rateX/UniswapV2Helper'
 import { UniswapV2Pool } from '../pools/UniswapV2'
+
+let CreateUniswapV2HelperContract: any;
+
+(async () => {
+  import('../../../contracts/rateX/UniswapV2Helper').then((module) => {
+    CreateUniswapV2HelperContract = module.CreateUniswapV2HelperContract;
+  });
+})()
 
 const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 

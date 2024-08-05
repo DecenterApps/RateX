@@ -1,6 +1,13 @@
 import { Pool, PoolInfo } from '../../../types'
-import { CreateBalancerHelperContract } from '../../../../contracts/rateX/BalancerHelper'
 import { BalancerWeightedPool } from './BalancerWeightedPool'
+
+let CreateBalancerHelperContract: any;
+
+(async () => {
+  import('../../../../contracts/rateX/BalancerHelper').then((module) => {
+    CreateBalancerHelperContract = module.CreateBalancerHelperContract;
+  });
+})()
 
 export class BalancerState {
     private constructor() {}
