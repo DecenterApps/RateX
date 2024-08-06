@@ -1,5 +1,6 @@
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
+import { myLocalStorage } from './my_local_storage';
 
 let initializedMainnet = false
 let initializedArbitrum = false
@@ -25,6 +26,9 @@ async function initializeDexes(chainId: number): Promise<void> {
     for (const file of files) {
       if (file.endsWith('.ts')) {
         if (chainId === 1 && file === 'CamelotV2.ts') {
+          continue
+        }
+        if (chainId === 42161 && file === 'UniswapV2.ts') {
           continue
         }
         const module = await import(`../dexes/graph_queries/${file}`)
@@ -148,8 +152,8 @@ async function fetchPoolsData(
   // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
-    for(const poolInfo of poolInfos){
-      localStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo))
+    for (const poolInfo of poolInfos) {
+      myLocalStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo))
     }
     dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos))
   }

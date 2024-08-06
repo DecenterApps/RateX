@@ -4,9 +4,15 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CreateSushiSwapHelperContract } from '../../../contracts/rateX/SushiSwapHelper'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
 
+let CreateSushiSwapHelperContract: any;
+
+(async () => {
+  import('../../../contracts/rateX/SushiSwapHelper').then((module) => {
+    CreateSushiSwapHelperContract = module.CreateSushiSwapHelperContract;
+  });
+})()
 const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {

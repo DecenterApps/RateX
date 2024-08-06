@@ -1,12 +1,18 @@
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CreateCurveHelperContract } from '../../../contracts/rateX/CurveHelper'
 import { CurvePool } from '../pools/Curve'
 import BigNumber from 'bignumber.js'
 import { dexIds } from '../dexIdsList'
 import CurveMainnetGraph from "./hardcoded/CurveMainnetGraph.json";
 import CurveArbitrumGraph from "./hardcoded/CurveArbitrumGraph.json"
 
+let CreateCurveHelperContract: any;
+
+(async () => {
+  import('../../../contracts/rateX/CurveHelper').then((module) => {
+    CreateCurveHelperContract = module.CreateCurveHelperContract;
+  });
+})()
 // For curve we use the official API instead of a graph query
 export default class Curve implements DEXGraphFunctionality {
   dexId = dexIds.CURVE

@@ -10,6 +10,7 @@ import { RateXAbi } from "../contracts/abi/RateXAbi";
 import { transferQuoteWithBalancerPoolIdToAddress } from "../sdk/swap/solidity_communication";
 import UniswapV3 from "../sdk/dexes/graph_queries/UniswapV3";
 import UniswapV2 from "../sdk/dexes/graph_queries/UniswapV2";
+import { myLocalStorage } from "../sdk/swap/my_local_storage";
 
 const privateKey = 'df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e';
 
@@ -117,7 +118,7 @@ async function executeSwapEthers(
 export const testPool = async (poolInfo, wallet, networkId) => {
     try {
         const dex = await getDex(poolInfo.dexId);
-        localStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo));
+        myLocalStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo));
         const [pool] = await dex.getAdditionalPoolDataFromSolidity([poolInfo])
         if (!pool) {
             return false;

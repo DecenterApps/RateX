@@ -5,6 +5,7 @@ import SushiSwapV2 from "../../dexes/graph_queries/SushiSwapV2";
 import UniswapV2 from "../../dexes/graph_queries/UniswapV2";
 import UniswapV3 from "../../dexes/graph_queries/UniswapV3";
 import { DEXGraphFunctionality } from "../../DEXGraphFunctionality";
+import { myLocalStorage } from "../../swap/my_local_storage";
 import { Quote, Route, Pool, PoolInfo } from "../../types";
 import { createGraph, multiHopSwap } from "./multiHopSwap";
 import objectHash from "object-hash";
@@ -74,7 +75,7 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         for (const swap of route.swaps) {
             const dex = getDex(swap.dexId);
             dex.setEndpoint(chainId)
-            const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(localStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
+            const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(myLocalStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
             progress = amount;
         }
@@ -82,7 +83,6 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         total += progress;
     }
     quote.quote = total;
-    console.log("IterativeQuote: ", quote);
     return quote;
 }
 
