@@ -88,7 +88,6 @@ function printPrettyTable(csv: string): void {
 
 
 const runTestOnChainId = async (chainId: 1 | 42161) => {
-    console.log("\nRunning tests for chain id: " + chainId + "\n")
     let prevTokenIn = null, prevTokenOut = null, prevPools: Pool[] = [];
     const ONE_INCH_API_KEY = process.env.REACT_APP_1INCH_API_KEY;
     let output = "Amount,From,To,RateX,RateX time,Uniswap,Uniswap time"
@@ -96,6 +95,7 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         output += ",1Inch,1Inch time"
     output += ",Competition max (C),RateX vs C\n"
     for (const { tokenIn, tokenOut, amount } of TEST_CASES) {
+        console.log(`Swapping ${amount} ${tokenIn.ticker} for ${tokenOut.ticker} on chain id ${chainId}`)
         const tokenInAddress = tokenIn.address[chainId];
         const tokenOutAddress = tokenOut.address[chainId]
         const amountIn = BigInt(amount) * BigInt(10 ** tokenIn.decimals)
@@ -148,10 +148,13 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         prevTokenOut = tokenOut;
         output += "\n";
     }
+    console.log("\nCompleted test for chain id: " + chainId + "\n")
     printPrettyTable(output);
 }
 
 const runTests = async () => {
+    console.log("Starting tests... Be patient, it may take up to 20 seconds for each pair to be swapped.")
+    await new Promise(e => setTimeout(e, 2000));
     await runTestOnChainId(1)
     await runTestOnChainId(42161)
 }
