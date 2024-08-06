@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js'
 import { dexIds } from '../dexIdsList'
 import CurveMainnetGraph from "./hardcoded/CurveMainnetGraph.json";
 import CurveArbitrumGraph from "./hardcoded/CurveArbitrumGraph.json"
+import { myLocalStorage } from '../../swap/my_local_storage'
 
 let CreateCurveHelperContract: any;
 
@@ -17,9 +18,12 @@ let CreateCurveHelperContract: any;
 export default class Curve implements DEXGraphFunctionality {
   dexId = dexIds.CURVE
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new Curve()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new Curve();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
 
   setEndpoint(chainId: number): void {
@@ -91,6 +95,9 @@ export default class Curve implements DEXGraphFunctionality {
       pools.push(new CurvePool(pool[0], pool[1], [token1, token2], reserves, pool[4], pool[5]))
     }
 
+    for (const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }

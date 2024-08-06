@@ -20,9 +20,12 @@ export default class UniswapV2 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/EYCKATKGBKLWvSfwvBjzfCBmGwYNdVkduYXVivCsLRFu`
   dexId = dexIds.UNI_V2
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new UniswapV2()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new UniswapV2();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
   // @reminder add uniswapv2 real endpoint for arbitrum
   setEndpoint(chainId: number): void {
@@ -91,7 +94,9 @@ export default class UniswapV2 implements DEXGraphFunctionality {
 
       pools.push(new UniswapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
     }
-
+    for (const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }

@@ -5,6 +5,7 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds, balancerWeightedPoolTypes } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { BalancerState } from '../pools/Balancer/BalancerState'
+import { myLocalStorage } from '../../swap/my_local_storage'
 
 const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
@@ -12,9 +13,12 @@ export default class BalancerV2 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV`
   dexId = dexIds.BALANCER_V2
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new BalancerV2()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new BalancerV2();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
 
   setEndpoint(chainId: number): void {
@@ -62,7 +66,9 @@ export default class BalancerV2 implements DEXGraphFunctionality {
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos, this.chainId)
-
+    for(const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }

@@ -1,31 +1,8 @@
-import BalancerV2 from "../../dexes/graph_queries/BalancerV2";
-import CamelotV2 from "../../dexes/graph_queries/CamelotV2";
-import Curve from "../../dexes/graph_queries/Curve";
-import SushiSwapV2 from "../../dexes/graph_queries/SushiSwapV2";
-import UniswapV2 from "../../dexes/graph_queries/UniswapV2";
-import UniswapV3 from "../../dexes/graph_queries/UniswapV3";
-import { DEXGraphFunctionality } from "../../DEXGraphFunctionality";
 import { myLocalStorage } from "../../swap/my_local_storage";
 import { Quote, Route, Pool, PoolInfo } from "../../types";
 import { createGraph, multiHopSwap } from "./multiHopSwap";
 import objectHash from "object-hash";
 
-export const getDex = (dexId: string) : DEXGraphFunctionality => {
-    if (dexId === "UNI_V2")
-        return UniswapV2.initialize();
-    if(dexId==="SUSHI_V2")
-        return SushiSwapV2.initialize();
-    if(dexId==="UNI_V3")
-        return UniswapV3.initialize();
-    if(dexId==="CURVE")
-        return Curve.initialize()
-    if(dexId==="BALANCER_V2")
-        return BalancerV2.initialize()
-    if(dexId==="CAMELOT")
-        return CamelotV2.initialize();
-    
-    return UniswapV2.initialize();
-}
 
 /*  Simple algorithm that splits the input amount into (100/step) parts of step% each and finds the best route for each split.
     The algorithm to find the best route for each iteration finds the route with the highest output amount.
@@ -73,9 +50,9 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
     for (const route of quote.routes) {
         let progress = route.amountIn;
         for (const swap of route.swaps) {
-            const dex = getDex(swap.dexId);
-            dex.setEndpoint(chainId)
-            const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(myLocalStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
+            const pool = myLocalStorage.getItem(swap.poolId.toLowerCase());
+            if (!pool)
+                throw Error("Error caching pools");
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
             progress = amount;
         }
