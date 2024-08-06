@@ -5,6 +5,7 @@ import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
 import { CreateRateXContract } from '../../contracts/rateX/RateX'
 import { findRoute } from '../routing/main'
+import { keccak256, toUtf8Bytes } from 'ethers'
 
 async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
   console.log('tokenIn: ', tokenIn)
@@ -58,11 +59,27 @@ async function executeSwap(
     let transactionHash: string = ''
     quote = transferQuoteWithBalancerPoolIdToAddress(quote)
 
-    console.log('usao u swap')
+    // RateX contract expects dexId to be a uint32 that represents first 4 bytes of keccak256 hash of dexId, not a string
+    function hashStringToInt(dexName: string): number {
+      const hash = keccak256(toUtf8Bytes(dexName))
+      // Take the first 4 bytes (8 hex characters) and convert to uint32
+      return parseInt(hash.slice(2, 10), 16)
+    }
 
+    const routesAdjusted = quote.routes.map((route) => {
+      const adjustedSwaps = route.swaps.map((swap) => {
+        // @ts-ignore
+        return { ...swap, dexId: hashStringToInt(swap.dexId) }
+      })
+      return { ...route, swaps: adjustedSwaps }
+    })
+
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
+
+    console.log('usao u swap')
     // @ts-ignore
     await RateXContract.methods //@ts-ignore
-      .swap(quote.routes, tokenIn, tokenOut, amountIn, minAmountOut, signer)
+      .swap(routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signer, deadline)
       .send({ from: signer })
       .on('transactionHash', function (hash: string) {
         transactionHash = hash
