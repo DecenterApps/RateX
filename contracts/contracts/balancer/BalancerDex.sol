@@ -6,6 +6,9 @@ import {IVault} from './interfaces/IVault.sol';
 import {IWeightedPool} from './interfaces/IWeightedPool.sol';
 import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
+/// @title BalancerDex - A DEX implementation for Balancer
+/// @notice This contract implements the IDex interface for Balancer protocol
+/// @dev This contract interacts with Balancer's Vault to perform token swaps
 contract BalancerDex is IDex {
   enum PoolType {
     Weighted,
@@ -19,6 +22,14 @@ contract BalancerDex is IDex {
     balancerVault = IVault(_balancerVault);
   }
 
+  /// @notice Swaps tokens using the Balancer protocol
+  /// @dev This function decodes the swap parameters from _data and performs the swap
+  /// @param _data Encoded data containing the addresses of pool, tokenIn, and tokenOut
+  /// @param _amountIn The amount of input tokens to swap
+  /// @param _amountOutMin The minimum amount of output tokens expected
+  /// @param _to The address that will receive the output tokens
+  /// @param _deadline The timestamp by which the transaction must be executed
+  /// @return amountOut The amount of output tokens received from the swap
   function swap(
     bytes calldata _data,
     uint _amountIn,
