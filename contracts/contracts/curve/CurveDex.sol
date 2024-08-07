@@ -31,8 +31,6 @@ contract CurveDex is IDex {
     require(i >= 0 && j >= 0, 'Tokens not found in pool');
 
     amountOut = ICurvePool(_poolAddress).exchange(i, j, _amountIn, _amountOutMin, _to);
-
-    emit TestAmountOutEvent(amountOut);
   }
 
   function findTokenIndexes(address _poolAddress, address _tokenIn, address _tokenOut) internal view returns (int128 i, int128 j) {

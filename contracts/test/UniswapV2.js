@@ -38,6 +38,14 @@ describe("Tests for swapping on uniswapV2", async function () {
             [addresses.tokens.WETH, addresses.tokens.DAI]
         );
 
+        const amountOut = await uniswapV2.swap.staticCall(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
+        );
+
         const tx = await uniswapV2.swap(
             data,
             amountIn,
@@ -46,9 +54,6 @@ describe("Tests for swapping on uniswapV2", async function () {
             deadline
         );
         const txReceipt = await tx.wait();
-
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
         const wethBalanceAfter = await WETH.balanceOf(uniswapAddress);
         const daiBalanceAfter = await DAI.balanceOf(addr1);

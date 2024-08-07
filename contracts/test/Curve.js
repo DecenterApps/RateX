@@ -37,6 +37,14 @@ describe("Tests for swapping on Curve", async function () {
             [addresses.curve.curve2Pool, addresses.tokens.USDT, addresses.tokens.USDCE]
         );
 
+        const amountOut = await curve.swap.staticCall(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            0
+        );
+
         const tx = await curve.swap(
             data,
             amountIn,
@@ -45,8 +53,6 @@ describe("Tests for swapping on Curve", async function () {
             0
         );
         const txReceipt = await tx.wait();
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
         const balanceUSDTAfter = await USDT.balanceOf(curveAddress);
         const balanceUSDCEAfter = await USDCE.balanceOf(addr1);

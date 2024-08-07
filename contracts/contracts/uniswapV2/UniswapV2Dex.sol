@@ -23,8 +23,6 @@ contract UniswapV2Dex is IDex {
 
     uint256[] memory amounts = router.swapExactTokensForTokens(_amountIn, _amountOutMin, path, _to, _deadline);
 
-    emit TestAmountOutEvent(amounts[1]);
-
     return amounts[1];
   }
 }

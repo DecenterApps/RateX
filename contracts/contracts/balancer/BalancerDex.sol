@@ -27,7 +27,7 @@ contract BalancerDex is IDex {
     uint _deadline
   ) external override returns (uint amountOut) {
     (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
-    
+
     TransferHelper.safeApprove(_tokenIn, address(balancerVault), _amountIn);
 
     IWeightedPool pool = IWeightedPool(_poolAddress);
@@ -47,7 +47,5 @@ contract BalancerDex is IDex {
     fundManagement.toInternalBalance = false;
 
     amountOut = balancerVault.swap(singleSwap, fundManagement, _amountOutMin, _deadline);
-
-    emit TestAmountOutEvent(amountOut);
   }
 }

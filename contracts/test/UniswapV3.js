@@ -38,6 +38,14 @@ describe("Tests for swapping on uniswap v3", async function () {
             [addresses.uniV3.wbtc_eth_pool_0_3, addresses.tokens.WETH,addresses.tokens.WBTC]
         );
 
+        const amountOut = await uniswap.swap.staticCall(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
+        );
+
         const tx = await uniswap.swap(
             data,
             amountIn,
@@ -46,8 +54,6 @@ describe("Tests for swapping on uniswap v3", async function () {
             deadline
         );
         const txReceipt = await tx.wait();
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
         const wethBalanceAfter = await WETH.balanceOf(uniswapAddress);
         const wbtcBalanceAfter = await WBTC.balanceOf(addr1);

@@ -38,6 +38,14 @@ describe("Tests for swapping on sushiswap", async function () {
             [addresses.tokens.WETH, addresses.tokens.DAI]
         );
 
+        const amountOut = await sushiSwap.swap.staticCall(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
+        );
+
         const tx = await sushiSwap.swap(
             data,
             amountIn,
@@ -46,9 +54,6 @@ describe("Tests for swapping on sushiswap", async function () {
             deadline
         );
         const txReceipt = await tx.wait();
-
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
         const wethBalanceAfter = await WETH.balanceOf(sushiSwapAddress);
         const daiBalanceAfter = await DAI.balanceOf(addr1);

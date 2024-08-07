@@ -36,7 +36,5 @@ contract UniswapV3Dex is IDex {
         sqrtPriceLimitX96: 0
       })
     );
-
-    emit TestAmountOutEvent(amountOut);
   }
 }

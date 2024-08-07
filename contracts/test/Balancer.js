@@ -52,6 +52,14 @@ describe("Tests for Balancer", async function () {
             [examplePoolAddress, addresses.tokens.WETH, addresses.tokens.RDNT]
         );
 
+        const amountOut = await balancer.swap.staticCall(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
+        );
+
         const tx = await balancer.swap(
             data,
             amountIn,
@@ -60,8 +68,6 @@ describe("Tests for Balancer", async function () {
             deadline
         );
         const txReceipt = await tx.wait();
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
         const wethBalanceAfter = await WETH.balanceOf(balancerAddress);
         const rdntBalanceAfter = await RDNT.balanceOf(addr1);
