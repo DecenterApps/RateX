@@ -5,92 +5,92 @@ import {IDex} from './interfaces/IDex.sol';
 import {TransferHelper, IERC20} from './libraries/TransferHelper.sol';
 import {Ownable2Step} from '@openzeppelin/contracts/access/Ownable2Step.sol';
 
-///@title Main contract for RateX dex aggregator
-///@notice This contract aggregates multiple dexes
-///and it is the only contract users directly interact with
-///@dev This is the first version of the contract, it does not have any optimizations
+/// @title RateX: DEX Aggregator
+/// @notice This contract aggregates multiple decentralized exchanges (DEXs) to provide optimal swap routes
+/// @dev Alpha version of the contract
 contract RateX is Ownable2Step {
-  ///@notice Struct for single dex
+  /// @notice Represents a single DEX
+  /// @param dexId Unique identifier for the DEX
+  /// @param dexAddress Contract address of the DEX
   struct DexType {
     uint32 dexId;
     address dexAddress;
   }
 
-  ///@notice Struct for executing single swap
-  ///@param poolId Address of the pool we are swapping through
-  ///@dev we will get amount in for swap from route
+  /// @notice Represents a single swap step in a route
+  /// @param data Encoded swap data for the specific DEX
+  /// @param dexId Identifier of the DEX to use for this step
   struct SwapStep {
     bytes data;
     uint32 dexId;
   }
 
-  ///@notice Single route for swap
-  ///@param swaps Array of SwapStep structs
-  ///@param amountIn Amount of tokenIn for swap
-  ///@dev We can determine amountOut by executing swaps from swaps array
+  /// @notice Represents a complete swap route
+  /// @param swaps Array of swap steps to execute
+  /// @param amountIn Amount of input token for this route
   struct Route {
     SwapStep[] swaps;
     uint256 amountIn;
   }
 
-  ///@notice uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1;
+  /// @notice uint256(keccak256('REENTRANCY_GUARD_SLOT')) - 1
   uint256 private constant REENTRANCY_GUARD_SLOT = 10176365415448536267786959035014641849020047300636800306623756021601666631018;
 
-  ///@notice bool for pausing contract
+  /// @notice Indicates if the contract is paused
   bool private _paused;
 
-  ///@notice Mapping of dexId to dexAddress
+  /// @notice Maps DEX IDs to their contract addresses
   mapping(uint32 => address) public dexes;
 
-  ///@notice Event emitted when swap is executed
+  /// @notice Emitted when a swap is executed
   event SwapEvent(address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, address recipient);
 
-  ///@notice Event emitted when new dex is added
+  /// @notice Emitted when a new DEX is added
   event DexAdded(uint32 dexId, address dexAddress);
 
-  ///@notice Event emitted when dex is replaced
+  /// @notice Emitted when a DEX is replaced
   event DexReplaced(uint32 dexId, address oldAddress, address newAddress);
 
-  ///@notice Event emitted when dex is removed
+  /// @notice Emitted when a DEX is removed
   event DexRemoved(uint32 dexId);
 
-  ///@notice Event emitted when contract is paused
+  /// @notice Emitted when the contract is paused
   event Paused();
 
-  ///@notice Event emitted when contract is unpaused
+  /// @notice Emitted when the contract is unpaused
   event Unpaused();
 
-  ///@notice Error thrown when provided address is zero address
+  /// @notice Thrown when a zero address is provided where a non-zero address is required
   error RateX__ZeroAddress();
 
-  ///@notice Error thrown when dex already exists
+  /// @notice Thrown when attempting to add a DEX that already exists
   error RateX__DexAlreadyExists();
 
-  ///@notice Error thrown when dex does not exist
+  /// @notice Thrown when attempting to interact with a non-existent DEX
   error RateX__DexDoesNotExist();
 
-  ///@notice Error thrown when routes length is 0
+  /// @notice Thrown when no routes are provided for a swap
   error RateX__NoRoutes();
 
-  ///@notice Error thrown when amount in does not match
+  /// @notice Thrown when the provided amount in doesn't match the sum of route amounts
   error RateX__AmountInDoesNotMatch();
 
-  ///@notice Error thrown when amount out does not match
+  /// @notice Thrown when the actual output amount doesn't match the expected amount
   error RateX__AmountOutDoesNotMatch();
 
-  ///@notice Error thrown when amount is below slippage protection
+  /// @notice Thrown when the output amount is less than the minimum specified
   error RateX__AmountLesserThanMinAmount();
 
-  ///@notice Error thrown when reentrant call is detected
+  /// @notice Thrown when a reentrant call is detected
   error RateX__ReentrantCall();
 
-  ///@notice Error thrown when contract is paused
+  /// @notice Thrown when trying to execute a function while the contract is paused
   error RateX__Paused();
 
-  ///@notice Error thrown when contract is not paused
+  /// @notice Thrown when trying to pause an already paused contract
   error RateX__NotPaused();
 
-  ///@notice Error thrown when delegate call failed
+  /// @notice Thrown when a delegate call to a DEX fails
   error RateX__DelegateCallFailed();
 
   modifier nonReentrant() {
@@ -123,7 +123,8 @@ contract RateX is Ownable2Step {
     _;
   }
 
-  ///@dev we have predefined dexes to add
+  /// @notice Initializes the contract with a set of DEXes
+  /// @param _initialDexes Array of initial DEXes to add
   constructor(DexType[] memory _initialDexes) {
     for (uint256 i = 0; i < _initialDexes.length; ++i) {
       if (_initialDexes[i].dexAddress == address(0)) {
@@ -133,8 +134,8 @@ contract RateX is Ownable2Step {
     }
   }
 
-  ///@notice Function for adding new dex, only owner can call it
-  ///@dev Address of new dex should implement IDex interface
+  /// @notice Adds a new DEX to the aggregator
+  /// @param _dex The DEX to add
   function addDex(DexType memory _dex) external onlyOwner {
     if (_dex.dexAddress == address(0)) {
       revert RateX__ZeroAddress();
@@ -148,10 +149,8 @@ contract RateX is Ownable2Step {
     emit DexAdded(_dex.dexId, _dex.dexAddress);
   }
 
-  ///@notice Function for replacing existing dex, only owner can call it
-  ///@dev Address of new dex should implement IDex interface
-  /// think later about how to notify users if new dex is replaced
-  /// and if they can vote for that
+  /// @notice Replaces an existing DEX with a new one
+  /// @param _dex The new DEX information
   function replaceDex(DexType memory _dex) external onlyOwner {
     if (_dex.dexAddress == address(0)) {
       revert RateX__ZeroAddress();
@@ -166,9 +165,8 @@ contract RateX is Ownable2Step {
     emit DexReplaced(_dex.dexId, oldAddress, _dex.dexAddress);
   }
 
-  ///@notice Function for removing existing dex, only owner can call it
-  ///@dev To save gas costs, this function will not preserve order of supportedDexes array
-  /// Same as replacement and adding, think about how users should be notified
+  /// @notice Removes a DEX from the aggregator
+  /// @param _dexId The ID of the DEX to remove
   function removeDex(uint32 _dexId) external onlyOwner {
     if (dexes[_dexId] == address(0)) {
       revert RateX__DexDoesNotExist();
@@ -179,42 +177,41 @@ contract RateX is Ownable2Step {
     emit DexRemoved(_dexId);
   }
 
-  ///@notice Function for withdrawing funds from contract in case of stuck tokens, only owner can call it
-  ///@param _token Address of token we are withdrawing
-  ///@param _recipient Address of recipient
-  ///@param _amount Amount of token we are withdrawing
+  /// @notice Withdraws stuck tokens from the contract
+  /// @param _token Address of the token to withdraw
+  /// @param _recipient Address to receive the withdrawn tokens
+  /// @param _amount Amount of tokens to withdraw
   function rescueFunds(address _token, address _recipient, uint256 _amount) external onlyOwner {
     TransferHelper.safeTransfer(_token, _recipient, _amount);
   }
 
-  ///@notice Function for pausing contract, only owner can call it
+  /// @notice Pauses the contract
   function pause() external onlyOwner {
     _paused = true;
     emit Paused();
   }
 
-  ///@notice Function for unpausing contract, only owner can call it
+  /// @notice Unpauses the contract
   function unpause() external onlyOwner whenPaused {
     _paused = false;
     emit Unpaused();
   }
 
-  ///@notice Function for getting paused status
-  ///@return paused Paused status
+  /// @notice Checks if the contract is paused
+  /// @return paused The current pause status
   function isPaused() external view returns (bool paused) {
     paused = _paused;
   }
 
-  ///@notice main function for executing swap
-  ///@param _foundRoutes Array of routes for swap
-  ///@param _tokenIn Address of token we are swapping from
-  ///@param _tokenOut Address of token we are swapping to
-  ///@param _amountIn Amount of tokenIn for swap
-  ///@param _quotedAmountWithSlippageProtection min amount of tokenOut we want to get
-  ///@param _recipient Address of recipient
-  ///@param _deadline Deadline for swap
-  ///@return amountOut Amount of tokenOut we got
-  ///@dev Right now we don't have any optimizations for gas costs and calldata size
+  /// @notice Executes a swap across multiple DEXes
+  /// @param _foundRoutes Array of routes for the swap
+  /// @param _tokenIn Address of the input token
+  /// @param _tokenOut Address of the output token
+  /// @param _amountIn Total amount of input tokens
+  /// @param _quotedAmountWithSlippageProtection Minimum acceptable output amount
+  /// @param _recipient Address to receive the output tokens
+  /// @param _deadline Timestamp by which the swap must be executed
+  /// @return amountOut The amount of output tokens received
   function swap(
     Route[] calldata _foundRoutes,
     address _tokenIn,
