@@ -7,6 +7,9 @@ import {ICurvePoolRegistry} from './interfaces/ICurvePoolRegistry.sol';
 import {IFactoryCurvePoolRegistry} from './interfaces/IFactoryCurvePoolRegistry.sol';
 import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
+/// @title CurveDex - A DEX implementation for Curve
+/// @notice This contract implements the IDex interface for Curve protocol
+/// @dev This contract interacts with Curve pools to perform token swaps
 contract CurveDex is IDex {
   ICurvePoolRegistry private immutable curvePoolRegistry;
   IFactoryCurvePoolRegistry private immutable curveFactoryPoolRegistry;
@@ -16,6 +19,13 @@ contract CurveDex is IDex {
     curveFactoryPoolRegistry = IFactoryCurvePoolRegistry(_curveFactoryPoolRegistry);
   }
 
+  /// @notice Swaps tokens using the Curve protocol
+  /// @dev This function decodes the swap parameters from _data and performs the swap
+  /// @param _data Encoded data containing the addresses of pool, tokenIn, and tokenOut
+  /// @param _amountIn The amount of input tokens to swap
+  /// @param _amountOutMin The minimum amount of output tokens expected
+  /// @param _to The address that will receive the output tokens
+  /// @return amountOut The amount of output tokens received from the swap
   function swap(
     bytes calldata _data,
     uint _amountIn,
@@ -33,6 +43,13 @@ contract CurveDex is IDex {
     amountOut = ICurvePool(_poolAddress).exchange(i, j, _amountIn, _amountOutMin, _to);
   }
 
+  /// @notice Finds the indexes of tokenIn and tokenOut in the given Curve pool
+  /// @dev This function handles both regular and factory Curve pools
+  /// @param _poolAddress The address of the Curve pool
+  /// @param _tokenIn The address of the input token
+  /// @param _tokenOut The address of the output token
+  /// @return i The index of the input token in the pool
+  /// @return j The index of the output token in the pool
   function findTokenIndexes(address _poolAddress, address _tokenIn, address _tokenOut) internal view returns (int128 i, int128 j) {
     if (
       _poolAddress == 0x7f90122BF0700F9E7e1F688fe926940E8839F353 ||

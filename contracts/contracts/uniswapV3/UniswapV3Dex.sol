@@ -6,6 +6,9 @@ import {ISwapRouter} from '@uniswap/v3-periphery/contracts/interfaces/ISwapRoute
 import {IDex} from '../rateX/interfaces/IDex.sol';
 import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 
+/// @title UniswapV3Dex - A DEX implementation for Uniswap V3
+/// @notice This contract implements the IDex interface for Uniswap V3 protocol
+/// @dev This contract interacts with Uniswap V3's swap router to perform token swaps
 contract UniswapV3Dex is IDex {
   ISwapRouter public immutable swapRouter;
 
@@ -13,6 +16,14 @@ contract UniswapV3Dex is IDex {
     swapRouter = ISwapRouter(_swapRouterAddress);
   }
 
+  /// @notice Swaps tokens using the Uniswap V3 protocol
+  /// @dev This function decodes the swap parameters from _data and performs the swap
+  /// @param _data Encoded data containing the pool address, tokenIn, and tokenOut addresses
+  /// @param _amountIn The amount of input tokens to swap
+  /// @param _amountOutMin The minimum amount of output tokens expected
+  /// @param _to The address that will receive the output tokens
+  /// @param _deadline The timestamp by which the transaction must be executed
+  /// @return amountOut The amount of output tokens received from the swap
   function swap(
     bytes calldata _data,
     uint _amountIn,
@@ -21,7 +32,7 @@ contract UniswapV3Dex is IDex {
     uint _deadline
   ) external returns (uint256 amountOut) {
     (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
-    
+
     TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
 
     amountOut = swapRouter.exactInputSingle(
