@@ -11,14 +11,20 @@ const _MAX_IN_RATIO = new BigNumber(0.3e18)
 
 export class BalancerWeightedPool extends Pool {
   reserves: BigNumber[]
+  startingReserves: BigNumber[]
   weights: BigNumber[]
   swapFeePercentage: BigNumber
 
   constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigInt[], weights: BigInt[], swapFeePercentage: BigInt) {
     super(poolId, dexId, tokens)
     this.reserves = reserves.map((r: BigInt) => new BigNumber(r.toString()))
+    this.startingReserves = [...this.reserves]
     this.weights = weights.map((r: BigInt) => new BigNumber(r.toString()))
     this.swapFeePercentage = new BigNumber(swapFeePercentage.toString())
+  }
+
+  reset(): void {
+    this.reserves = [...this.startingReserves]
   }
 
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {

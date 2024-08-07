@@ -9,14 +9,20 @@ let DInvariants = new Map<string, BigNumber>()
 
 export class CurvePool extends Pool {
   reserves: BigNumber[]
+  startingReserves: BigNumber[]
   fee: BigNumber
   amplificationCoeff: BigNumber
 
   constructor(poolId: string, dexId: string, tokens: Token[], reserves: BigNumber[], fee: string, A: string) {
     super(poolId, dexId, tokens)
     this.reserves = reserves
+    this.startingReserves = [...this.reserves]
     this.fee = new BigNumber(fee)
     this.amplificationCoeff = new BigNumber(A)
+  }
+
+  reset(): void {
+    this.reserves = [...this.startingReserves]
   }
 
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
@@ -60,7 +66,7 @@ function calculateOutputAmount(pool: CurvePool, tokenA: string, tokenB: string, 
   let dy = pool.reserves[j].minus(y).minus(1).div(precisions[j])
   const fee = pool.fee.times(dy).div(10 ** 10)
   const res = floor(dy.minus(fee))
-  
+
   for (let k = 0; k < pool.tokens.length; k++) {
     pool.reserves[k] = pool.reserves[k].div(precisions[k])
   }

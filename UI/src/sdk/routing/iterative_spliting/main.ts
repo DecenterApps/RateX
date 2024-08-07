@@ -53,6 +53,7 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
             const pool = myLocalStorage.getItem(swap.poolId.toLowerCase());
             if (!pool)
                 throw Error("Error caching pools");
+            pool.reset();
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
             progress = amount;
         }

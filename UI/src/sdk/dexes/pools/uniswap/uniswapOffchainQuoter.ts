@@ -1,6 +1,6 @@
-import {FeeAmount, LiquidityMath, SwapMath, TickMath} from "@uniswap/v3-sdk";
+import { FeeAmount, LiquidityMath, SwapMath, TickMath } from "@uniswap/v3-sdk";
 import JSBI from "jsbi";
-import {PoolState, StepComputations, SwapState, TickData} from "./types";
+import { LastQuote, PoolState, StepComputations, SwapState, TickData } from "./types";
 
 export class UniswapOffchainQuoter {
 
@@ -12,7 +12,7 @@ export class UniswapOffchainQuoter {
     ): [bigint, bigint] {
 
         if (amountIn <= BigInt(0)) {
-          return [BigInt(0), BigInt(0)];
+            return [BigInt(0), BigInt(0)];
         }
 
         try {
@@ -30,7 +30,7 @@ export class UniswapOffchainQuoter {
                 state.sqrtPriceX96 !== sqrtPriceLimitX96 &&
                 tickDataIndex >= 0 &&
                 tickDataIndex < poolState.data.ticks.length
-                ) {
+            ) {
                 const tickData = poolState.data.ticks[tickDataIndex];
 
                 let step: StepComputations = this.initStepComputations(state, tickData);
@@ -41,11 +41,7 @@ export class UniswapOffchainQuoter {
             }
 
             // remember where we left off, so we can update pool later
-            poolState.lastQuote = {
-                newLiquidity: state.liquidity,
-                newSqrtPriceX96: state.sqrtPriceX96,
-                newTickIndex: zeroForOne ? tickDataIndex + 2 : tickDataIndex - 2
-            }
+            poolState.lastQuote = new LastQuote(state.liquidity, state.sqrtPriceX96, zeroForOne ? tickDataIndex + 2 : tickDataIndex - 2)
 
             const amountOut = state.amountCalculated > BigInt(0) ? state.amountCalculated : -state.amountCalculated;
             return [amountOut, state.amountSpecifiedRemaining];
@@ -55,7 +51,7 @@ export class UniswapOffchainQuoter {
     }
 
     private initSwapState(poolState: PoolState, amountIn: bigint): SwapState {
-        return  {
+        return {
             amountSpecifiedRemaining: amountIn,
             amountCalculated: BigInt(0),
             sqrtPriceX96: poolState.data.currentSqrtPriceX96,

@@ -27,6 +27,10 @@ export class TickData {
     initialized: boolean;
     liquidityNet: bigint;
 
+    clone() {
+        return new TickData(this.tick, this.initialized, this.liquidityNet);
+    }
+
     constructor(tick: bigint, initialized: boolean, liquidityNet: bigint) {
         this.tick = tick;
         this.initialized = initialized;
@@ -94,7 +98,33 @@ export class AdaptedPoolData {
 
     currentTickIndex: number; // currenTick info is at ticks[currentTickIndex]
 
-    constructor(poolData: PoolData) {
+    clone() {
+        const newData = new AdaptedPoolData(null);
+        newData.pool = this.pool;
+        newData.token0 = this.token0;
+        newData.token1 = this.token1;
+        newData.tickSpacing = this.tickSpacing;
+        newData.fee = this.fee;
+        newData.currentLiquidity = this.currentLiquidity;
+        newData.currentSqrtPriceX96 = this.currentSqrtPriceX96;
+        newData.ticks = this.ticks.map(e => e.clone());
+        newData.currentTickIndex = this.currentTickIndex;
+        return newData;
+    }
+
+    constructor(poolData: PoolData | null) {
+        if (!poolData) {
+            this.pool = '';
+            this.token0 = '';
+            this.token1 = '';
+            this.tickSpacing = BigInt(0);
+            this.fee = BigInt(0);
+            this.currentLiquidity = BigInt(0);
+            this.currentSqrtPriceX96 = BigInt(0);
+            this.ticks = []
+            this.currentTickIndex = 0
+            return;
+        }
         this.pool = poolData.info.pool;
         this.token0 = poolData.info.token0;
         this.token1 = poolData.info.token1;
@@ -118,6 +148,10 @@ export class LastQuote {
     newSqrtPriceX96: bigint;
     newTickIndex: number; // index in array of ticks
 
+    clone() {
+        return new LastQuote(this.newLiquidity, this.newSqrtPriceX96, this.newTickIndex)
+    }
+
     constructor(newLiquidity: bigint, newSqrtPriceX96: bigint, newTickIndex: number) {
         this.newLiquidity = newLiquidity;
         this.newSqrtPriceX96 = newSqrtPriceX96;
@@ -128,6 +162,10 @@ export class LastQuote {
 export class PoolState {
     data: AdaptedPoolData;
     lastQuote: LastQuote;
+
+    clone() {
+        return new PoolState(this.data.clone(), this.lastQuote.clone())
+    }
 
     constructor(currData: AdaptedPoolData, lastQuote: LastQuote) {
         this.data = currData;

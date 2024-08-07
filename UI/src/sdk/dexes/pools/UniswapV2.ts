@@ -2,11 +2,17 @@ import { Pool, Token } from '../../types'
 
 export class UniswapV2Pool extends Pool {
   reserves: bigint[]
+  startingReserves: bigint[]
 
   constructor(poolId: string, dexId: string, tokens: Token[], reserves: bigint[]) {
     super(poolId, dexId, tokens)
     this.reserves = reserves.slice()
+    this.startingReserves = [...this.reserves]
   }
+
+  reset(): void {
+    this.reserves = [...this.startingReserves]
+}
 
   calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint {
     let reserveIn: bigint = this.reserves[0]
