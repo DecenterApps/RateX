@@ -20,14 +20,14 @@ contract BalancerDex is IDex {
   }
 
   function swap(
-    address _poolAddress,
-    address _tokenIn,
-    address _tokenOut,
+    bytes calldata _data,
     uint _amountIn,
     uint _amountOutMin,
     address _to,
     uint _deadline
   ) external override returns (uint amountOut) {
+    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+    
     TransferHelper.safeApprove(_tokenIn, address(balancerVault), _amountIn);
 
     IWeightedPool pool = IWeightedPool(_poolAddress);

@@ -14,52 +14,79 @@ describe("Tests for main RateX contract", async function () {
     const TEST_ADDRESS = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
     const addresses = config[hre.network.config.chainId];
 
+    const abiCoder = new hre.ethers.AbiCoder();
+    const wethWbtcSwapOnSushiData = abiCoder.encode(
+        ['address', 'address'],
+        [addresses.tokens.WETH, addresses.tokens.WBTC]
+    );
+
+    const wethWbtc_03_SwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.wbtc_eth_pool_0_3, addresses.tokens.WETH, addresses.tokens.WBTC]
+    );
+
+    const usdceWbtc_005_SwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.wbtc_usdce_pool_0_05, addresses.tokens.USDCE, addresses.tokens.WBTC]
+    );
+
+    const wethLinkSwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.weth_link_pool, addresses.tokens.WETH, addresses.tokens.LINK]
+    );
+
+    const wethUsdce_005_SwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.weth_usdce_pool_0_05, addresses.tokens.WETH, addresses.tokens.USDCE]
+    );
+
+    const wethUsdt_005_SwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.weth_usdt_pool_0_05, addresses.tokens.WETH, addresses.tokens.USDT]
+    );
+
+    const usdceUsdt_001_SwapOnUniData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.uniV3.usdt_usdce_pool_0_0_1, addresses.tokens.USDCE, addresses.tokens.USDT]
+    );
+
+    const usdceUsdt_2pool_SwapOnCurveData = abiCoder.encode(
+        ['address', 'address', 'address'],
+        [addresses.curve.curve2Pool, addresses.tokens.USDCE, addresses.tokens.USDT]
+    );
+
     const wethWbtcSwapOnSushi = {
-        poolId: addresses.sushi.wbtc_eth_pool,
-        tokenIn: addresses.tokens.WETH,
-        tokenOut: addresses.tokens.WBTC,
+        data: wethWbtcSwapOnSushiData,
         dexId: SUSHI_V2_ID
     };
     const wethWbtc_03_SwapOnUni = {
-        poolId: addresses.uniV3.wbtc_eth_pool_0_3,
-        tokenIn: addresses.tokens.WETH,
-        tokenOut: addresses.tokens.WBTC,
+        data: wethWbtc_03_SwapOnUniData,
         dexId: UNI_V3_ID
     };
     const usdceWbtc_005_SwapOnUni = {
-        poolId: addresses.uniV3.wbtc_usdce_pool_0_05,
-        tokenIn: addresses.tokens.USDCE,
-        tokenOut: addresses.tokens.WBTC,
+        data: usdceWbtc_005_SwapOnUniData,
         dexId: UNI_V3_ID
     };
     const wethLinkSwapOnUni = {
-        poolId: addresses.uniV3.weth_link_pool,
-        tokenIn: addresses.tokens.WETH,
-        tokenOut: addresses.tokens.LINK,
+        data: wethLinkSwapOnUniData,
         dexId: UNI_V3_ID
     };
+
     const wethUsdce_005_SwapOnUni = {
-        poolId: addresses.uniV3.weth_usdce_pool_0_05,
-        tokenIn: addresses.tokens.WETH,
-        tokenOut: addresses.tokens.USDCE,
+        data: wethUsdce_005_SwapOnUniData,
         dexId: UNI_V3_ID
     };
+
     const wethUsdt_005_SwapOnUni = {
-        poolId: addresses.uniV3.weth_usdt_pool_0_05,
-        tokenIn: addresses.tokens.WETH,
-        tokenOut: addresses.tokens.USDT,
+        data: wethUsdt_005_SwapOnUniData,
         dexId: UNI_V3_ID
     };
     const usdceUsdt_001_SwapOnUni = {
-        poolId: addresses.uniV3.usdt_usdce_pool_0_0_1,
-        tokenIn: addresses.tokens.USDCE,
-        tokenOut: addresses.tokens.USDT,
+        data: usdceUsdt_001_SwapOnUniData,
         dexId: UNI_V3_ID
     };
     const usdceUsdt_2pool_SwapOnCurve = {
-        poolId: addresses.curve.curve2Pool,
-        tokenIn: addresses.tokens.USDCE,
-        tokenOut: addresses.tokens.USDT,
+        data: usdceUsdt_2pool_SwapOnCurveData,
         dexId: CURVE_ID
     };
 
@@ -253,10 +280,14 @@ describe("Tests for main RateX contract", async function () {
         await sendWethTokensToUser(addr1, 10);
         await approveToContract(addr1, await rateX.getAddress(), addresses.tokens.WETH, 20);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [addresses.sushi.wbtc_eth_pool, addresses.tokens.WETH, addresses.tokens.WBTC]
+        );
+
         const swapWithInvalidDex = {
-            poolId: addresses.sushi.wbtc_eth_pool,
-            tokenIn: addresses.tokens.WETH,
-            tokenOut: addresses.tokens.WBTC,
+            data: data,
             dexId: stringToUint32("DEX_DOES_NOT_EXIST")
         };
 

@@ -17,14 +17,14 @@ contract CurveDex is IDex {
   }
 
   function swap(
-    address _poolAddress,
-    address _tokenIn,
-    address _tokenOut,
+    bytes calldata _data,
     uint _amountIn,
     uint _amountOutMin,
     address _to,
     uint /*_deadline*/
   ) external override returns (uint256 amountOut) {
+    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+
     TransferHelper.safeApprove(_tokenIn, _poolAddress, _amountIn);
 
     (int128 i, int128 j) = findTokenIndexes(_poolAddress, _tokenIn, _tokenOut);

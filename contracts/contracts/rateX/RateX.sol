@@ -20,9 +20,7 @@ contract RateX is Ownable2Step {
   ///@param poolId Address of the pool we are swapping through
   ///@dev we will get amount in for swap from route
   struct SwapStep {
-    address poolId;
-    address tokenIn;
-    address tokenOut;
+    bytes data;
     uint32 dexId;
   }
 
@@ -270,16 +268,7 @@ contract RateX is Ownable2Step {
 
       // Delegate call to the DEX contract's swap function
       (bool success, bytes memory result) = dexes[swapStep.dexId].delegatecall(
-        abi.encodeWithSignature(
-          'swap(address,address,address,uint256,uint256,address,uint256)',
-          swapStep.poolId,
-          swapStep.tokenIn,
-          swapStep.tokenOut,
-          amountOut,
-          1,
-          address(this),
-          _deadline
-        )
+        abi.encodeWithSignature('swap(bytes,uint256,uint256,address,uint256)', swapStep.data, amountOut, 1, address(this), _deadline)
       );
 
       if (!success) {

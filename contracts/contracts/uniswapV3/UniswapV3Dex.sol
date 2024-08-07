@@ -14,14 +14,14 @@ contract UniswapV3Dex is IDex {
   }
 
   function swap(
-    address _poolAddress,
-    address _tokenIn,
-    address _tokenOut,
+    bytes calldata _data,
     uint _amountIn,
     uint _amountOutMin,
     address _to,
     uint _deadline
   ) external returns (uint256 amountOut) {
+    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+    
     TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
 
     amountOut = swapRouter.exactInputSingle(

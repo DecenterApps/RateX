@@ -13,14 +13,14 @@ contract CamelotDex is IDex {
   }
 
   function swap(
-    address /*_poolAddress*/,
-    address _tokenIn,
-    address _tokenOut,
+    bytes calldata _data,
     uint _amountIn,
     uint _amountOutMin,
     address _to,
     uint _deadline
   ) external returns (uint256 amountOut) {
+    (address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address));
+    
     TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
 
     address[] memory path = new address[](2);

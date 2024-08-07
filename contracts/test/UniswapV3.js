@@ -32,10 +32,14 @@ describe("Tests for swapping on uniswap v3", async function () {
         const amountIn = hre.ethers.parseEther("1");
         const deadline = await time.latest() + 10;
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [addresses.uniV3.wbtc_eth_pool_0_3, addresses.tokens.WETH,addresses.tokens.WBTC]
+        );
+
         const tx = await uniswap.swap(
-            addresses.uniV3.wbtc_eth_pool_0_3,
-            addresses.tokens.WETH,
-            addresses.tokens.WBTC,
+            data,
             amountIn,
             0,
             addr1,
@@ -62,10 +66,14 @@ describe("Tests for swapping on uniswap v3", async function () {
         const amountIn = hre.ethers.parseEther("1");
         const deadline = await time.latest() + 10;
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [addresses.uniV3.wbtc_eth_pool_0_3, addresses.tokens.WETH,addresses.tokens.WBTC]
+        );
+
         await expect(uniswap.swap(
-            addresses.uniV3.wbtc_eth_pool_0_05,
-            addresses.tokens.WETH,
-            addresses.tokens.WBTC,
+            data,
             amountIn,
             hre.ethers.parseEther("2"), // should revert because min amount is too high
             addr1,

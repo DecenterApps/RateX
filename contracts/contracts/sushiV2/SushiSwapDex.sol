@@ -12,15 +12,9 @@ contract SushiSwapDex is IDex {
     sushiRouter = ISushiSwapRouter(_sushiSwapRouter);
   }
 
-  function swap(
-    address /*_poolAddress*/,
-    address _tokenIn,
-    address _tokenOut,
-    uint _amountIn,
-    uint _amountOutMin,
-    address _to,
-    uint _deadline
-  ) external override returns (uint256) {
+  function swap(bytes calldata _data, uint _amountIn, uint _amountOutMin, address _to, uint _deadline) external override returns (uint256) {
+    (address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address));
+    
     TransferHelper.safeApprove(_tokenIn, address(sushiRouter), _amountIn);
 
     address[] memory path = new address[](2);

@@ -32,10 +32,14 @@ describe("Tests for swapping on uniswapV2", async function () {
 
         const wethBalanceBefore = await WETH.balanceOf(uniswapAddress);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address'],
+            [addresses.tokens.WETH, addresses.tokens.DAI]
+        );
+
         const tx = await uniswapV2.swap(
-            "0x0000000000000000000000000000000000000000", // not used in function because we can get pool address from pair
-            addresses.tokens.WETH,
-            addresses.tokens.DAI,
+            data,
             amountIn,
             1,
             addr1,

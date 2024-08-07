@@ -31,10 +31,14 @@ describe("Tests for swapping on Curve", async function () {
 
         const balanceUSDTBefore = await USDT.balanceOf(curveAddress);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [addresses.curve.curve2Pool, addresses.tokens.USDT, addresses.tokens.USDCE]
+        );
+
         const tx = await curve.swap(
-            addresses.curve.curve2Pool,
-            addresses.tokens.USDT,
-            addresses.tokens.USDCE,
+            data,
             amountIn,
             0,
             addr1,
@@ -53,16 +57,19 @@ describe("Tests for swapping on Curve", async function () {
 
     it("Should revert because tokens not found in pool", async function () {
         const {curve, addr1} = await deployCurveDex();
-
         const amountIn = hre.ethers.parseEther("1");
 
         await sendWethTokensToUser(addr1, amountIn);
         await approveToContract(addr1, await curve.getAddress(), addresses.tokens.WETH, amountIn);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [addresses.curve.curve2Pool, addresses.tokens.WETH, addresses.tokens.USDC]
+        );
+
         await expect(curve.swap(
-            addresses.curve.curve2Pool,
-            addresses.tokens.WETH, // should revert because WETH not in pool
-            addresses.tokens.USDC,
+            data,
             amountIn,
             0,
             addr1,

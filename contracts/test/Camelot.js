@@ -32,10 +32,14 @@ describe("Tests for Camelot V2", async function () {
 
         const wethBalanceBefore = await WETH.balanceOf(camelotAddress);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address'],
+            [addresses.tokens.WETH, addresses.tokens.USDT]
+        );
+
         const tx = await camelot.swap(
-            "0x0000000000000000000000000000000000000000", // not used in function because we can get pool address from pair
-            addresses.tokens.WETH,
-            addresses.tokens.USDT,
+            data,
             amountIn,
             0n,
             addr1,

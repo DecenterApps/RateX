@@ -46,10 +46,14 @@ describe("Tests for Balancer", async function () {
 
         const wethBalanceBefore = await WETH.balanceOf(balancerAddress);
 
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [examplePoolAddress, addresses.tokens.WETH, addresses.tokens.RDNT]
+        );
+
         const tx = await balancer.swap(
-            examplePoolAddress,
-            addresses.tokens.WETH,
-            addresses.tokens.RDNT,
+            data,
             amountIn,
             0n,
             addr1,
