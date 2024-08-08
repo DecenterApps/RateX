@@ -1,11 +1,11 @@
-import { Pool, Quote, ResponseType } from '../types'
+import { Pool, Quote, ResponseType, SwapStep } from '../types'
 import { fetchPoolsData } from './graph_communication'
 import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../../providers/RPCProvider'
 import Web3 from 'web3'
 import { CreateRateXContract } from '../../contracts/rateX/RateX'
 import { findRoute } from '../routing/main'
-import { keccak256, toUtf8Bytes } from 'ethers'
+import { keccak256, toUtf8Bytes, ethers } from 'ethers'
 
 async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
   console.log('tokenIn: ', tokenIn)
@@ -59,17 +59,14 @@ async function executeSwap(
     let transactionHash: string = ''
     quote = transferQuoteWithBalancerPoolIdToAddress(quote)
 
-    // RateX contract expects dexId to be a uint32 that represents first 4 bytes of keccak256 hash of dexId, not a string
-    function hashStringToInt(dexName: string): number {
-      const hash = keccak256(toUtf8Bytes(dexName))
-      // Take the first 4 bytes (8 hex characters) and convert to uint32
-      return parseInt(hash.slice(2, 10), 16)
-    }
-
     const routesAdjusted = quote.routes.map((route) => {
       const adjustedSwaps = route.swaps.map((swap) => {
-        // @ts-ignore
-        return { ...swap, dexId: hashStringToInt(swap.dexId) }
+        // Encode the swap data based on the dexId
+        const encodedData = encodeSwapData(swap)
+        // Convert dexId to uint32
+        const dexIdUint32 = hashStringToInt(swap.dexId)
+
+        return { data: encodedData, dexId: dexIdUint32 }
       })
       return { ...route, swaps: adjustedSwaps }
     })
@@ -106,6 +103,25 @@ function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
   )
 
   return quote
+}
+
+// RateX contract expects dexId to be a uint32 that represents first 4 bytes of keccak256 hash of dexId, not a string
+function hashStringToInt(dexName: string): number {
+  const hash = keccak256(toUtf8Bytes(dexName))
+  // Take the first 4 bytes (8 hex characters) and convert to uint32
+  return parseInt(hash.slice(2, 10), 16)
+}
+
+// Encode swap data for RateX contract
+function encodeSwapData(swap: SwapStep) {
+  const abiCoder = new ethers.AbiCoder()
+
+  if (swap.dexId === 'BALANCER' || swap.dexId === 'CURVE' || swap.dexId === 'UNI_V3') {
+    // For DEXes like Balancer, Curve, UniswapV3 => we include poolId, tokenIn, and tokenOut
+    return abiCoder.encode(['address', 'address', 'address'], [swap.poolId, swap.tokenIn, swap.tokenOut])
+  }
+  // For DEXes like Uniswap V2, Camelot, Sushiswap we include only tokenIn and tokenOut
+  else return abiCoder.encode(['address', 'address'], [swap.tokenIn, swap.tokenOut])
 }
 
 export { getQuote, executeSwap }
