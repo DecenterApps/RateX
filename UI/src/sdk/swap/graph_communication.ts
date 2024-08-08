@@ -143,16 +143,13 @@ async function fetchPoolsData(
 
   // call Graph API
   const promises: Promise<void>[] = []
-  const start = Date.now();
   promises.push(getPoolIdsForToken(tokenFrom, numFromToPools, chainId, graphApiKey))
   promises.push(getPoolIdsForToken(tokenTo, numFromToPools, chainId, graphApiKey))
   promises.push(getTopPools(numTopPools, chainId, graphApiKey))
   promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools, chainId, graphApiKey))
   await Promise.all(promises)
-  console.log("Partial: " + (Date.now() - start));
   filterDuplicatePools()
 
-  const solidity = Date.now();
   // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
@@ -162,7 +159,6 @@ async function fetchPoolsData(
   allPoolsData.forEach((poolsData: Pool[]) => {
     pools.push(...poolsData)
   })
-  console.log(Date.now() - solidity)
 
   return pools
 }
