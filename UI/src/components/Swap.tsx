@@ -108,7 +108,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         },
         decimals: 18,
       }
-      
       await contract.methods
         .name()
         .call()
@@ -139,19 +138,30 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         } else {
           throw new Error('Unsupported chainId');
         }
+        
+
         const tokenResponse = await fetch(imageApiUrl);
+
         const tokenResponseObject = await tokenResponse.json();
-        console.log(tokenResponseObject.image.small)
-        token.img=tokenResponseObject.image.small;
+        console.log("ovo je res" +chainId)
+        console.log(tokenResponseObject)
+        if(tokenResponseObject.image)
+    {
+      token.img=tokenResponseObject.image.small;
+
+    }
+    else
+        token.img="";
         console.log(token)
       if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
-     
+
         token.address[chainId] = customToken
         
         await modifyToken(0, [token])
         return setIsOpenModal(false)
       }
     } catch (error: any) {
+      console.log(error)
       notification.error({
         message: 'Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!',
       })
@@ -331,6 +341,7 @@ style={{top:'5vh'}}
       <div className="tradeBox">
         <div className="tradeBoxHeader">
           <h4> Swap </h4>
+          {chainId}
           <Popover content={settings} title="Settings" trigger="click" placement="bottomRight">
             <SettingOutlined className="cog" />
           </Popover>

@@ -14,12 +14,12 @@ async function initializeDexes(chainId: number): Promise<void> {
 
     // CHANGE DEXES FOR ALGORITHM
     const files = [
-     // 'SushiSwapV2.ts',
-      //'UniswapV3.ts',
+     //'SushiSwapV2.ts',
+      'UniswapV3.ts',
       //'BalancerV2.ts',
       //'Curve.ts',
       // 'CamelotV2.ts',
-      'UniswapV2.ts',
+      //'UniswapV2.ts',
     ]
 
     for (const file of files) {
