@@ -130,17 +130,29 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           token.decimals = Number(decimals)
         })
 
-        const imageUrl = `https://etherscan.io/token/images/${token.ticker}_32.png`;
-  
-    // Check if the image exists
-        const img = new Image();
-        img.onload = () => {
-          token.img = imageUrl;
+        const tryLoadImage = (url: string): Promise<string> => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(url);
+            img.onerror = () => reject();
+            img.src = url;
+          });
         };
-        img.onerror = () => {
-          console.log('Image not found, using placeholder.');
-        };
-        img.src = imageUrl;
+    
+        let imageUrl = `https://etherscan.io/token/images/${token.name}_32.png`;
+    
+        try {
+          token.img = await tryLoadImage(imageUrl);
+        } catch {
+          console.log('Image not found for token name, using ticker.');
+          imageUrl = `https://etherscan.io/token/images/${token.ticker}_32.png`;
+    
+          try {
+            token.img = await tryLoadImage(imageUrl);
+          } catch {
+            console.log('Image not found for both name and ticker, using placeholder.');
+          }
+        }
        
       if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
 
@@ -329,7 +341,7 @@ style={{top:'5vh'}}
           <Input placeholder="0" value={tokenFromAmount === -1 ? '' : tokenFromAmount} onChange={changeAmount} />
           <div className="tokenFromAmountUSD">{`$${Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4)}`}</div>
           <div className="assetFrom" onClick={() => openModal(1)}>
-            <img src={tokenFrom.img} alt="assetFromLogo" className="assetLogo" />
+            <img src={tokenFrom.img} style={{borderRadius:'50px'}} alt="assetFromLogo" className="assetLogo" />
             {tokenFrom.ticker}
             <DownOutlined />
           </div>
@@ -355,7 +367,7 @@ style={{top:'5vh'}}
             </Fragment>
           )}
           <div className="assetTo" onClick={() => openModal(2)}>
-            <img src={tokenTo.img} alt="assetFromLogo" className="assetLogo" />
+            <img src={tokenTo.img} style={{borderRadius:'50px'}} alt="assetFromLogo" className="assetLogo" />
             {tokenTo.ticker}
             <DownOutlined />
           </div>

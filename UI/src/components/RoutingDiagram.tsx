@@ -50,11 +50,11 @@ function TokenInComponent({ token, chainId, tokenFrom}: { token: string; chainId
     <div className="routingDiagramToken tooltip">
       {chainId === 1 ? (
         <a href={`https://etherscan.io/token/${token}`} target="_blank">
-          <img src={img} alt="assetFromLogo" />
+          <img src={img} style={{borderRadius:'50px'}} alt="assetFromLogo" />
         </a>
       ) : (
         <a href={`https://arbiscan.io/token/${token}`} target="_blank">
-          <img src={img} alt="assetFromLogo" />
+          <img src={img} style={{borderRadius:'50px'}} alt="assetFromLogo" />
         </a>
       )}
       <span className="tooltiptext">{ticker}</span>
@@ -78,11 +78,11 @@ function TokenOutComponent({ token, chainId, tokenTo, isLast }: { token: string;
     <div className="routingDiagramToken tooltip">
       {chainId === 1 ? (
         <a href={`https://etherscan.io/token/${token}`} target="_blank">
-          <img src={img} alt="assetFromLogo" />
+          <img src={img} style={{borderRadius:'50px'}} alt="assetFromLogo" />
         </a>
       ) : (
         <a href={`https://arbiscan.io/token/${token}`} target="_blank">
-          <img src={img} alt="assetFromLogo" />
+          <img src={img} style={{borderRadius:'50px'}} alt="assetFromLogo" />
         </a>
       )}
       <span className="tooltiptext">{ticker}</span>
