@@ -5,19 +5,11 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
 import { UniswapV2Pool } from '../pools/UniswapV2'
-
-let CreateUniswapV2HelperContract: any;
-
-(async () => {
-  import('../../../contracts/rateX/UniswapV2Helper').then((module) => {
-    CreateUniswapV2HelperContract = module.CreateUniswapV2HelperContract;
-  });
-})()
-
-const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
+import Web3 from 'web3'
+import { CreateUniswapV2HelperContract } from '../../contracts/rateX/UniswapV2Helper'
 
 export default class UniswapV2 implements DEXGraphFunctionality {
-  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/EYCKATKGBKLWvSfwvBjzfCBmGwYNdVkduYXVivCsLRFu`
+  endpoint = ``
   dexId = dexIds.UNI_V2
   chainId = 1
   myLocalStorage = null
@@ -28,9 +20,12 @@ export default class UniswapV2 implements DEXGraphFunctionality {
     return object
   }
   // @reminder add uniswapv2 real endpoint for arbitrum
-  setEndpoint(chainId: number): void {
+  setEndpoint(chainId: number, graphApiKey: string): void {
+    if (chainId == 1) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/EYCKATKGBKLWvSfwvBjzfCBmGwYNdVkduYXVivCsLRFu`
+    }
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/CStW6CSQbHoXsgKuVCrk3uShGA4JX3CAzzv2x9zaGf8w`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/CStW6CSQbHoXsgKuVCrk3uShGA4JX3CAzzv2x9zaGf8w`
     }
     this.chainId = chainId
   }
@@ -68,9 +63,9 @@ export default class UniswapV2 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
     //@ts-ignore
-    const UniswapV2HelperContract = CreateUniswapV2HelperContract(this.chainId)
+    const UniswapV2HelperContract = CreateUniswapV2HelperContract(this.chainId, rpcProvider)
     const rawData: any[][] = await UniswapV2HelperContract.methods.getPoolsData(poolInfos).call()
 
     const pools: Pool[] = []

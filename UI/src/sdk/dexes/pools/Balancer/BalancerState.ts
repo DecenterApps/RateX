@@ -1,18 +1,12 @@
 import { Pool, PoolInfo } from '../../../types'
 import { BalancerWeightedPool } from './BalancerWeightedPool'
-
-let CreateBalancerHelperContract: any;
-
-(async () => {
-  import('../../../../contracts/rateX/BalancerHelper').then((module) => {
-    CreateBalancerHelperContract = module.CreateBalancerHelperContract;
-  });
-})()
+import { CreateBalancerHelperContract } from '../../../contracts/rateX/BalancerHelper'
+import Web3 from 'web3'
 
 export class BalancerState {
     private constructor() {}
 
-    public static async getPoolDataFromContract(pools: PoolInfo[], chainId: number): Promise<Pool[]> {
+    public static async getPoolDataFromContract(pools: PoolInfo[], chainId: number, rpcProvider: Web3): Promise<Pool[]> {
         let newPools: Pool[] = []
 
         // iterate trough pools
@@ -22,7 +16,7 @@ export class BalancerState {
             // return token address after '-' split
             pool.tokens.forEach((token) => token._address = token._address.split('-')[1])
 
-            const BalancerHelperContract = CreateBalancerHelperContract(chainId)
+            const BalancerHelperContract = CreateBalancerHelperContract(chainId, rpcProvider)
             // @ts-ignore
             const res: any[] = await BalancerHelperContract.methods // @ts-ignore
                 .getWeightedPoolInfo(pool.poolId)

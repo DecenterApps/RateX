@@ -5,23 +5,14 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo, Token } from '../../types'
 import { dexIds } from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
-import { myLocalStorage } from '../../swap/my_local_storage'
+import { CreateCamelotHelperContract } from '../../contracts/rateX/CamelotHelper'
+import Web3 from 'web3'
 
 // Camelot is a silly place
 
-let CreateCamelotHelperContract: any;
-
-(async () => {
-  import('../../../contracts/rateX/CamelotHelper').then((module) => {
-    CreateCamelotHelperContract = module.CreateCamelotHelperContract;
-  });
-})()
-
-const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
-
 export default class CamelotV2 implements DEXGraphFunctionality {
   // Camelot is currently not working, ne
-  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
+  endpoint = ``
   dexId = dexIds.CAMELOT
   chainId = 1
   myLocalStorage = null
@@ -32,9 +23,12 @@ export default class CamelotV2 implements DEXGraphFunctionality {
     return object
   }
 
-  setEndpoint(chainId: number): void {
+  setEndpoint(chainId: number, graphApiKey: string): void {
+    if (chainId == 1) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
+    }
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
     }
     this.chainId = chainId
   }
@@ -70,8 +64,8 @@ export default class CamelotV2 implements DEXGraphFunctionality {
   }
 
   // call to Solidity for additional data
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
-    const CamelotHelperContract = CreateCamelotHelperContract(this.chainId)
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
+    const CamelotHelperContract = CreateCamelotHelperContract(this.chainId, rpcProvider)
     //@ts-ignore
     const rawData: any[][] = await CamelotHelperContract.methods.getPoolsData(poolInfos).call()
 

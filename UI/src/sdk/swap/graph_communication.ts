@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
 import { myLocalStorage } from './my_local_storage';
@@ -7,7 +8,7 @@ let initializedArbitrum = false
 let initializedDexes: DEXGraphFunctionality[] = []
 let dexesPools: Map<DEXGraphFunctionality, PoolInfo[]> = new Map<DEXGraphFunctionality, PoolInfo[]>()
 
-async function initializeDexes(chainId: number): Promise<void> {
+async function initializeDexes(chainId: number, graphApiKey: string): Promise<void> {
   try {
     // Clear Previous Dex Graph Mappings and Initialized DEX array
     dexesPools.clear()
@@ -19,7 +20,7 @@ async function initializeDexes(chainId: number): Promise<void> {
       'UniswapV3.ts',
       'BalancerV2.ts',
       //'Curve.ts',
-      'CamelotV2.ts',
+      //'CamelotV2.ts',
       'UniswapV2.ts',
     ]
 
@@ -33,9 +34,7 @@ async function initializeDexes(chainId: number): Promise<void> {
         }
         const module = await import(`../dexes/graph_queries/${file}`)
         const dex: DEXGraphFunctionality = module.default.initialize(myLocalStorage)
-        if (chainId !== 1) {
-          dex.setEndpoint(chainId)
-        }
+        dex.setEndpoint(chainId, graphApiKey)
         initializedDexes.push(dex)
         dexesPools.set(dex, [])
       }
@@ -45,14 +44,14 @@ async function initializeDexes(chainId: number): Promise<void> {
   }
 }
 
-async function checkInitializedDexes(chainId: number) {
+async function checkInitializedDexes(chainId: number, graphApiKey: string) {
   if (chainId === 1 && !initializedMainnet) {
-    await initializeDexes(chainId)
+    await initializeDexes(chainId, graphApiKey)
     initializedArbitrum = false
     initializedMainnet = true
   }
   if (chainId === 42161 && !initializedArbitrum) {
-    await initializeDexes(chainId)
+    await initializeDexes(chainId, graphApiKey)
     initializedMainnet = false
     initializedArbitrum = true
   }
@@ -62,8 +61,8 @@ async function checkInitializedDexes(chainId: number) {
  *   UniswapV3: [poolId1, poolId2, ...],
  *   SushiSwapV2: [poolId1, poolId2, ...]
  */
-async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3, chainId: number): Promise<void> {
-  await checkInitializedDexes(chainId)
+async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools: number = 3, chainId: number, graphApiKey: string): Promise<void> {
+  await checkInitializedDexes(chainId, graphApiKey)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithTokenPair(tokenA, tokenB, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -84,8 +83,8 @@ async function getPoolIdsForTokenPairs(tokenA: string, tokenB: string, numPools:
  * @param amountIn: amount of token1 to swap (in wei) - currently unused
  * @returns: list of poolIds
  */
-async function getPoolIdsForToken(token: string, numPools: number = 5, chainId: number): Promise<void> {
-  await checkInitializedDexes(chainId)
+async function getPoolIdsForToken(token: string, numPools: number = 5, chainId: number, graphApiKey: string): Promise<void> {
+  await checkInitializedDexes(chainId, graphApiKey)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getPoolsWithToken(token, numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -105,8 +104,8 @@ async function getPoolIdsForToken(token: string, numPools: number = 5, chainId: 
  * @param amountIn: amount of token1 to swap (in wei) - currently unused
  * @returns: list of poolIds
  */
-async function getTopPools(numPools: number = 5, chainId: number): Promise<void> {
-  await checkInitializedDexes(chainId)
+async function getTopPools(numPools: number = 5, chainId: number, graphApiKey: string): Promise<void> {
+  await checkInitializedDexes(chainId, graphApiKey)
 
   const allPoolsPromises = initializedDexes.map((dex) => dex.getTopPools(numPools))
   const allPoolsResults = await Promise.all(allPoolsPromises)
@@ -131,33 +130,39 @@ async function fetchPoolsData(
   tokenTo: string,
   numFromToPools: number = 5,
   numTopPools: number = 5,
-  chainId: number
+  chainId: number,
+  rpcProvider: Web3,
+  graphApiKey: string
 ): Promise<Pool[]> {
   let pools: Pool[] = []
   dexesPools.forEach((poolInfos: PoolInfo[], dex: DEXGraphFunctionality) => {
     dexesPools.set(dex, [])
   })
 
-  await checkInitializedDexes(chainId)
+  await checkInitializedDexes(chainId, graphApiKey)
 
   // call Graph API
   const promises: Promise<void>[] = []
-  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools, chainId))
-  promises.push(getPoolIdsForToken(tokenTo, numFromToPools, chainId))
-  promises.push(getTopPools(numTopPools, chainId))
-  promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools, chainId))
+  const start = Date.now();
+  promises.push(getPoolIdsForToken(tokenFrom, numFromToPools, chainId, graphApiKey))
+  promises.push(getPoolIdsForToken(tokenTo, numFromToPools, chainId, graphApiKey))
+  promises.push(getTopPools(numTopPools, chainId, graphApiKey))
+  promises.push(getPoolIdsForTokenPairs(tokenFrom, tokenTo, numFromToPools, chainId, graphApiKey))
   await Promise.all(promises)
+  console.log("Partial: " + (Date.now() - start));
   filterDuplicatePools()
 
+  const solidity = Date.now();
   // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
-    dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos))
+    dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos, rpcProvider))
   }
   const allPoolsData = await Promise.all(dexPoolsPromises)
   allPoolsData.forEach((poolsData: Pool[]) => {
     pools.push(...poolsData)
   })
+  console.log(Date.now() - solidity)
 
   return pools
 }

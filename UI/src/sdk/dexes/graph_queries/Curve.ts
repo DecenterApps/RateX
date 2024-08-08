@@ -6,14 +6,8 @@ import { dexIds } from '../dexIdsList'
 import CurveMainnetGraph from "./hardcoded/CurveMainnetGraph.json";
 import CurveArbitrumGraph from "./hardcoded/CurveArbitrumGraph.json"
 import { myLocalStorage } from '../../swap/my_local_storage'
-
-let CreateCurveHelperContract: any;
-
-(async () => {
-  import('../../../contracts/rateX/CurveHelper').then((module) => {
-    CreateCurveHelperContract = module.CreateCurveHelperContract;
-  });
-})()
+import Web3 from 'web3'
+import { CreateCurveHelperContract } from '../../contracts/rateX/CurveHelper'
 // For curve we use the official API instead of a graph query
 export default class Curve implements DEXGraphFunctionality {
   dexId = dexIds.CURVE
@@ -57,9 +51,9 @@ export default class Curve implements DEXGraphFunctionality {
   }
 
   // calls to Solidity for additional data
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
     //@ts-ignore
-    const CurveHelperContract = CreateCurveHelperContract(this.chainId)
+    const CurveHelperContract = CreateCurveHelperContract(this.chainId, rpcProvider)
     const rawData: any[][] = await CurveHelperContract.methods.getPoolsData(poolInfos).call()
 
     const pools: Pool[] = []

@@ -5,18 +5,12 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
 import { SushiSwapV2Pool } from '../pools/SushiSwapV2'
+import Web3 from 'web3'
+import { CreateSushiSwapHelperContract } from '../../../sdk/contracts/rateX/SushiSwapHelper'
 
-let CreateSushiSwapHelperContract: any;
-
-(async () => {
-  import('../../../contracts/rateX/SushiSwapHelper').then((module) => {
-    CreateSushiSwapHelperContract = module.CreateSushiSwapHelperContract;
-  });
-})()
-const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
 export default class SushiSwapV2 implements DEXGraphFunctionality {
-  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/77jZ9KWeyi3CJ96zkkj5s1CojKPHt6XJKjLFzsDCd8Fd`
+  endpoint = ""
   dexId = dexIds.SUSHI_V2
   chainId = 1
   myLocalStorage = null
@@ -27,9 +21,12 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     return object
   }
 
-  setEndpoint(chainId: number): void {
+  setEndpoint(chainId: number, graphApiKey: string): void {
+    if (chainId == 1) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/77jZ9KWeyi3CJ96zkkj5s1CojKPHt6XJKjLFzsDCd8Fd`
+    }
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8yBXBTMfdhsoE5QCf7KnoPmQb7QAWtRzESfYjiCjGEM9`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/8yBXBTMfdhsoE5QCf7KnoPmQb7QAWtRzESfYjiCjGEM9`
     }
     this.chainId = chainId
   }
@@ -82,9 +79,9 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
     //@ts-ignore
-    const SushiSwapHelperContract = CreateSushiSwapHelperContract(this.chainId)
+    const SushiSwapHelperContract = CreateSushiSwapHelperContract(this.chainId, rpcProvider)
     const rawData: any[][] = await SushiSwapHelperContract.methods.getPoolsData(poolInfos).call()
 
     const pools: Pool[] = []

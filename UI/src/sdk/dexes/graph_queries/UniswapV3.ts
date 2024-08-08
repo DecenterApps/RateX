@@ -6,11 +6,10 @@ import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { UniswapState } from '../pools/uniswap/uniswapState'
 import { UniswapV3Pool } from '../pools/uniswap/UniswapV3'
-
-const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
+import Web3 from 'web3'
 
 export default class UniswapV3 implements DEXGraphFunctionality {
-  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`
+  endpoint = ``
   chainId = 1
   dexId = dexIds.UNI_V3
   myLocalStorage = null
@@ -21,9 +20,12 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     return object
   }
 
-  setEndpoint(chainId: number): void {
+  setEndpoint(chainId: number, graphApiKey: string): void {
+    if (chainId == 1) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`
+    }
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/FbCGRftH4a3yZugY7TnbYgPJVEv2LvMT6oF1fxPe9aJM`
     }
     this.chainId = chainId
   }
@@ -57,9 +59,9 @@ export default class UniswapV3 implements DEXGraphFunctionality {
     return poolsInfo
   }
 
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
     const pools = poolInfos.map((poolInfo: PoolInfo) => poolInfo.poolId)
-    await UniswapState.initializeFreshPoolsData(pools, this.chainId)
+    await UniswapState.initializeFreshPoolsData(pools, this.chainId, rpcProvider)
 
     const pools2 = poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens));
     for (const pool of pools2)

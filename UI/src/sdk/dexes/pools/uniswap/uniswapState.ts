@@ -1,14 +1,8 @@
 import { PoolData, PoolState } from './types'
 import { convertInitialPoolDataToPoolState, convertRowPoolData } from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
-
-let CreateUniswapHelperContract: any;
-
-(async () => {
-  import('../../../../contracts/rateX/UniswapHelper').then((module) => {
-    CreateUniswapHelperContract = module.CreateUniswapHelperContract;
-  });
-})()
+import { CreateUniswapHelperContract } from '../../../contracts/rateX/UniswapHelper'
+import Web3 from 'web3'
 
 export class UniswapState {
   private static poolStateMap: Map<string, PoolState> = new Map<string, PoolState>()
@@ -28,10 +22,10 @@ export class UniswapState {
     }
   }
 
-  private static async getPoolsDataFromContract(pools: string[], chainId: number): Promise<PoolData[]> {
+  private static async getPoolsDataFromContract(pools: string[], chainId: number, rpcProvider: Web3): Promise<PoolData[]> {
     //@ts-ignore
     try {
-      const UniswapHelperContract = CreateUniswapHelperContract(chainId)
+      const UniswapHelperContract = CreateUniswapHelperContract(chainId, rpcProvider)
       const rawPoolsData: any[] = await UniswapHelperContract.methods.fetchData(pools, 15).call()
       return rawPoolsData.map((rawPoolData: any) => convertRowPoolData(rawPoolData))
     } catch (err) {
@@ -40,7 +34,7 @@ export class UniswapState {
     }
   }
 
-  public static async initializeFreshPoolsData(pools: string[], chainId: number) {
+  public static async initializeFreshPoolsData(pools: string[], chainId: number, rpcProvider: Web3) {
     const poolsSize = pools.length
     const numberOfBatches = Math.ceil(poolsSize / this.batch_size)
 
@@ -48,7 +42,7 @@ export class UniswapState {
 
     for (let i = 0; i < numberOfBatches; i++) {
       const batch = pools.slice(i * this.batch_size, (i + 1) * this.batch_size)
-      promises.push(this.getPoolsDataFromContract(batch, chainId))
+      promises.push(this.getPoolsDataFromContract(batch, chainId, rpcProvider))
     }
     const allPoolsData = await Promise.all(promises)
 

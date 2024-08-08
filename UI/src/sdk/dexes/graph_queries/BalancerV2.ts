@@ -6,11 +6,10 @@ import { dexIds, balancerWeightedPoolTypes } from '../dexIdsList'
 import { Pool, PoolInfo } from '../../types'
 import { BalancerState } from '../pools/Balancer/BalancerState'
 import { myLocalStorage } from '../../swap/my_local_storage'
-
-const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
+import Web3 from 'web3'
 
 export default class BalancerV2 implements DEXGraphFunctionality {
-  endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV`
+  endpoint = ``
   dexId = dexIds.BALANCER_V2
   chainId = 1
   myLocalStorage = null
@@ -21,9 +20,12 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     return object
   }
 
-  setEndpoint(chainId: number): void {
+  setEndpoint(chainId: number, graphApiKey: string): void {
+    if (chainId == 1) {
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/C4ayEZP2yTXRAB8vSaTrgN4m9anTe9Mdm2ViyiAuV9TV`
+    }
     if (chainId == 42161) {
-      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/itkjv6Vdh22HtNEPQuk5c9M3T7VeGLQtXxcH8rFi1vc`
+      this.endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${graphApiKey}/subgraphs/id/itkjv6Vdh22HtNEPQuk5c9M3T7VeGLQtXxcH8rFi1vc`
     }
     this.chainId = chainId
   }
@@ -34,7 +36,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {}
+      } catch (e) { }
     })
 
     return poolsInfo
@@ -46,7 +48,7 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {}
+      } catch (e) { }
     })
 
     return poolsInfo
@@ -58,15 +60,15 @@ export default class BalancerV2 implements DEXGraphFunctionality {
     queryResult.pools.forEach((pool: any) => {
       try {
         poolsInfo.push(createPoolFromGraph(pool, this.dexId))
-      } catch (e) {}
+      } catch (e) { }
     })
 
     return poolsInfo
   }
 
-  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
-    const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos, this.chainId)
-    for(const pool of pools)
+  async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[], rpcProvider: Web3): Promise<Pool[]> {
+    const pools: Pool[] = await BalancerState.getPoolDataFromContract(poolInfos, this.chainId, rpcProvider)
+    for (const pool of pools)
       // @ts-ignore
       this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
