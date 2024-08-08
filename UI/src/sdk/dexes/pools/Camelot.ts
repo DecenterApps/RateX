@@ -10,13 +10,19 @@ export class CamelotPool extends Pool {
 
     fees: BigNumber[]
     reserves: BigNumber[]
+    startingReserves: BigNumber[]
     stableSwap: boolean
 
     constructor(poolId: string, dexId: string, tokens: Token[], reserves: bigint[], fees: bigint[], stableSwap: boolean) {
         super(poolId, dexId, tokens)
         this.reserves = reserves.map((r) => BigNumber(r.toString()))
+        this.startingReserves = [...this.reserves]
         this.fees = fees.map((f) => BigNumber(f.toString()))
         this.stableSwap = stableSwap
+    }
+
+    reset(): void {
+        this.reserves = [...this.startingReserves]
     }
 
     // function getAmountOut on Camelot V2 pools smart contracts
@@ -33,10 +39,10 @@ export class CamelotPool extends Pool {
     update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void {
         const i = this.tokens.findIndex((token) => token._address === tokenIn)
         const j = this.tokens.findIndex((token) => token._address === tokenOut)
-    
+
         this.reserves[i] = this.reserves[i].plus(BigNumber(amountIn.toString()))
         this.reserves[j] = this.reserves[j].minus(BigNumber(amountOut.toString()))
-      }
+    }
 }
 
 function calculateStableSwap(pool: CamelotPool, tokenIn: string, tokenOut: string, amountIn: BigNumber): bigint {
@@ -110,7 +116,7 @@ function _get_y(x0: BigNumber, xy: BigNumber, y: BigNumber): BigNumber {
         }
 
         const diff = y.minus(y_prev).abs()
-        if(diff.lte(1))
+        if (diff.lte(1))
             break
     }
     return floor(y)

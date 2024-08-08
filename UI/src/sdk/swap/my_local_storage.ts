@@ -1,19 +1,21 @@
+import { Pool } from "../types";
+
 interface ILocalStorage {
-    setItem(key: string, value: string): void;
-    getItem(key: string): string | null;
+    setItem(key: string, value: Pool): void;
+    getItem(key: string): Pool | null;
     removeItem(key: string): void;
 }
 
-const values: { [key: string]: string } = {};
+const values: { [key: string]: Pool } = {};
 
 class MockLocalStorage implements ILocalStorage {
 
 
-    setItem(key: string, value: string): void {
+    setItem(key: string, value: Pool): void {
         values[key] = value;
     }
 
-    getItem(key: string): string | null {
+    getItem(key: string): Pool | null {
         return values[key] || null;
     }
 

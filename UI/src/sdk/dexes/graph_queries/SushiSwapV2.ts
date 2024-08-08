@@ -19,9 +19,12 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/77jZ9KWeyi3CJ96zkkj5s1CojKPHt6XJKjLFzsDCd8Fd`
   dexId = dexIds.SUSHI_V2
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new SushiSwapV2()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new SushiSwapV2();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
 
   setEndpoint(chainId: number): void {
@@ -105,7 +108,9 @@ export default class SushiSwapV2 implements DEXGraphFunctionality {
 
       pools.push(new SushiSwapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
     }
-
+    for (const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }

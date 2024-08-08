@@ -5,6 +5,7 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo, Token } from '../../types'
 import { dexIds } from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
+import { myLocalStorage } from '../../swap/my_local_storage'
 
 // Camelot is a silly place
 
@@ -23,9 +24,12 @@ export default class CamelotV2 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/8zagLSufxk5cVhzkzai3tyABwJh53zxn9tmUYJcJxijG`
   dexId = dexIds.CAMELOT
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new CamelotV2()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new CamelotV2();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
 
   setEndpoint(chainId: number): void {
@@ -99,7 +103,9 @@ export default class CamelotV2 implements DEXGraphFunctionality {
 
       pools.push(new CamelotPool(poolId, dexId, [token1, token2], reserves, fees, stableSwap))
     }
-
+    for (const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }
