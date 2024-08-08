@@ -1,7 +1,8 @@
 {
   "scripts": {
     "postinstall": "(cd UI && npm install); (cd UI/src/sdk && npm install); (cd contracts && npm install)",
-    "start": "npm run --prefix ./UI start"
+    "start": "npm run --prefix ./UI start",
+    "test": "npm run --prefix ./tests test"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.1.3",

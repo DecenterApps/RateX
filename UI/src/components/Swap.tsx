@@ -129,30 +129,19 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         .then((decimals: any) => {
           token.decimals = Number(decimals)
         })
-        let imageApiUrl = '';
 
-        if (chainId === 1) {
-          imageApiUrl = `https://api.etherscan.io/api?module=token&action=tokeninfo&contractaddress=${customToken}`;
-        } else if (chainId === 42161) {
-          imageApiUrl = `https://api.arbiscan.io/api?module=token&action=tokeninfo&contractaddress=${customToken}`;
-        } else {
-          throw new Error('Unsupported chainId');
-        }
-        
-
-        const tokenResponse = await fetch(imageApiUrl);
-
-        const tokenResponseObject = await tokenResponse.json();
-        console.log("ovo je res" +chainId)
-        console.log(tokenResponseObject)
-        if(tokenResponseObject.image)
-    {
-      token.img=tokenResponseObject.image.small;
-
-    }
-    else
-        token.img="";
-        console.log(token)
+        const imageUrl = `https://etherscan.io/token/images/${token.ticker}_32.png`;
+  
+    // Check if the image exists
+        const img = new Image();
+        img.onload = () => {
+          token.img = imageUrl;
+        };
+        img.onerror = () => {
+          console.log('Image not found, using placeholder.');
+        };
+        img.src = imageUrl;
+       
       if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
 
         token.address[chainId] = customToken
@@ -177,12 +166,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   async function modifyToken(index: number, tokenList: Token[]) {
     if (changeToken === 1) {
     
-      if(tokenList[index].address[1] == tokenTo.address[1] || tokenList[index].address[42161] == tokenTo.address[42161]){
-        notification.error({
-          message: 'You can not do the swap between the same tokens',
-        })
-        return;
-      }
+     
       setTokenFrom(tokenList[index])
       const _tokenFromPrice = await getTokenPrice(tokenList[index].ticker, chainId)
       console.log('Fetched price', _tokenFromPrice, 'for', tokenList[index].ticker)
@@ -191,12 +175,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       const tokenToAmount = (Number(tokenFromAmount) * _tokenFromPrice) / tokenToPrice
       setTokenToAmount(tokenToAmount)
     } else {
-      if(tokenList[index].address[1] == tokenFrom.address[1] || tokenList[index].address[42161] == tokenFrom.address[42161]){
-        notification.error({
-          message: 'You can not do the swap between the same tokens',
-        })       
-         return;
-      }
+     
       setTokenTo(tokenList[index])
       const _tokenToPrice = await getTokenPrice(tokenList[index].ticker, chainId)
       console.log('Fetched price', _tokenToPrice, 'for', tokenList[index].ticker)

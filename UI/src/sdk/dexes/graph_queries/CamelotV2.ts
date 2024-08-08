@@ -3,11 +3,18 @@ import { gql, request } from 'graphql-request'
 import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CreateCamelotHelperContract } from '../../../contracts/rateX/CamelotHelper'
 import { dexIds } from '../dexIdsList'
 import { CamelotPool } from '../pools/Camelot'
 
 // Camelot is a silly place
+
+let CreateCamelotHelperContract: any;
+
+(async () => {
+  import('../../../contracts/rateX/CamelotHelper').then((module) => {
+    CreateCamelotHelperContract = module.CreateCamelotHelperContract;
+  });
+})()
 
 const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 

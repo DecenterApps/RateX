@@ -5,6 +5,7 @@ import SushiSwapV2 from "../../dexes/graph_queries/SushiSwapV2";
 import UniswapV2 from "../../dexes/graph_queries/UniswapV2";
 import UniswapV3 from "../../dexes/graph_queries/UniswapV3";
 import { DEXGraphFunctionality } from "../../DEXGraphFunctionality";
+import { myLocalStorage } from "../../swap/my_local_storage";
 import { Quote, Route, Pool, PoolInfo } from "../../types";
 import { createGraph, multiHopSwap } from "./multiHopSwap";
 import objectHash from "object-hash";
@@ -31,7 +32,7 @@ export const getDex = (dexId: string) : DEXGraphFunctionality => {
     (code is seen in ./multiHopSwap.ts)
     After each iteration, the pools are updated with the amounts that passed through them.
 */
-async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[]): Promise<Quote> {
+async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[], chainId: number): Promise<Quote> {
     const graph = createGraph(pools)
 
     // percentage of the amountIn that we split into
@@ -73,7 +74,8 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         let progress = route.amountIn;
         for (const swap of route.swaps) {
             const dex = getDex(swap.dexId);
-            const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(localStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
+            dex.setEndpoint(chainId)
+            const [pool] = await dex.getAdditionalPoolDataFromSolidity([JSON.parse(myLocalStorage.getItem(swap.poolId.toLowerCase()) || "{}") as PoolInfo])
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
             progress = amount;
         }
@@ -81,7 +83,6 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
         total += progress;
     }
     quote.quote = total;
-    console.log("IterativeQuote: ", quote);
     return quote;
 }
 
