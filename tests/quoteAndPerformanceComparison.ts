@@ -4,6 +4,7 @@ import { findRoute } from '../UI/src/sdk/routing/main';
 import { fetchPoolsData } from '../UI/src/sdk/swap/graph_communication';
 import { Pool } from '../UI/src/sdk/types';
 import { getUniswapOutputAmount } from './util/uniswap';
+import RateX from '../UI/src/sdk/index'
 
 
 dotenv.config();
@@ -88,6 +89,23 @@ function printPrettyTable(csv: string): void {
 
 
 const runTestOnChainId = async (chainId: 1 | 42161) => {
+    let myRateX;
+    if (chainId == 1) {
+        myRateX = new RateX({
+            rpcUrl: "https://rpc.tenderly.co/fork/fdd24d54-fab7-472f-8d70-997f532a48ff",
+            dexes: [],
+            chainId: 1,
+            graphApiKey: "cadce34ab35de780055a5d8a19459f5b"
+        });
+    }
+    else {
+        myRateX = new RateX({
+            rpcUrl: "https://rpc.tenderly.co/fork/ccd25189-1f8a-43b0-b800-caffeb333e69",
+            dexes: [],
+            chainId: 42161,
+            graphApiKey: "cadce34ab35de780055a5d8a19459f5b"
+        });
+    }
     let prevTokenIn = null, prevTokenOut = null, prevPools: Pool[] = [];
     const ONE_INCH_API_KEY = process.env.REACT_APP_1INCH_API_KEY;
     let output = "Amount,From,To,RateX,RateX time,Uniswap,Uniswap time"
@@ -100,18 +118,10 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         const tokenOutAddress = tokenOut.address[chainId]
         const amountIn = BigInt(amount) * BigInt(10 ** tokenIn.decimals)
 
-        let pools: Pool[];
         const startTime = Date.now();
-        if (prevTokenIn == tokenIn && prevTokenOut == tokenOut)
-            pools = prevPools;
-        else
-            pools = await fetchPoolsData(tokenInAddress, tokenOutAddress, 5, 5, chainId);
-        const quote = await findRoute(tokenInAddress, tokenOutAddress, amountIn, pools, chainId);
+        const quote = await myRateX.getQuote(tokenInAddress, tokenOutAddress, amountIn)
         const quoteReadable = (parseFloat(quote.quote.toString()) / (10 ** tokenOut.decimals)).toFixed(3)
-        //console.log(`---\nSwapping ${amount} ${tokenIn.ticker} for ${tokenOut.ticker}`)
         const rateXTime = Date.now() - startTime;
-        //console.log(`Our quote: ${quoteReadable}  (${rateXTime}ms)`)
-
 
         const uniswapStart = Date.now();
         const uniswapQuote = await getUniswapOutputAmount(tokenIn.address[chainId], tokenOut.address[chainId], amountIn, chainId);
@@ -119,8 +129,6 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         const uniswapTime = Date.now() - uniswapStart;
         let competitionsBest = uniswapQuoteReadable;
         output += `${amount},${tokenIn.ticker},${tokenOut.ticker},${quoteReadable},${rateXTime}ms,${uniswapQuoteReadable},${uniswapTime}ms`
-        //console.log(`Uniswap quote: ${uniswapQuoteReadable} (${uniswapTime}ms)`)
-
 
         if (ONE_INCH_API_KEY) {
             const oneInchStart = Date.now();
@@ -143,7 +151,6 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         const rateXvsCompetition = (100 * (parseFloat(quoteReadable) - parseFloat(competitionsBest)) / parseFloat(competitionsBest)).toFixed(1);
         output += `,${competitionsBest},${(parseFloat(rateXvsCompetition) > 0) ? "+" + rateXvsCompetition : rateXvsCompetition}%`
 
-        prevPools = pools;
         prevTokenIn = tokenIn;
         prevTokenOut = tokenOut;
         output += "\n";
