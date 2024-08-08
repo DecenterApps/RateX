@@ -39,6 +39,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [changeToken, setChangeToken] = useState(1)
   const [loadingQuote, setLoadingQuote] = useState(false)
   const [loadingSwap, setLoadingSwap] = useState(false)
+  const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
 
   const web3: Web3 = initRPCProvider(chainId)
@@ -95,7 +96,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   async function checkCustomAddedToken() {
     if (customToken === '') return setIsOpenModal(false)
-    
+    setLoadingCustomToken(true)
     try {
       const contract = new web3.eth.Contract(ERC20_ABI, customToken)
       const token: Token = {
@@ -130,29 +131,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           token.decimals = Number(decimals)
         })
 
-        const tryLoadImage = (url: string): Promise<string> => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve(url);
-            img.onerror = () => reject();
-            img.src = url;
-          });
-        };
-    
-        let imageUrl = `https://etherscan.io/token/images/${token.name}_32.png`;
-    
-        try {
-          token.img = await tryLoadImage(imageUrl);
-        } catch {
-          console.log('Image not found for token name, using ticker.');
-          imageUrl = `https://etherscan.io/token/images/${token.ticker}_32.png`;
-    
-          try {
-            token.img = await tryLoadImage(imageUrl);
-          } catch {
-            console.log('Image not found for both name and ticker, using placeholder.');
-          }
-        }
+        let img = await fetchTokenImage(customToken);
+        token.img = img
        
       if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
 
@@ -161,8 +141,10 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         await modifyToken(0, [token])
         return setIsOpenModal(false)
       }
+      setLoadingCustomToken(false)
     } catch (error: any) {
       console.log(error)
+      setLoadingCustomToken(false)
       notification.error({
         message: 'Invalid custom address. Erase input or include correct address. Note: Check if you are on correct chain!',
       })
@@ -171,10 +153,26 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   
 
   function openModal(token: number) {
+    setLoadingCustomToken(false)
+
     setChangeToken(token)
     setIsOpenModal(true)
   }
-
+  const fetchTokenImage = async (address: string): Promise<string> => {
+    const baseUrl = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/';
+    const imageUrl = `${baseUrl}${address}/logo.png`;
+  
+    try {
+      const response = await fetch(imageUrl);
+      if (response.ok) {
+        return imageUrl;
+      }
+    } catch (error) {
+      console.log('Image not found in Trust Wallet repository.');
+    }
+    return 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png'; // Placeholder image
+  };
+  
   async function modifyToken(index: number, tokenList: Token[]) {
     if (changeToken === 1) {
     
@@ -303,7 +301,7 @@ style={{top:'5vh'}}
    
     </div>
   }
-  onCancel={checkCustomAddedToken}
+  onCancel={()=>setIsOpenModal(false)}
   title="Select a token"
 >
 <div className="modalContent">
@@ -323,9 +321,15 @@ style={{top:'5vh'}}
   <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%", flexDirection:'column'}}>
   <Input className="tokenAddress" placeholder="Or enter token address" onChange={changeTempToken} />
 
-    <Button type="primary" className="swapButton" style={{fontSize:'1em', width:'90%', marginTop:5, height:'40px'}} onClick={checkCustomAddedToken}>
+{loadingCustomToken? <div className="lds-ellipsis">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div> :  <Button type="primary" className="swapButton" style={{fontSize:'1em', width:'90%', marginTop:5, height:'40px'}} onClick={checkCustomAddedToken}>
       Add Custom Token
-    </Button>
+    </Button>}
+   
     </div>
 </Modal>
 
