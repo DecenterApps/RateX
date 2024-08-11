@@ -47,9 +47,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   useEffect(() => {
     async function getPrices() {
       const tokenFromPrice = await getTokenPrice(tokenFrom.ticker, chainId)
-      tokenFromPrice === -1 ? setTokenFromPrice(0) : setTokenFromPrice(tokenFromPrice)
+      tokenFromPrice === -1 ? setTokenFromPrice(-1) : setTokenFromPrice(tokenFromPrice)
       const tokenToPrice = await getTokenPrice(tokenTo.ticker, chainId)
-      tokenToPrice === -1 ? setTokenFromPrice(0) : setTokenToPrice(tokenToPrice)
+      tokenToPrice === -1 ? setTokenFromPrice(-1) : setTokenToPrice(tokenToPrice)
     }
     getPrices()
   }, [chainId, tokenFrom.ticker, tokenTo.ticker])
@@ -343,7 +343,7 @@ style={{top:'5vh'}}
         </div>
         <div className="input">
           <Input placeholder="0" value={tokenFromAmount === -1 ? '' : tokenFromAmount} onChange={changeAmount} />
-          <div className="tokenFromAmountUSD">{`$${Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4)}`}</div>
+          <div className="tokenFromAmountUSD">{`${tokenFromPrice>-1? '$'+Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4):"No price data available"}`}</div>
           <div className="assetFrom" onClick={() => openModal(1)}>
             <img src={tokenFrom.img} style={{borderRadius:'50px'}} alt="assetFromLogo" className="assetLogo" />
             {tokenFrom.ticker}
@@ -365,8 +365,8 @@ style={{top:'5vh'}}
             <Fragment>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
-                {`$${(tokenToAmount * tokenToPrice).toFixed(4)}`}(
-                <span style={{ color: priceImpactColor() }}>{calculatePriceImpact().toFixed(2)}%</span>)
+                {`${tokenToPrice>0?'$'+(tokenToAmount * tokenToPrice).toFixed(4):"No price data available"}`}
+                <span style={{ color: priceImpactColor() }}>{(tokenFromPrice>-1 && tokenToPrice>-1) ?calculatePriceImpact().toFixed(2)+"%" : ""}</span>
               </div>
             </Fragment>
           )}
