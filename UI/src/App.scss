@@ -116,7 +116,10 @@ header {
   display: flex;
   flex-direction: column;
   // gap: 10px;
+  max-height: 53vh; /* Set your desired max height */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
+
 
 .chainChoice,
 .tokenChoice {
@@ -145,4 +148,31 @@ header {
   font-size: 13px;
   font-weight: 300;
   color: $color-text-secondary;
+}
+
+
+/* Global scrollbar styles for WebKit-based browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a; /* Dark background */
+  border-radius: 100px; /* Rounded corners */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555; /* Grey thumb */
+  border-radius: 100px; /* Rounded corners */
+  border: 3px solid #1a1a1a; /* Padding around thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Lighter grey on hover */
+}
+
+/* Global scrollbar styles for Firefox */
+* {
+  scrollbar-width: thin; /* Thin scrollbar */
+  scrollbar-color: #555 #1a1a1a; /* Thumb color and track color */
 }
