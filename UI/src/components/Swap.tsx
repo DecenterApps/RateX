@@ -365,8 +365,8 @@ style={{top:'5vh'}}
             <Fragment>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
-                {`${tokenToPrice>0?'$'+(tokenToAmount * tokenToPrice).toFixed(4):"No price data available"}`}
-                <span style={{ color: priceImpactColor() }}>{(tokenFromPrice>-1 && tokenToPrice>-1) ?calculatePriceImpact().toFixed(2)+"%" : ""}</span>
+                {`${tokenToPrice>0?'$'+(tokenToAmount * tokenToPrice).toFixed(4)+" ":"No price data available "}`}
+                <span style={{ color: priceImpactColor() }}>{(tokenFromPrice>-1 && tokenToPrice>-1) ?calculatePriceImpact().toFixed(2)+" %" : ""}</span>
               </div>
             </Fragment>
           )}

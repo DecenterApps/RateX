@@ -1,6 +1,6 @@
 import { Pool, Token } from '../../../types'
 import { UniswapState } from './uniswapState'
-import {PoolState} from './types'
+import { PoolState } from './types'
 
 export class UniswapV3Pool extends Pool {
   public constructor(poolId: string, dexId: string, tokens: Token[]) {
@@ -15,6 +15,10 @@ export class UniswapV3Pool extends Pool {
     }
 
     return UniswapState.quoter.quote(poolData, tokenIn, tokenOut, amountIn)[0]
+  }
+
+  reset(): void {
+    UniswapState.resetPoolState(this.poolId)
   }
 
   update(tokenIn: string, tokenOut: string, amountIn: bigint) {

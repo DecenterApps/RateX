@@ -30,6 +30,7 @@ export abstract class Pool {
   }
 
   abstract calculateExpectedOutputAmount(tokenIn: string, tokenOut: string, amountIn: bigint): bigint
+  abstract reset(): void
   abstract update(tokenIn: string, tokenOut: string, amountIn: bigint, amountOut: bigint): void
 
   containsToken(token: string): boolean {

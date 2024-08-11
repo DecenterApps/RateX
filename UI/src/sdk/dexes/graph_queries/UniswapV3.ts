@@ -13,9 +13,12 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV`
   chainId = 1
   dexId = dexIds.UNI_V3
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new UniswapV3()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new UniswapV3();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
 
   setEndpoint(chainId: number): void {
@@ -57,7 +60,12 @@ export default class UniswapV3 implements DEXGraphFunctionality {
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     const pools = poolInfos.map((poolInfo: PoolInfo) => poolInfo.poolId)
     await UniswapState.initializeFreshPoolsData(pools, this.chainId)
-    return poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens))
+
+    const pools2 = poolInfos.map((poolInfo: PoolInfo) => new UniswapV3Pool(poolInfo.poolId, this.dexId, poolInfo.tokens));
+    for (const pool of pools2)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
+    return pools2
   }
 }
 

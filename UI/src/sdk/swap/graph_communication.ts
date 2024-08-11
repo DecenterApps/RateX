@@ -15,11 +15,11 @@ async function initializeDexes(chainId: number): Promise<void> {
 
     // CHANGE DEXES FOR ALGORITHM
     const files = [
-     'SushiSwapV2.ts',
+      'SushiSwapV2.ts',
       'UniswapV3.ts',
       'BalancerV2.ts',
       //'Curve.ts',
-       'CamelotV2.ts',
+      'CamelotV2.ts',
       'UniswapV2.ts',
     ]
 
@@ -32,7 +32,7 @@ async function initializeDexes(chainId: number): Promise<void> {
           continue
         }
         const module = await import(`../dexes/graph_queries/${file}`)
-        const dex: DEXGraphFunctionality = module.default.initialize()
+        const dex: DEXGraphFunctionality = module.default.initialize(myLocalStorage)
         if (chainId !== 1) {
           dex.setEndpoint(chainId)
         }
@@ -152,9 +152,6 @@ async function fetchPoolsData(
   // call Solidity for additional pool data
   const dexPoolsPromises: Promise<Pool[]>[] = []
   for (let [dex, poolInfos] of dexesPools.entries()) {
-    for (const poolInfo of poolInfos) {
-      myLocalStorage.setItem(poolInfo.poolId.toLowerCase(), JSON.stringify(poolInfo))
-    }
     dexPoolsPromises.push(dex.getAdditionalPoolDataFromSolidity(poolInfos))
   }
   const allPoolsData = await Promise.all(dexPoolsPromises)
