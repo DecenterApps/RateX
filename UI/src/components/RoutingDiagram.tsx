@@ -57,14 +57,15 @@ function TokenComponent({ token, chainId }: { token: string; chainId: Number }) 
 }
 
 function RoutingDiagram({ quote, chainId }: { quote: Quote | undefined; chainId: Number }) {
-  if (!quote || quote.quote <= 0) {
+  const newQuote: Quote | undefined = structuredClone(quote)
+  if (!newQuote || newQuote.quote <= 0) {
     return <></>
   }
-  quote.routes.sort((a, b) => b.percentage - a.percentage)
+  newQuote.routes.sort((a, b) => b.percentage - a.percentage)
   return (
     <div className="routingDiagram">
       <h4>Order Routing</h4>
-      {quote.routes.map((route, index) => (
+      {newQuote.routes.map((route, index) => (
         <RouteComponent key={-index} route={route} chainId={chainId} />
       ))}
     </div>
