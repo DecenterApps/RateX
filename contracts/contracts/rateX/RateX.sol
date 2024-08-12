@@ -186,7 +186,7 @@ contract RateX is Ownable2Step {
   }
 
   /// @notice Pauses the contract
-  function pause() external onlyOwner {
+  function pause() external onlyOwner whenNotPaused {
     _paused = true;
     emit Paused();
   }

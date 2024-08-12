@@ -540,6 +540,13 @@ describe("Tests for main RateX contract", async function () {
             .to.be.revertedWith("Ownable: caller is not the owner");
     });
 
+    it("Should revert when pausing the contract that is already paused", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await rateX.pause();
+        await expect(rateX.pause()).to.be.revertedWithCustomError(rateX, "RateX__Paused");
+    });
+
     it("Should unpause the contract", async function () {
         const {rateX} = await loadFixture(deployRateXFixture);
 
@@ -562,5 +569,10 @@ describe("Tests for main RateX contract", async function () {
         await expect(rateX.connect(addr2).unpause())
             .to.be.revertedWith("Ownable: caller is not the owner");
     });
-    
+
+    it("Should revert when unpausing the contract that is not paused", async function () {
+        const {rateX} = await loadFixture(deployRateXFixture);
+
+        await expect(rateX.unpause()).to.be.revertedWithCustomError(rateX, "RateX__NotPaused");
+    });  
 })
