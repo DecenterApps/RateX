@@ -266,7 +266,7 @@ contract RateX is Ownable2Step {
 
       // Delegate call to the DEX contract's swap function
       (bool success, bytes memory result) = dexes[swapStep.dexId].delegatecall(
-        abi.encodeWithSignature('swap(bytes,uint256,uint256,address,uint256)', swapStep.data, amountOut, 1, address(this), _deadline)
+        abi.encodeWithSelector(IDex.swap.selector, swapStep.data, amountOut, 1, address(this), _deadline)
       );
 
       if (!success) {
