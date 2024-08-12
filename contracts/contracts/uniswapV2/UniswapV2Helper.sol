@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
-import '../rateX/interfaces/IHelperState.sol';
-import './UniswapV2Library.sol';
+import {IHelperState} from '../rateX/interfaces/IHelperState.sol';
+import {UniswapV2Library} from './UniswapV2Library.sol';
 
 contract UniswapV2Helper is IHelperState {
   struct UniswapV2Pool {
@@ -14,7 +14,7 @@ contract UniswapV2Helper is IHelperState {
 
   function getPoolsData(PoolInfo[] memory poolsInfo) external view returns (UniswapV2Pool[] memory pools) {
     pools = new UniswapV2Pool[](poolsInfo.length);
-    for (uint i = 0; i < poolsInfo.length; i++) {
+    for (uint256 i = 0; i < poolsInfo.length; i++) {
       PoolInfo memory poolInfo = poolsInfo[i];
 
       uint[] memory reserves;
