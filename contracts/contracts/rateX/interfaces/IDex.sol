@@ -10,9 +10,9 @@ interface IDex {
     /// @return amountOut The amount of tokenOut received
     function swap( 
         bytes calldata _data,
-        uint _amountIn,
-        uint _amountOutMin,
+        uint256 _amountIn,
+        uint256 _amountOutMin,
         address _to,
-        uint _deadline
+        uint256 _deadline
     ) external returns(uint256 amountOut);
 }

@@ -32,11 +32,11 @@ contract BalancerDex is IDex {
   /// @return amountOut The amount of output tokens received from the swap
   function swap(
     bytes calldata _data,
-    uint _amountIn,
-    uint _amountOutMin,
+    uint256 _amountIn,
+    uint256 _amountOutMin,
     address _to,
-    uint _deadline
-  ) external override returns (uint amountOut) {
+    uint256 _deadline
+  ) external override returns (uint256 amountOut) {
     (address poolAddress, address tokenIn, address tokenOut) = abi.decode(_data, (address, address, address));
 
     TransferHelper.safeApprove(tokenIn, address(balancerVault), _amountIn);

@@ -23,7 +23,7 @@ contract UniswapV2Dex is IDex {
   /// @param _to The address that will receive the output tokens
   /// @param _deadline The timestamp by which the transaction must be executed
   /// @return The amount of output tokens received from the swap
-  function swap(bytes calldata _data, uint _amountIn, uint _amountOutMin, address _to, uint _deadline) external override returns (uint256) {
+  function swap(bytes calldata _data, uint256 _amountIn, uint256 _amountOutMin, address _to, uint256 _deadline) external override returns (uint256) {
     (address tokenIn, address tokenOut) = abi.decode(_data, (address, address));
 
     TransferHelper.safeApprove(tokenIn, address(router), _amountIn);

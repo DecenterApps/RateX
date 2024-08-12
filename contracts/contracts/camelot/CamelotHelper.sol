@@ -17,7 +17,7 @@ contract CamelotHelper is IHelperState {
   function getPoolsData(PoolInfo[] memory poolsInfo) external view returns (CamelotPool[] memory pools) {
     pools = new CamelotPool[](poolsInfo.length);
 
-    for (uint i = 0; i < poolsInfo.length; i++) {
+    for (uint256 i = 0; i < poolsInfo.length; i++) {
       PoolInfo memory poolInfo = poolsInfo[i];
 
       uint112[2] memory reserves;

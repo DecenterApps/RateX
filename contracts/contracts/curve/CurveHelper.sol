@@ -10,22 +10,22 @@ contract CurveHelper is IHelperState {
     string dexId;
     Token[] tokens;
     uint[] balances;
-    uint fee;
-    uint A;
+    uint256 fee;
+    uint256 A;
   }
 
   function getPoolsData(PoolInfo[] memory poolsInfo) external view returns (CurvePool[] memory pools) {
     pools = new CurvePool[](poolsInfo.length);
-    for (uint i = 0; i < poolsInfo.length; i++) {
+    for (uint256 i = 0; i < poolsInfo.length; i++) {
       PoolInfo memory poolInfo = poolsInfo[i];
 
       uint[] memory balances = new uint[](poolInfo.tokens.length);
-      for (uint j = 0; j < balances.length; j++) {
+      for (uint256 j = 0; j < balances.length; j++) {
         balances[j] = ICurvePool(poolInfo.poolId).balances(j);
       }
 
-      uint fee = ICurvePool(poolInfo.poolId).fee();
-      uint A = ICurvePool(poolInfo.poolId).A();
+      uint256 fee = ICurvePool(poolInfo.poolId).fee();
+      uint256 A = ICurvePool(poolInfo.poolId).A();
 
       pools[i] = CurvePool(poolInfo.poolId, poolInfo.dexId, poolInfo.tokens, balances, fee, A);
     }
