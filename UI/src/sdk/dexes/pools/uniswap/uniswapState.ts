@@ -1,17 +1,31 @@
 import { PoolData, PoolState } from './types'
 import { convertInitialPoolDataToPoolState, convertRowPoolData } from './utils'
 import { UniswapOffchainQuoter } from './uniswapOffchainQuoter'
-import { CreateUniswapHelperContract } from '../../../../contracts/rateX/UniswapHelper'
+
+let CreateUniswapHelperContract: any;
+
+(async () => {
+  import('../../../../contracts/rateX/UniswapHelper').then((module) => {
+    CreateUniswapHelperContract = module.CreateUniswapHelperContract;
+  });
+})()
 
 export class UniswapState {
   private static poolStateMap: Map<string, PoolState> = new Map<string, PoolState>()
+  private static startingPoolStateMap: Map<string, PoolState> = new Map<string, PoolState>()
   public static quoter: UniswapOffchainQuoter = new UniswapOffchainQuoter()
   private static batch_size = 3
 
-  private constructor() {}
+  private constructor() { }
 
   public static getPoolState(poolAddress: string): PoolState | undefined {
     return this.poolStateMap.get(poolAddress.toLowerCase())
+  }
+  public static resetPoolState(poolAddress: string): void {
+    const poolState = this.startingPoolStateMap.get(poolAddress.toLowerCase())
+    if (poolState) {
+      this.poolStateMap.set(poolAddress.toLowerCase(), poolState)
+    }
   }
 
   private static async getPoolsDataFromContract(pools: string[], chainId: number): Promise<PoolData[]> {
@@ -42,6 +56,7 @@ export class UniswapState {
       let poolState = convertInitialPoolDataToPoolState(poolData)
       // we will store keys as lowercase addresses
       this.poolStateMap.set(poolData.info.pool.toLowerCase(), poolState)
+      this.startingPoolStateMap.set(poolData.info.pool.toLowerCase(), poolState.clone())
     })
   }
 }

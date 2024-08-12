@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Modal } from 'antd'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import chainList from '../constants/chainList.json'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+import { useAccount } from 'wagmi'
 
 interface HeaderProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -14,8 +16,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   const [chainId, setChainId] = chainIdState
   const [wallet, setWallet] = walletState
   const [isOpenModal, setIsOpenModal] = useState(false)
-
-  const currentChainData = chainList.find((chain) => chain.chainId === chainId)
+  const { address, isConnecting, isDisconnected } = useAccount()
 
   useEffect(() => {
     const web3: Web3 = initRPCProvider(chainId)
@@ -41,19 +42,6 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
     setChainId(newChainId)
     setIsOpenModal(false)
-  }
-
-  function isWalletConnected() {
-    return wallet !== '0x0000000000000000000000000000000000000000'
-  }
-
-  async function connectWallet() {
-    if (window.ethereum) {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-      setWallet(accounts[0])
-    } else {
-      window.open('https://metamask.io/download.html')
-    }
   }
 
   async function refreshAccounts() {
@@ -114,13 +102,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
           </Link>
         </div>
         <div className="rightHeader">
-          <button className="chooseChain" onClick={() => setIsOpenModal(true)}>
-            {' '}
-            {currentChainData?.name}{' '}
-          </button>
-          <button className="connectButton" onClick={connectWallet}>
-            {isWalletConnected() ? `Connected: ${wallet}` : 'Connect Wallet'}
-          </button>
+          <ConnectButton />
         </div>
       </header>
     </>

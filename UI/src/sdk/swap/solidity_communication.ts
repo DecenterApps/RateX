@@ -15,7 +15,7 @@ async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, cha
   console.log('Fetched pools:', pools)
   console.log('Pool size: ', pools.length)
 
-  return findRoute(tokenIn, tokenOut, amountIn, pools)
+  return await findRoute(tokenIn, tokenOut, amountIn, pools, chainId)
 }
 
 async function executeSwap(
@@ -92,7 +92,7 @@ async function executeSwap(
  * @param quote: The quote to be transformed
  * @returns The transformed quote
  */
-function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
+export function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
   quote.routes.forEach((route) =>
     route.swaps.map((swap) => {
       if (swap.poolId.length === 66) {

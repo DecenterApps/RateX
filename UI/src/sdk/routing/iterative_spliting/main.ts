@@ -1,13 +1,15 @@
-import {Quote, Route, Pool} from "../../types";
-import {createGraph, multiHopSwap} from "./multiHopSwap";
+import { myLocalStorage } from "../../swap/my_local_storage";
+import { Quote, Route, Pool, PoolInfo } from "../../types";
+import { createGraph, multiHopSwap } from "./multiHopSwap";
 import objectHash from "object-hash";
+
 
 /*  Simple algorithm that splits the input amount into (100/step) parts of step% each and finds the best route for each split.
     The algorithm to find the best route for each iteration finds the route with the highest output amount.
     (code is seen in ./multiHopSwap.ts)
     After each iteration, the pools are updated with the amounts that passed through them.
 */
-function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[]): Quote {
+async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountIn: bigint, pools: Pool[], chainId: number): Promise<Quote> {
     const graph = createGraph(pools)
 
     // percentage of the amountIn that we split into
@@ -43,7 +45,22 @@ function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, amountI
     foundRoutes[0].amountIn += missingAmount;
 
     const quote: Quote = { routes: foundRoutes, quote: amountOut };
-    console.log("IterativeQuote: ", quote);
+
+    let total = BigInt(0);
+    for (const route of quote.routes) {
+        let progress = route.amountIn;
+        for (const swap of route.swaps) {
+            const pool = myLocalStorage.getItem(swap.poolId.toLowerCase());
+            if (!pool)
+                throw Error("Error caching pools");
+            pool.reset();
+            const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
+            progress = amount;
+        }
+        route.quote = progress;
+        total += progress;
+    }
+    quote.quote = total;
     return quote;
 }
 

@@ -1,7 +1,8 @@
 @import '../shared.scss';
 
 .tradeBox {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   background-color: $color-dark;
   border: 2px solid $color-neutral;
   min-height: 300px;
@@ -10,9 +11,13 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding: 20px;
   margin-bottom: 30px;
+
+  @media (min-width: 768px) {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 }
 
 .tradeBox > * {
@@ -40,6 +45,10 @@
   border: 3px solid $color-dark;
   font-size: 12px;
   transition: 0.3s;
+
+  @media (max-width: 480px) {
+    top: 80px;
+  }
 }
 
 .switchButton:hover {
@@ -81,6 +90,10 @@
   font-size: 17px;
   padding-right: 8px;
   top: 32px;
+
+  @media (max-width: 480px) {
+    top: 24px;
+  }
 }
 
 .assetFrom:hover,
@@ -103,6 +116,11 @@
   margin-bottom: 20px;
   margin-top: 20px;
   border: none;
+
+  @media (max-width: 480px) {
+    height: 45px;
+    font-size: 18px;
+  }
 }
 
 .swapButton:hover {
@@ -130,6 +148,10 @@
   width: 90%;
   height: 50px !important; 
   align-self: center;
+
+  @media (max-width: 480px) {
+    height: 40px !important;
+  }
 }
 
 .lds-ellipsis {

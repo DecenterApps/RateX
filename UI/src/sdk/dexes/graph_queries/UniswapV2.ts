@@ -4,8 +4,15 @@ import { DEXGraphFunctionality } from '../../DEXGraphFunctionality'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { dexIds } from '../dexIdsList'
 import { Pool, PoolInfo, Token } from '../../types'
-import { CreateUniswapV2HelperContract } from '../../../contracts/rateX/UniswapV2Helper'
 import { UniswapV2Pool } from '../pools/UniswapV2'
+
+let CreateUniswapV2HelperContract: any;
+
+(async () => {
+  import('../../../contracts/rateX/UniswapV2Helper').then((module) => {
+    CreateUniswapV2HelperContract = module.CreateUniswapV2HelperContract;
+  });
+})()
 
 const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY
 
@@ -13,9 +20,12 @@ export default class UniswapV2 implements DEXGraphFunctionality {
   endpoint = `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/EYCKATKGBKLWvSfwvBjzfCBmGwYNdVkduYXVivCsLRFu`
   dexId = dexIds.UNI_V2
   chainId = 1
+  myLocalStorage = null
 
-  static initialize(): DEXGraphFunctionality {
-    return new UniswapV2()
+  static initialize(myLocalStorage: any): DEXGraphFunctionality {
+    const object = new UniswapV2();
+    object.myLocalStorage = myLocalStorage;
+    return object
   }
   // @reminder add uniswapv2 real endpoint for arbitrum
   setEndpoint(chainId: number): void {
@@ -60,7 +70,6 @@ export default class UniswapV2 implements DEXGraphFunctionality {
 
   async getAdditionalPoolDataFromSolidity(poolInfos: PoolInfo[]): Promise<Pool[]> {
     //@ts-ignore
-    console.log(poolInfos)
     const UniswapV2HelperContract = CreateUniswapV2HelperContract(this.chainId)
     const rawData: any[][] = await UniswapV2HelperContract.methods.getPoolsData(poolInfos).call()
 
@@ -85,7 +94,9 @@ export default class UniswapV2 implements DEXGraphFunctionality {
 
       pools.push(new UniswapV2Pool(pool[0], pool[1], [token1, token2], pool[3]))
     }
-
+    for (const pool of pools)
+      // @ts-ignore
+      this.myLocalStorage.setItem(pool.poolId.toLowerCase(), pool)
     return pools
   }
 }

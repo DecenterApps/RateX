@@ -1,5 +1,6 @@
 import { DEXGraphFunctionality } from '../DEXGraphFunctionality'
 import { Pool, PoolInfo } from '../types'
+import { myLocalStorage } from './my_local_storage';
 
 let initializedMainnet = false
 let initializedArbitrum = false
@@ -14,11 +15,11 @@ async function initializeDexes(chainId: number): Promise<void> {
 
     // CHANGE DEXES FOR ALGORITHM
     const files = [
-      //'SushiSwapV2.ts',
-      //'UniswapV3.ts',
-      //'BalancerV2.ts',
+      'SushiSwapV2.ts',
+      'UniswapV3.ts',
+      'BalancerV2.ts',
       //'Curve.ts',
-      // 'CamelotV2.ts',
+      'CamelotV2.ts',
       'UniswapV2.ts',
     ]
 
@@ -27,8 +28,11 @@ async function initializeDexes(chainId: number): Promise<void> {
         if (chainId === 1 && file === 'CamelotV2.ts') {
           continue
         }
+        if (chainId === 42161 && file === 'UniswapV2.ts') {
+          continue
+        }
         const module = await import(`../dexes/graph_queries/${file}`)
-        const dex: DEXGraphFunctionality = module.default.initialize()
+        const dex: DEXGraphFunctionality = module.default.initialize(myLocalStorage)
         if (chainId !== 1) {
           dex.setEndpoint(chainId)
         }

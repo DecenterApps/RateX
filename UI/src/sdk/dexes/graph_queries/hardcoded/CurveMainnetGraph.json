@@ -1,0 +1,994 @@
+[
+    {
+        "poolId": "0xF55B0f6F2Da5ffDDb104b58a60F2862745960442",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x02950460E2b9529D0E00284A5fA2d7bDF3fA4d72",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0xF980B4A4194694913Af231De69AB4593f5E0fCDc",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+                "decimals": "18",
+                "name": "mkUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0xf8D390F23b06D420daa629d3B6A9A24BD27c1eF3",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+                "decimals": "6",
+                "name": "PYUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0xe2Ed1dAc3A9547BC6057e32bf8133b5268D7d987",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6",
+                "decimals": "18",
+                "name": "pxETH"
+            },
+            {
+                "_address": "0x5E8422345238F34275888049021821E8E08CAa1f",
+                "decimals": "18",
+                "name": "frxETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xC8Eb2Cf2f792F77AF0Cd9e203305a585E588179D",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "decimals": "18",
+                "name": "WETH"
+            },
+            {
+                "_address": "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6",
+                "decimals": "18",
+                "name": "pxETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xA5588F7cdf560811710A2D82D3C9c99769DB1Dcb",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+                "decimals": "18",
+                "name": "FRAX"
+            },
+            {
+                "_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+                "decimals": "6",
+                "name": "PYUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x5dc1BF6f1e983C0b21EfB003c105133736fA0743",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+                "decimals": "18",
+                "name": "FRAX"
+            },
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            }
+        ]
+    },
+    {
+        "poolId": "0x8eFD02a0a40545F32DbA5D664CbBC1570D3FedF6",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+                "decimals": "18",
+                "name": "alETH"
+            },
+            {
+                "_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "decimals": "18",
+                "name": "WETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x625E92624Bc2D88619ACCc1788365A69767f6200",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+                "decimals": "6",
+                "name": "PYUSD"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x383E6b4437b59fff47B619CBA855CA29342A8559",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+                "decimals": "6",
+                "name": "PYUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0x4ef4c7519023F30A78647EEab321d6cFabC2513c",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+                "decimals": "18",
+                "name": "FRAX"
+            },
+            {
+                "_address": "0x0dE54CFdfeD8005176f8b7A9D5438B45c4F1df1e",
+                "decimals": "18",
+                "name": "FXB_20240630"
+            }
+        ]
+    },
+    {
+        "poolId": "0x0024271A09284bbF227465a9AF312667BE62346E",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "decimals": "18",
+                "name": "WETH"
+            },
+            {
+                "_address": "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+                "decimals": "18",
+                "name": "ETHx"
+            }
+        ]
+    },
+    {
+        "poolId": "0x7264cc03a9126Cc063265365fB043dF9c3479b63",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+                "decimals": "18",
+                "name": "wstETH"
+            },
+            {
+                "_address": "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+                "decimals": "18",
+                "name": "ETHx"
+            }
+        ]
+    },
+    {
+        "poolId": "0xc37c0E88551Ed383c1aBEDc6628a5579071BF56f",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xA0d69E286B938e21CBf7E51D71F6A4c8918f482F",
+                "decimals": "18",
+                "name": "eUSD"
+            },
+            {
+                "_address": "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+                "decimals": "18",
+                "name": "mkUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x91285c4fC766ffF6F3acAfeEC7a0423275257faE",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xA0d69E286B938e21CBf7E51D71F6A4c8918f482F",
+                "decimals": "18",
+                "name": "eUSD"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x1ab3D612EA7df26117554ddDD379764EBcE1A5Ad",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+                "decimals": "18",
+                "name": "mkUSD"
+            },
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            }
+        ]
+    },
+    {
+        "poolId": "0x6685fcFCe05e7502bf9f0AA03B36025b09374726",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x38D64ce1Bdf1A9f24E0Ec469C9cAde61236fB4a0",
+                "decimals": "18",
+                "name": "vETH"
+            },
+            {
+                "_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "decimals": "18",
+                "name": "WETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x3C91EAeac42DfaEad5F356167c52837e443b9f94",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x2b01d4FdB87eb7F2399E5D68631d8A939a323786",
+                "decimals": "18",
+                "name": "xETH"
+            },
+            {
+                "_address": "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6",
+                "decimals": "18",
+                "name": "pxETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xe3E637f8aCC097244A065791142c29fbF5877D18",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            },
+            {
+                "_address": "0x9961BdBE8B7091E584c2bF9D0a160C583f564A8c",
+                "decimals": "18",
+                "name": "cncCRVUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xC6628f00F29cc89a87BBeE7554C4725611200fD7",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F",
+                "decimals": "18",
+                "name": "SDT"
+            },
+            {
+                "_address": "0x830614aE209FF9d8706d386fcdBc7a55206fcffC",
+                "decimals": "18",
+                "name": "cvgSDT"
+            }
+        ]
+    },
+    {
+        "poolId": "0xe4F00da633c6aA958E851469bdF179950502691d",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xf38FEEdb0c85c1e1D6864c7513Ac646d28bb0Cfc",
+                "decimals": "18",
+                "name": "stZETA"
+            },
+            {
+                "_address": "0xf091867EC603A6628eD83D274E835539D82e9cc8",
+                "decimals": "18",
+                "name": "ZETA"
+            }
+        ]
+    },
+    {
+        "poolId": "0x2022d9AF896eCF0F1f5B48cdDaB9e74b5aAbCf00",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
+                "decimals": "18",
+                "name": "mswETH"
+            },
+            {
+                "_address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
+                "decimals": "18",
+                "name": "swETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xBeCDF453a9d69aa67d27fd391E81FD96A8b9Ade5",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x922406EAFC3CcEb32b0256F287fB977c426EDbd8",
+                "decimals": "18",
+                "name": "senUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0xF36a4BA50C603204c3FC6d2dA8b78A7b69CBC67d",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            },
+            {
+                "_address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+                "decimals": "18",
+                "name": "DAI"
+            }
+        ]
+    },
+    {
+        "poolId": "0xC236BAE6e35b3Fb7335e1c35CA0862Ce92bd5DE3",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+                "decimals": "18",
+                "name": "mkUSD"
+            },
+            {
+                "_address": "0x35282d87011f87508D457F08252Bc5bFa52E10A0",
+                "decimals": "18",
+                "name": "ULTRA"
+            }
+        ]
+    },
+    {
+        "poolId": "0x7F20EEa5bc667F4601E35af15868F3Bc6e447050",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6",
+                "decimals": "18",
+                "name": "pxETH"
+            },
+            {
+                "_address": "0x38D64ce1Bdf1A9f24E0Ec469C9cAde61236fB4a0",
+                "decimals": "18",
+                "name": "vETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x8C24b3213FD851db80245FCCc42c40B94Ac9a745",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            },
+            {
+                "_address": "0x8C0D76C9B18779665475F3E212D9Ca1Ed6A1A0e6",
+                "decimals": "18",
+                "name": "zunUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x670a72e6D22b0956C0D2573288F82DCc5d6E3a61",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+                "decimals": "18",
+                "name": "GHO"
+            },
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            }
+        ]
+    },
+    {
+        "poolId": "0x8fFC7b89412eFD0D17EDEa2018F6634eA4C2FCb2",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xd6982da59F1D26476E259559508f4135135cf9b8",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x6c3ea9036406852006290770BEdFcAbA0e23A0e8",
+                "decimals": "6",
+                "name": "PYUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x189B4e49B5cAf33565095097b4B960F14032C7D0",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x865377367054516e17014CcdED1e7d814EDC9ce4",
+                "decimals": "18",
+                "name": "DOLA"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x69Cf42F15F9325986154b61A013da6E8feC82CCF",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x15f74458aE0bFdAA1a96CA1aa779D715Cc1Eefe4",
+                "decimals": "18",
+                "name": "GRAI"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x1EE81c56e42EC34039D993d12410d437DdeA341E",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+                "decimals": "18",
+                "name": "FRAX"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x74345504Eaea3D9408fC69Ae7EB2d14095643c5b",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+                "decimals": "18",
+                "name": "GHO"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xC03FEF1c425956A3Cd5762022E511e0d4148B3D6",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x35282d87011f87508D457F08252Bc5bFa52E10A0",
+                "decimals": "18",
+                "name": "ULTRA"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0x16b54e3aC8e3ba088333985035b869847e36E770",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xA0d69E286B938e21CBf7E51D71F6A4c8918f482F",
+                "decimals": "18",
+                "name": "eUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xcA554E2e2948a211D4650Fe0F4E271f01f9cB5F1",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4591DBfF62656E7859Afe5e45f6f47D3669fBB28",
+                "decimals": "18",
+                "name": "mkUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x635EF0056A597D13863B73825CcA297236578595",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+                "decimals": "18",
+                "name": "GHO"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x66267c6E24fBcdeBf06AE9104e0ccFb9C8b2AE08",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xD60EeA80C83779a8A5BFCDAc1F3323548e6BB62d",
+                "decimals": "18",
+                "name": "ShezUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    },
+    {
+        "poolId": "0x3A65cbaebBFecbeA5D0CB523ab56fDbda7fF9aAA",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xc2e660C62F72c2ad35AcE6DB78a616215E2F2222",
+                "decimals": "18",
+                "name": "zunETH"
+            },
+            {
+                "_address": "0x5E8422345238F34275888049021821E8E08CAa1f",
+                "decimals": "18",
+                "name": "frxETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xDB81ee37b9dd2E636e2B87023029bD7F07c045b3",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x78da5799CF427Fee11e9996982F4150eCe7a99A7",
+                "decimals": "18",
+                "name": "rgUSD"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x20BB4a325924917E3336753BA5350a84F70f392e",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x78da5799CF427Fee11e9996982F4150eCe7a99A7",
+                "decimals": "18",
+                "name": "rgUSD"
+            },
+            {
+                "_address": "0x865377367054516e17014CcdED1e7d814EDC9ce4",
+                "decimals": "18",
+                "name": "DOLA"
+            }
+        ]
+    },
+    {
+        "poolId": "0x6fC7eA6CA8Cd2759803eb78159C931a8FF5E0557",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x78da5799CF427Fee11e9996982F4150eCe7a99A7",
+                "decimals": "18",
+                "name": "rgUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x98407609F0911b57A8666a48c74666bAFBAef501",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x80d69e79258FE9D056c822461c4eb0B4ca8802E2",
+                "decimals": "18",
+                "name": "InrETH"
+            },
+            {
+                "_address": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+                "decimals": "18",
+                "name": "rETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x68E26dAF88DA63BeBD3dA05fc9c880fA37080D3e",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xfa2629B9cF3998D52726994E0FcdB750224D8B9D",
+                "decimals": "18",
+                "name": "InankrETH"
+            },
+            {
+                "_address": "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
+                "decimals": "18",
+                "name": "ankrETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x51fd52420ce0c8df1FcF36C9511f01998de73887",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xC3ADe5aCe1bBb033CcAE8177C12Ecbfa16bD6A9D",
+                "decimals": "18",
+                "name": "InswETH"
+            },
+            {
+                "_address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
+                "decimals": "18",
+                "name": "swETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x15061E372D50792B68a8E400E89a5Da0E4861236",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x668308d77be3533c909a692302Cb4D135Bf8041C",
+                "decimals": "18",
+                "name": "InsfrxETH"
+            },
+            {
+                "_address": "0xac3E018457B222d93114458476f3E3416Abbe38F",
+                "decimals": "18",
+                "name": "sfrxETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x2116BFaD62b383043230501f6a124c6EA60CcfA5",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            },
+            {
+                "_address": "0x65D72AA8DA931F047169112fcf34f52DbaAE7D18",
+                "decimals": "18",
+                "name": "rUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x27cB9629aE3Ee05cb266B99cA4124EC999303c9D",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+                "decimals": "18",
+                "name": "alUSD"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xD7Bf9bb6Bd088317Effd116E2B70ea3A054cBceb",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
+                "decimals": "18",
+                "name": "MIM"
+            },
+            {
+                "_address": "0x085780639CC2cACd35E474e71f4d000e2405d8f6",
+                "decimals": "18",
+                "name": "fxUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x952DE65765C1fb6181280Bb4fa059CB616E35832",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x57a5a0567187FF4A8dcC1A9bBa86155E355878F2",
+                "decimals": "18",
+                "name": "InETHx"
+            },
+            {
+                "_address": "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+                "decimals": "18",
+                "name": "ETHx"
+            }
+        ]
+    },
+    {
+        "poolId": "0x8B1925C7470A97731F14E65168675D5086CD967b",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xeCf3672A6d2147E2A77f07069Fb48d8Cf6F6Fbf9",
+                "decimals": "18",
+                "name": "InmETH"
+            },
+            {
+                "_address": "0xd5F7838F5C461fefF7FE49ea5ebaF7728bB0ADfa",
+                "decimals": "18",
+                "name": "mETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x9Fb2C7Ac644214395B446032266E0FcBCE40CD1a",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xDA9B11Cd701e10C2Ec1a284f80820eDD128c5246",
+                "decimals": "18",
+                "name": "InwbETH"
+            },
+            {
+                "_address": "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+                "decimals": "18",
+                "name": "wBETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xFbC50c058D5B972C68c52E1EF7A8f766B39B4A4c",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xfD07fD5EBEa6F24888a397997E262179Bf494336",
+                "decimals": "18",
+                "name": "InosETH"
+            },
+            {
+                "_address": "0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38",
+                "decimals": "18",
+                "name": "osETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0xd35faBF6Ec806f4D772617956A2058CdE086C6E0",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xBf19Eead55a6B100667f04F8FBC5371E03E8ab2E",
+                "decimals": "18",
+                "name": "IncbETH"
+            },
+            {
+                "_address": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
+                "decimals": "18",
+                "name": "cbETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x9E641187391B7a5fE9ee193359408CA3894f68a2",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xCFC5bD99915aAa815401C5a41A927aB7a38d29cf",
+                "decimals": "18",
+                "name": "thUSD"
+            },
+            {
+                "_address": "0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E",
+                "decimals": "18",
+                "name": "crvUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0xa3f152837492340dAAf201F4dFeC6cD73A8a9760",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xFf71841EeFca78a64421db28060855036765c248",
+                "decimals": "18",
+                "name": "coveYFI"
+            },
+            {
+                "_address": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+                "decimals": "18",
+                "name": "YFI"
+            }
+        ]
+    },
+    {
+        "poolId": "0x637213593e31Bc25F49D37C74B43a89eb1743D73",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x63a0964A36c34E81959da5894ad888800e17405b",
+                "decimals": "18",
+                "name": "ShezETH"
+            },
+            {
+                "_address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "decimals": "18",
+                "name": "WETH"
+            }
+        ]
+    },
+    {
+        "poolId": "0x8655521A3B237872707B3eC001c4B8C991A63724",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x58efE15C0404aB22F87E4495D71f6f2077e862bE",
+                "decimals": "6",
+                "name": "USDT"
+            },
+            {
+                "_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+                "decimals": "6",
+                "name": "USDT"
+            }
+        ]
+    },
+    {
+        "poolId": "0xF8dB2ACcdEf8e7a26b0E65C3980ADC8ce11671a4",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+                "decimals": "18",
+                "name": "USDe"
+            },
+            {
+                "_address": "0xc5f0f7b66764F6ec8C8Dff7BA683102295E16409",
+                "decimals": "18",
+                "name": "FDUSD"
+            }
+        ]
+    },
+    {
+        "poolId": "0x08BfA22bB3e024CDfEB3eca53c0cb93bF59c4147",
+        "dexId": "CURVE",
+        "tokens": [
+            {
+                "_address": "0xA0d69E286B938e21CBf7E51D71F6A4c8918f482F",
+                "decimals": "18",
+                "name": "eUSD"
+            },
+            {
+                "_address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+                "decimals": "6",
+                "name": "USDC"
+            }
+        ]
+    }
+]

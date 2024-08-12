@@ -1,6 +1,13 @@
 import { Pool, PoolInfo } from '../../../types'
-import { CreateBalancerHelperContract } from '../../../../contracts/rateX/BalancerHelper'
 import { BalancerWeightedPool } from './BalancerWeightedPool'
+
+let CreateBalancerHelperContract: any;
+
+(async () => {
+  import('../../../../contracts/rateX/BalancerHelper').then((module) => {
+    CreateBalancerHelperContract = module.CreateBalancerHelperContract;
+  });
+})()
 
 export class BalancerState {
     private constructor() {}
@@ -13,7 +20,7 @@ export class BalancerState {
             // const [balancerVault, , ] = await loadFixture(await deployBalancerDex())
 
             // return token address after '-' split
-            ;[pool.tokens[0]._address, pool.tokens[1]._address] = pool.tokens.map((token) => token._address.split('-')[1])
+            pool.tokens.forEach((token) => token._address = token._address.split('-')[1])
 
             const BalancerHelperContract = CreateBalancerHelperContract(chainId)
             // @ts-ignore

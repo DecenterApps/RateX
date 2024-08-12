@@ -23,3 +23,8 @@ yarn-error.log*
 # Algo testing
 bane.ts
 .env
+
+# Aleksin Zahtev
+/UI/src/contracts/addresses-arbitrum.ts
+/UI/src/contracts/addresses-mainnet.ts
+node_modules

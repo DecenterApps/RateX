@@ -34,7 +34,7 @@ async function getTokenPrice(tokenTicker: string, chainId: number): Promise<numb
     let convertedValue = new Decimal(value.toString()).div(10 ** 8)
     return convertedValue.toNumber()
   } catch (error) {
-    console.error('Error fetching token price')
+    console.log('No price data available')
     return -1
   }
 }
