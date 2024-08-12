@@ -37,18 +37,18 @@ contract BalancerDex is IDex {
     address _to,
     uint _deadline
   ) external override returns (uint amountOut) {
-    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+    (address poolAddress, address tokenIn, address tokenOut) = abi.decode(_data, (address, address, address));
 
-    TransferHelper.safeApprove(_tokenIn, address(balancerVault), _amountIn);
+    TransferHelper.safeApprove(tokenIn, address(balancerVault), _amountIn);
 
-    IWeightedPool pool = IWeightedPool(_poolAddress);
+    IWeightedPool pool = IWeightedPool(poolAddress);
     bytes32 poolId = pool.getPoolId();
 
     IVault.SingleSwap memory singleSwap;
     singleSwap.poolId = poolId;
     singleSwap.kind = IVault.SwapKind.GIVEN_IN;
-    singleSwap.assetIn = _tokenIn;
-    singleSwap.assetOut = _tokenOut;
+    singleSwap.assetIn = tokenIn;
+    singleSwap.assetOut = tokenOut;
     singleSwap.amount = _amountIn;
 
     IVault.FundManagement memory fundManagement;

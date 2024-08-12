@@ -24,13 +24,13 @@ contract SushiSwapDex is IDex {
   /// @param _deadline The timestamp by which the transaction must be executed
   /// @return The amount of output tokens received from the swap
   function swap(bytes calldata _data, uint _amountIn, uint _amountOutMin, address _to, uint _deadline) external override returns (uint256) {
-    (address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address));
-    
-    TransferHelper.safeApprove(_tokenIn, address(sushiRouter), _amountIn);
+    (address tokenIn, address tokenOut) = abi.decode(_data, (address, address));
+
+    TransferHelper.safeApprove(tokenIn, address(sushiRouter), _amountIn);
 
     address[] memory path = new address[](2);
-    path[0] = _tokenIn;
-    path[1] = _tokenOut;
+    path[0] = tokenIn;
+    path[1] = tokenOut;
 
     uint256[] memory amounts = sushiRouter.swapExactTokensForTokens(_amountIn, _amountOutMin, path, _to, _deadline);
 

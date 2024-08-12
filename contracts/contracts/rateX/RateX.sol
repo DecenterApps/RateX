@@ -253,6 +253,7 @@ contract RateX is Ownable2Step {
     }
   }
 
+  /// @dev 1 is passed to DEX as amountOutMin as a sanity check because we have a slippage check later
   function _swapOnOneRoute(Route calldata _route, uint256 _deadline) internal returns (uint256 amountOut) {
     amountOut = _route.amountIn;
 

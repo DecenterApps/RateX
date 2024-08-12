@@ -10,7 +10,7 @@ import {TransferHelper} from '../rateX/libraries/TransferHelper.sol';
 /// @notice This contract implements the IDex interface for Uniswap V3 protocol
 /// @dev This contract interacts with Uniswap V3's swap router to perform token swaps
 contract UniswapV3Dex is IDex {
-  ISwapRouter public immutable swapRouter;
+  ISwapRouter private immutable swapRouter;
 
   constructor(address _swapRouterAddress) {
     swapRouter = ISwapRouter(_swapRouterAddress);
@@ -31,15 +31,15 @@ contract UniswapV3Dex is IDex {
     address _to,
     uint _deadline
   ) external returns (uint256 amountOut) {
-    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+    (address poolAddress, address tokenIn, address tokenOut) = abi.decode(_data, (address, address, address));
 
-    TransferHelper.safeApprove(_tokenIn, address(swapRouter), _amountIn);
+    TransferHelper.safeApprove(tokenIn, address(swapRouter), _amountIn);
 
     amountOut = swapRouter.exactInputSingle(
       ISwapRouter.ExactInputSingleParams({
-        tokenIn: _tokenIn,
-        tokenOut: _tokenOut,
-        fee: IUniswapV3Pool(_poolAddress).fee(),
+        tokenIn: tokenIn,
+        tokenOut: tokenOut,
+        fee: IUniswapV3Pool(poolAddress).fee(),
         recipient: _to,
         deadline: _deadline,
         amountIn: _amountIn,

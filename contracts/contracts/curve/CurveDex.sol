@@ -33,14 +33,14 @@ contract CurveDex is IDex {
     address _to,
     uint /*_deadline*/
   ) external override returns (uint256 amountOut) {
-    (address _poolAddress, address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address, address));
+    (address poolAddress, address tokenIn, address tokenOut) = abi.decode(_data, (address, address, address));
 
-    TransferHelper.safeApprove(_tokenIn, _poolAddress, _amountIn);
+    TransferHelper.safeApprove(tokenIn, poolAddress, _amountIn);
 
-    (int128 i, int128 j) = findTokenIndexes(_poolAddress, _tokenIn, _tokenOut);
+    (int128 i, int128 j) = findTokenIndexes(poolAddress, tokenIn, tokenOut);
     require(i >= 0 && j >= 0, 'Tokens not found in pool');
 
-    amountOut = ICurvePool(_poolAddress).exchange(i, j, _amountIn, _amountOutMin, _to);
+    amountOut = ICurvePool(poolAddress).exchange(i, j, _amountIn, _amountOutMin, _to);
   }
 
   /// @notice Finds the indexes of tokenIn and tokenOut in the given Curve pool

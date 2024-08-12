@@ -30,13 +30,13 @@ contract CamelotDex is IDex {
     address _to,
     uint _deadline
   ) external returns (uint256 amountOut) {
-    (address _tokenIn, address _tokenOut) = abi.decode(_data, (address, address));
+    (address tokenIn, address tokenOut) = abi.decode(_data, (address, address));
 
-    TransferHelper.safeApprove(_tokenIn, address(camelotRouter), _amountIn);
+    TransferHelper.safeApprove(tokenIn, address(camelotRouter), _amountIn);
 
     address[] memory path = new address[](2);
-    path[0] = _tokenIn;
-    path[1] = _tokenOut;
+    path[0] = tokenIn;
+    path[1] = tokenOut;
 
     amountOut = camelotRouter.getAmountsOut(_amountIn, path)[1];
 
