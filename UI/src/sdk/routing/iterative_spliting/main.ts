@@ -47,14 +47,19 @@ async function findRouteWithIterativeSplitting(tokenA: string, tokenB: string, a
     const quote: Quote = { routes: foundRoutes, quote: amountOut };
 
     let total = BigInt(0);
+    const resetPools = new Set<string>()
     for (const route of quote.routes) {
         let progress = route.amountIn;
         for (const swap of route.swaps) {
             const pool = myLocalStorage.getItem(swap.poolId.toLowerCase());
             if (!pool)
                 throw Error("Error caching pools");
-            pool.reset();
+            if (!resetPools.has(swap.poolId.toLowerCase())) {
+                pool.reset();
+                resetPools.add(swap.poolId.toLowerCase());
+            }
             const amount = pool.calculateExpectedOutputAmount(swap.tokenIn, swap.tokenOut, progress)
+            pool.update(swap.tokenIn, swap.tokenOut, progress, amount);
             progress = amount;
         }
         route.quote = progress;
