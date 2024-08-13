@@ -439,6 +439,7 @@ describe("Tests for main RateX contract", async function () {
         await sendWethTokensToUser(addr1, hre.ethers.parseEther("150"));
         await approveToContract(addr1, await rateX.getAddress(), addresses.tokens.WETH, hre.ethers.parseEther("100"));
 
+        const balanceInUsdtBefore = await USDT.balanceOf(addr1);
         const balanceInWethBefore = await WETH.balanceOf(addr1);
         const amountIn = hre.ethers.parseEther("100");
 
@@ -460,7 +461,7 @@ describe("Tests for main RateX contract", async function () {
         );
         const txReceipt = await tx.wait();
         const event = txReceipt.logs[txReceipt.logs.length - 1];
-
+        
         const balanceInUsdtAfter = await USDT.balanceOf(addr1);
         const balanceInWethAfter = await WETH.balanceOf(addr1);
 
@@ -474,7 +475,7 @@ describe("Tests for main RateX contract", async function () {
         expect(argTokenOut).to.equal(addresses.tokens.USDT);
         expect(argAmountIn).to.equal(amountIn);
         expect(argRecipient).to.equal(await addr1.getAddress());
-        expect(balanceInUsdtAfter).to.equal(argAmountOut);
+        expect(balanceInUsdtAfter).to.equal(balanceInUsdtBefore + argAmountOut);
         expect(BigInt(balanceInWethBefore) - BigInt(balanceInWethAfter)).to.equal(BigInt(argAmountIn));
     });
 

@@ -28,6 +28,7 @@ describe("Tests for swapping on uniswap v3", async function () {
 
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, uniswapAddress, hre.ethers.parseEther("2"));
 
+        const wbtcBalanceBefore = await WBTC.balanceOf(addr1);
         const wethBalanceBefore = await WETH.balanceOf(uniswapAddress);
         const amountIn = hre.ethers.parseEther("1");
         const deadline = await time.latest() + 10;
@@ -58,7 +59,7 @@ describe("Tests for swapping on uniswap v3", async function () {
         const wethBalanceAfter = await WETH.balanceOf(uniswapAddress);
         const wbtcBalanceAfter = await WBTC.balanceOf(addr1);
 
-        expect(wbtcBalanceAfter).to.be.equal(amountOut);
+        expect(wbtcBalanceAfter).to.be.equal(wbtcBalanceBefore + amountOut);
         expect(BigInt(wethBalanceAfter)).to.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 

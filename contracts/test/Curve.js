@@ -28,7 +28,8 @@ describe("Tests for swapping on Curve", async function () {
         const amountIn = hre.ethers.parseUnits("1000", 6);
 
         await sendERCTokensToUser(addresses.impersonate.USDT, addresses.tokens.USDT, curveAddress, amountIn);
-
+        
+        const balanceUSDCEBefore = await USDCE.balanceOf(addr1);
         const balanceUSDTBefore = await USDT.balanceOf(curveAddress);
 
         const abiCoder = new hre.ethers.AbiCoder();
@@ -57,7 +58,7 @@ describe("Tests for swapping on Curve", async function () {
         const balanceUSDTAfter = await USDT.balanceOf(curveAddress);
         const balanceUSDCEAfter = await USDCE.balanceOf(addr1);
 
-        expect(balanceUSDCEAfter).to.equal(amountOut);
+        expect(balanceUSDCEAfter).to.equal(balanceUSDCEBefore + amountOut);
         expect(BigInt(balanceUSDTAfter)).to.equal(BigInt(balanceUSDTBefore) - BigInt(amountIn));
     });
 

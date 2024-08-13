@@ -26,10 +26,11 @@ describe("Tests for Camelot V2", async function () {
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
         const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
 
-        const amountIn = hre.ethers.parseEther("100");
+        const amountIn = hre.ethers.parseEther("50");
         const deadline = await time.latest() + 10;
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, camelotAddress, amountIn);
 
+        const usdtBalanceBefore = await USDT.balanceOf(addr1);
         const wethBalanceBefore = await WETH.balanceOf(camelotAddress);
 
         const abiCoder = new hre.ethers.AbiCoder();
@@ -58,7 +59,7 @@ describe("Tests for Camelot V2", async function () {
         const wethBalanceAfter = await WETH.balanceOf(camelotAddress);
         const usdtBalanceAfter = await USDT.balanceOf(addr1);
 
-        expect(usdtBalanceAfter).to.be.equal(amountOut);
+        expect(usdtBalanceAfter).to.be.equal(usdtBalanceBefore + amountOut);
         expect(BigInt(wethBalanceAfter)).to.be.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 });
