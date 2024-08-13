@@ -91,20 +91,17 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()} >
-          <div className="App">
-            <a>{getChainId(config)}</a>
-            <a>,{chainId}</a>
-
-            <Header chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />
-            <div className="mainWindow">
-              <Routes>
-                <Route key="0" path="/" element={<Swap chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />} />
-              </Routes>
-            </div>
-          </div>
-        </RainbowKitProvider>
-      </QueryClientProvider>
+        <RainbowKitProvider  theme={darkTheme()} >
+    <div className="App">
+      <Header chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />
+      <div className="mainWindow">
+        <Routes>
+          <Route key="0" path="/" element={<Swap chainIdState={[chainId, setChainId]} walletState={[wallet, setWallet]} />} />
+        </Routes>
+      </div>
+    </div>
+    </RainbowKitProvider>
+    </QueryClientProvider>
     </WagmiProvider>
   )
 }

@@ -5,6 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import chainList from '../constants/chainList.json'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+import { useAccount } from 'wagmi'
 
 interface HeaderProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -15,6 +16,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   const [chainId, setChainId] = chainIdState
   const [wallet, setWallet] = walletState
   const [isOpenModal, setIsOpenModal] = useState(false)
+  const { address, isConnecting, isDisconnected } = useAccount()
 
   useEffect(() => {
     const web3: Web3 = initRPCProvider()

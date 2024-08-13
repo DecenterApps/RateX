@@ -1,8 +1,9 @@
 hre = require("hardhat");
+const {time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployBalancerDex, deployBalancerHelper} = require("../scripts/utils/deployment");
-const {sendWethTokensToUser, approveToContract} = require("../scripts/utils/contract");
+const {sendERCTokensToUser} = require("../scripts/utils/contract");
 
 describe("Tests for Balancer", async function () {
     const addresses = config[hre.network.config.chainId];
@@ -23,7 +24,7 @@ describe("Tests for Balancer", async function () {
     it("Should get weighted pool info", async function () {
         const {balancerHelper} = await deployBalancerHelper();
 
-        const [decimals, invariant, tokens, balances, weights, swapFeePercentage] =
+        const [decimals, tokens, balances, weights, swapFeePercentage] =
             await balancerHelper.getWeightedPoolInfo(examplePoolId);
 
         expect(decimals).to.equals(18);
@@ -35,28 +36,40 @@ describe("Tests for Balancer", async function () {
 
     it("Should swap weth for rdnt", async function () {
         const {balancer, addr1} = await deployBalancerDex();
+        const balancerAddress = await balancer.getAddress();
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
         const RDNT = await hre.ethers.getContractAt("IERC20", addresses.tokens.RDNT);
 
         const amountIn = hre.ethers.parseEther("1");
-        await sendWethTokensToUser(addr1, amountIn);
-        await approveToContract(addr1, await balancer.getAddress(), addresses.tokens.WETH, amountIn);
+        const deadline = await time.latest() + 10;
+        await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, balancerAddress, amountIn);
 
-        const wethBalanceBefore = await WETH.balanceOf(addr1);
+        const wethBalanceBefore = await WETH.balanceOf(balancerAddress);
 
-        const tx = await balancer.swap(
-            examplePoolAddress,
-            addresses.tokens.WETH,
-            addresses.tokens.RDNT,
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address', 'address'],
+            [examplePoolAddress, addresses.tokens.WETH, addresses.tokens.RDNT]
+        );
+
+        const amountOut = await balancer.swap.staticCall(
+            data,
             amountIn,
             0n,
-            addr1
+            addr1,
+            deadline
+        );
+
+        const tx = await balancer.swap(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
 
-        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        const wethBalanceAfter = await WETH.balanceOf(balancerAddress);
         const rdntBalanceAfter = await RDNT.balanceOf(addr1);
 
         expect(rdntBalanceAfter).to.be.equal(amountOut);
