@@ -21,7 +21,7 @@ function contractFactory(tokenTicker: string, chainId: number) {
   }
 
   const contractAddress = oracleData.address[chainId]
-  const web3 = initRPCProvider(chainId)
+  const web3 = initRPCProvider()
   // @ts-ignore
   return new web3.eth.Contract(ABI, contractAddress)
 }

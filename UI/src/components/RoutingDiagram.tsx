@@ -3,8 +3,9 @@ import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { dexIdToUrl } from '../constants/dexIdToUrl'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
-import { Quote, Route, SwapStep } from '../sdk/types'
+import { Quote, Route, SwapStep } from '../types'
 import { Token } from '../constants/Interfaces'
+import React from 'react'
 
 function RouteComponent({ route, chainId, tokenFrom, tokenTo}: { route: Route; chainId: Number, tokenFrom: Token, tokenTo: Token }) {
   return (
@@ -91,14 +92,15 @@ function TokenOutComponent({ token, chainId, tokenTo, isLast }: { token: string;
 }
 
 function RoutingDiagram({ quote, chainId, tokenFrom, tokenTo }: { quote: Quote | undefined; chainId: Number, tokenFrom: Token, tokenTo: Token }) {
-  if (!quote || quote.quote <= 0) {
+  const newQuote: Quote | undefined = structuredClone(quote)
+  if (!newQuote || newQuote.quote <= 0) {
     return <></>
   }
-  quote.routes.sort((a, b) => b.percentage - a.percentage)
+  newQuote.routes.sort((a, b) => b.percentage - a.percentage)
   return (
     <div className="routingDiagram">
       <h4>Order Routing</h4>
-      {quote.routes.map((route, index) => (
+      {newQuote.routes.map((route, index) => (
         <RouteComponent key={-index} route={route} chainId={chainId} tokenFrom={tokenFrom} tokenTo={tokenTo} />
       ))}
     </div>

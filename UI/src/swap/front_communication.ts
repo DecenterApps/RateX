@@ -1,9 +1,16 @@
 import { Quote, ResponseType } from '../types'
-import { executeSwap, getQuote } from './solidity_communication'
-import Web3 from 'web3'
+import { executeSwap } from './solidity_communication'
+import { RateX, Dexes } from 'ratex-sdk'
 
 async function findQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
-  return getQuote(tokenIn, tokenOut, amountIn, chainId)
+  const rpcUrl = process.env.REACT_APP_MAINNET_URL || ''
+  const graphApiKey = process.env.REACT_APP_GRAPH_API_KEY || ''
+  const dexes = [Dexes.SUSHISWAP_V2, Dexes.UNISWAP_V2, Dexes.UNISWAP_V3]
+
+  const rateX = new RateX({ rpcUrl, chainId, dexes, graphApiKey })
+  const res = await rateX.getQuote(tokenIn, tokenOut, amountIn)
+  console.log(res)
+  return res
 }
 
 async function swap(

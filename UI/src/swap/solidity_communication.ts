@@ -1,22 +1,9 @@
-import { Pool, Quote, ResponseType, SwapStep } from '../types'
-import { fetchPoolsData } from './graph_communication'
-import { ERC20_ABI } from '../../contracts/abi/common/ERC20_ABI'
-import initRPCProvider from '../../providers/RPCProvider'
+import { Quote, ResponseType, SwapStep } from '../types'
+import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
+import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
-import { CreateRateXContract } from '../../contracts/rateX/RateX'
-import { findRoute } from '../routing/main'
+import { CreateRateXContract } from '../contracts/rateX/RateX'
 import { keccak256, toUtf8Bytes, ethers } from 'ethers'
-
-async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
-  console.log('tokenIn: ', tokenIn)
-  console.log('tokenOut: ', tokenOut)
-
-  const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5, chainId)
-  console.log('Fetched pools:', pools)
-  console.log('Pool size: ', pools.length)
-
-  return await findRoute(tokenIn, tokenOut, amountIn, pools, chainId)
-}
 
 async function executeSwap(
   tokenIn: string,
@@ -27,7 +14,7 @@ async function executeSwap(
   signer: string,
   chainId: number
 ): Promise<ResponseType> {
-  const web3: Web3 = initRPCProvider(chainId)
+  const web3: Web3 = initRPCProvider()
   const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
@@ -124,4 +111,4 @@ function encodeSwapData(swap: SwapStep) {
   else return abiCoder.encode(['address', 'address'], [swap.tokenIn, swap.tokenOut])
 }
 
-export { getQuote, executeSwap }
+export { executeSwap }

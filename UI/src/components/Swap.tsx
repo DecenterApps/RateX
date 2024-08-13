@@ -6,13 +6,14 @@ import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
-import { findQuote, swap } from '../sdk/swap/front_communication'
-import { Quote } from '../sdk/types'
+import { Quote } from '../types'
 import './Swap.scss'
+import { swap, findQuote } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+import React from 'react'
 import {Button} from 'antd'
 
 
@@ -42,7 +43,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
 
-  const web3: Web3 = initRPCProvider(chainId)
+  const web3: Web3 = initRPCProvider()
 
   useEffect(() => {
     async function getPrices() {
@@ -247,12 +248,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }
 
   function commitSwap() {
-    let TENDERLY_FORK_ID: string | undefined
-    if (chainId === 1) {
-      TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID_MAINNET
-    } else {
-      TENDERLY_FORK_ID = process.env.REACT_APP_TENDERLY_FORK_ID_ARBITRUM
-    }
     if (quote === undefined) return
 
     setLoadingSwap(true)
@@ -263,11 +258,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       .then((res) => {
         res.isSuccess
           ? notification.success({
-              message:
-                TENDERLY_FORK_ID !== undefined
-                  ? `<a  href="https://dashboard.tenderly.co/shared/fork/${TENDERLY_FORK_ID}/transactions/" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
-                  : `Tx hash: ${res.txHash}`,
-            })
+            message: `<a href="https://etherscan.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
+          })
           : notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
       })
