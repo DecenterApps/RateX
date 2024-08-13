@@ -3,7 +3,8 @@ import { tokenAddressToImage } from '../constants/tokenAddressToImage'
 import { dexIdToUrl } from '../constants/dexIdToUrl'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import './RoutingDiagram.scss'
-import { Quote, Route, SwapStep } from '../sdk/types'
+import { Quote, Route, SwapStep } from '../types'
+import React from 'react'
 
 function RouteComponent({ route, chainId }: { route: Route; chainId: Number }) {
   return (

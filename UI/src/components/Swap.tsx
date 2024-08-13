@@ -6,13 +6,14 @@ import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
 import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
-import { findQuote, swap } from '../sdk/swap/front_communication'
-import { Quote } from '../sdk/types'
+import { Quote } from '../types'
 import './Swap.scss'
+import { swap, findQuote } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
+import React from 'react'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
