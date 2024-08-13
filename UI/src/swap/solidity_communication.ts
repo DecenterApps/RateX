@@ -13,7 +13,7 @@ async function executeSwap(
   signer: string,
   chainId: number
 ): Promise<ResponseType> {
-  const web3: Web3 = initRPCProvider(chainId)
+  const web3: Web3 = initRPCProvider()
   const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
   //@ts-ignore
   const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()

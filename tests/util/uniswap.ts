@@ -10,7 +10,7 @@ export const getUniswapOutputAmount = async (
     inputAmount: BigInt,
     chainId: 1 | 42161
 ): Promise<string> => {
-    const web3 = initRPCProvider(chainId)
+    const web3 = initRPCProvider()
     const quoterContract = new web3.eth.Contract(QuoterABI, QUOTER_ADDRESS);
     const fees = [3000, 10000, 100, 500]
     let maxOut = BigInt(0);
