@@ -1,10 +1,7 @@
 import * as dotenv from 'dotenv';
 import tokenList from '../UI/src/constants/tokenList.json'
-import { findRoute } from '../UI/src/sdk/routing/main';
-import { fetchPoolsData } from '../UI/src/sdk/swap/graph_communication';
-import { Pool } from '../UI/src/sdk/types';
 import { getUniswapOutputAmount } from './util/uniswap';
-import RateX from '../UI/src/sdk/index'
+import { RateX } from 'ratex-sdk'
 
 
 dotenv.config();
@@ -92,27 +89,25 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
     let myRateX;
     if (chainId == 1) {
         myRateX = new RateX({
-            rpcUrl: "https://rpc.tenderly.co/fork/fdd24d54-fab7-472f-8d70-997f532a48ff",
-            dexes: [],
+            rpcUrl: process.env.REACT_APP_MAINNET_URL || "",
             chainId: 1,
-            graphApiKey: "cadce34ab35de780055a5d8a19459f5b"
+            graphApiKey: process.env.REACT_APP_GRAPH_API_KEY || ""
         });
     }
     else {
         myRateX = new RateX({
-            rpcUrl: "https://rpc.tenderly.co/fork/ccd25189-1f8a-43b0-b800-caffeb333e69",
-            dexes: [],
+            rpcUrl: process.env.REACT_APP_ARBITRUM_URL || "",
             chainId: 42161,
-            graphApiKey: "cadce34ab35de780055a5d8a19459f5b"
+            graphApiKey: process.env.REACT_APP_GRAPH_API_KEY || ""
         });
     }
-    let prevTokenIn = null, prevTokenOut = null, prevPools: Pool[] = [];
     const ONE_INCH_API_KEY = process.env.REACT_APP_1INCH_API_KEY;
     let output = "Amount,From,To,RateX,RateX time,Uniswap,Uniswap time"
     if (ONE_INCH_API_KEY)
         output += ",1Inch,1Inch time"
     output += ",Competition max (C),RateX vs C\n"
     for (const { tokenIn, tokenOut, amount } of TEST_CASES) {
+        await new Promise(e => setTimeout(e, 4000))
         console.log(`Swapping ${amount} ${tokenIn.ticker} for ${tokenOut.ticker} on chain id ${chainId}`)
         const tokenInAddress = tokenIn.address[chainId];
         const tokenOutAddress = tokenOut.address[chainId]
@@ -149,11 +144,7 @@ const runTestOnChainId = async (chainId: 1 | 42161) => {
         }
 
         const rateXvsCompetition = (100 * (parseFloat(quoteReadable) - parseFloat(competitionsBest)) / parseFloat(competitionsBest)).toFixed(1);
-        output += `,${competitionsBest},${(parseFloat(rateXvsCompetition) > 0) ? "+" + rateXvsCompetition : rateXvsCompetition}%`
-
-        prevTokenIn = tokenIn;
-        prevTokenOut = tokenOut;
-        output += "\n";
+        output += `,${competitionsBest},${(parseFloat(rateXvsCompetition) > 0) ? "+" + rateXvsCompetition : rateXvsCompetition}%\n`
     }
     console.log("\nCompleted test for chain id: " + chainId + "\n")
     printPrettyTable(output);
