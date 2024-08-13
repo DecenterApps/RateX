@@ -28,6 +28,7 @@ export class BalancerState {
         });
 
         const newPools = await Promise.all(promises);
+        // @ts-ignore
         return newPools.filter((pool) => pool !== null); // Filter out any null values
     }
 }

@@ -10,7 +10,10 @@ async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, cha
   console.log('tokenIn: ', tokenIn)
   console.log('tokenOut: ', tokenOut)
 
-  const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5, chainId)
+  const GRAPH_API_KEY = process.env.REACT_APP_GRAPH_API_KEY || ''
+  const web3: Web3 = initRPCProvider(chainId)
+
+  const pools: Pool[] = await fetchPoolsData(tokenIn, tokenOut, 5, 5, chainId, web3, GRAPH_API_KEY)
   console.log('Fetched pools:', pools)
   console.log('Pool size: ', pools.length)
 

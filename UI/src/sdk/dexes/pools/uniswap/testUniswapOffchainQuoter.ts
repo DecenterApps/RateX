@@ -32,7 +32,7 @@ const quoterContract = new web3.eth.Contract(IQuoterV2_ABI, addresses.uniQuoterV
 
 async function testQuote() {
   const startTimestamp = Date.now()
-  await UniswapState.initializeFreshPoolsData(POOLS, 1)
+  await UniswapState.initializeFreshPoolsData(POOLS, 1, web3)
   const endTimestamp = Date.now()
 
   console.log('Time taken for initialization: ', endTimestamp - startTimestamp)
