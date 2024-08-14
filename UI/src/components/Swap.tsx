@@ -328,7 +328,6 @@ style={{top:'5vh'}}
       <div className="tradeBox">
         <div className="tradeBoxHeader">
           <h4> Swap </h4>
-          {chainId}
           <Popover content={settings} title="Settings" trigger="click" placement="bottomRight">
             <SettingOutlined className="cog" />
           </Popover>
