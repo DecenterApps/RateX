@@ -13,7 +13,12 @@ async function swap(
   amountIn: bigint,
   slippagePercentage: number,
   signer: string,
-  chainId: number
+  chainId: number,
+  writeContract: Function,
+  hash: any,
+  isConfirming: Boolean,
+  isConfirmed: Boolean
+
 ): Promise<ResponseType> {
   const amountOut = quote.quote
   const slippageBigInt = BigInt(slippagePercentage * 100)
@@ -24,7 +29,7 @@ async function swap(
     console.log(route)
   }
 
-  return executeSwap(token1, token2, quote, amountIn, minAmountOut, signer, chainId)
+  return executeSwap(token1, token2, quote, amountIn, minAmountOut, signer, chainId, writeContract, hash, isConfirming, isConfirmed)
 }
 
 export { findQuote, swap }

@@ -17,7 +17,7 @@ async function initializeDexes(chainId: number): Promise<void> {
     const files = [
       'SushiSwapV2.ts',
       'UniswapV3.ts',
-      'BalancerV2.ts',
+      // 'BalancerV2.ts',
       //'Curve.ts',
       'CamelotV2.ts',
       'UniswapV2.ts',

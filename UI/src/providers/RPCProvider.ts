@@ -33,7 +33,7 @@ function initOptimismProvider(): Web3 {
 // when testing locally and only running sdk (without running frontend) we should comment out this function because
 // window object won't be available
 function initRPCProvider(chainId: number): Web3 {
-  if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) {
+  if (typeof window !== 'undefined' && window.ethereum) {
     return new Web3(window.ethereum)
   }
   if (chainId === 42161) {

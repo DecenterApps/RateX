@@ -14,7 +14,7 @@ import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
 import {Button} from 'antd'
-
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -41,7 +41,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingSwap, setLoadingSwap] = useState(false)
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
-
+  
+  const { data: hash, isPending, writeContract } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+  useWaitForTransactionReceipt({
+    hash,
+  })
   const web3: Web3 = initRPCProvider(chainId)
 
   useEffect(() => {
@@ -259,7 +264,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amountIn = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** Number(tokenFrom.decimals))
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, writeContract, hash, isConfirming, isConfirmed)
       .then((res) => {
         res.isSuccess
           ? notification.success({

@@ -6,6 +6,11 @@ import Web3 from 'web3'
 import { CreateRateXContract } from '../../contracts/rateX/RateX'
 import { findRoute } from '../routing/main'
 import { keccak256, toUtf8Bytes, ethers } from 'ethers'
+import { useWriteContract } from 'wagmi'
+import { RateXAbi } from '../../contracts/abi/RateXAbi'
+
+import { RATE_X_ADDRESS as RATE_X_ADDRESS_MAINNET } from '../../contracts/addresses-mainnet'
+import { RATE_X_ADDRESS as RATE_X_ADDRESS_ARBITRUM } from '../../contracts/addresses-arbitrum'
 
 async function getQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
   console.log('tokenIn: ', tokenIn)
@@ -25,67 +30,89 @@ async function executeSwap(
   amountIn: bigint,
   minAmountOut: bigint,
   signer: string,
-  chainId: number
+  chainId: number,
+  writeContract: Function, // The wagmi writeContract hook
+  hash: any,
+  isConfirming: Boolean,
+  isConfirmed: Boolean
 ): Promise<ResponseType> {
-  const web3: Web3 = initRPCProvider(chainId)
-  const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn)
-  //@ts-ignore
-  const balance: bigint = await tokenInContract.methods.balanceOf(signer).call()
-  const ethBalance: bigint = BigInt(await web3.eth.getBalance(signer))
+  const web3: Web3 = initRPCProvider(chainId);
+  const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn);
+  
+  // Get the balance of the token in
+  const balance: bigint = await tokenInContract.methods.balanceOf(signer).call();
+  const ethBalance: bigint = BigInt(await web3.eth.getBalance(signer));
 
-  const WETH_ADDRESS = chainId === 1 ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
+  const WETH_ADDRESS = chainId === 1 
+    ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' 
+    : '0x82af49447d8a07e3bd95bd0d56f35241523fbab1';
 
   if (balance < amountIn) {
     if (tokenInContract.options.address?.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
       // Wrap ETH
-      const amountToWrap = amountIn - balance
+      const amountToWrap = amountIn - balance;
       if (ethBalance < amountToWrap) {
-        return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
+        return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType;
       }
       try {
-        await tokenInContract.methods.deposit().send({ from: signer, value: amountToWrap.toString() })
+        await tokenInContract.methods.deposit().send({ from: signer, value: amountToWrap.toString() });
       } catch (err: any) {
-        return { isSuccess: false, errorMessage: 'Failed to wrap ETH' } as ResponseType
+        return { isSuccess: false, errorMessage: 'Failed to wrap ETH' } as ResponseType;
       }
     } else {
-      return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
+      return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType;
     }
   }
 
   try {
-    const RateXContract = CreateRateXContract(chainId)
-    // @ts-ignore
-    await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
-    let transactionHash: string = ''
-    quote = transferQuoteWithBalancerPoolIdToAddress(quote)
+    const RateXContract = CreateRateXContract(chainId);
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 30; // 30 minutes
 
+    // Approve the token
+    await writeContract({
+      address: tokenInContract.options.address,
+      abi: ERC20_ABI,
+      functionName: 'approve',
+      args: [RateXContract.options.address, amountIn],
+    });
+    while(isConfirming)
+    {
+      console.log("pending...")
+    }
+    console.log(isConfirming+ " "+ isConfirmed)
+    console.log("done tx1")
+
+    // Adjust the routes and swaps
+    quote = transferQuoteWithBalancerPoolIdToAddress(quote);
     const routesAdjusted = quote.routes.map((route) => {
       const adjustedSwaps = route.swaps.map((swap) => {
-        // Encode the swap data based on the dexId
-        const encodedData = encodeSwapData(swap)
-        // Convert dexId to uint32
-        const dexIdUint32 = hashStringToInt(swap.dexId)
+        const encodedData = encodeSwapData(swap);
+        const dexIdUint32 = hashStringToInt(swap.dexId);
+        return { data: encodedData, dexId: dexIdUint32 };
+      });
+      return { ...route, swaps: adjustedSwaps };
+    });
 
-        return { data: encodedData, dexId: dexIdUint32 }
-      })
-      return { ...route, swaps: adjustedSwaps }
-    })
+    let transactionHash: string = '';
 
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
+    // Perform the swap
+    await writeContract({
+      address: RateXContract.options.address,
+      abi: RateXAbi, // Assuming the ABI is part of the contract object
+      functionName: 'swap',
+      args: [routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signer, deadline],
+      onTransactionHash: (hash: string) => {
+        transactionHash = hash;
+      },
+    });
 
-    console.log('usao u swap')
-    // @ts-ignore
-    await RateXContract.methods //@ts-ignore
-      .swap(routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signer, deadline)
-      .send({ from: signer })
-      .on('transactionHash', function (hash: string) {
-        transactionHash = hash
-      })
-    return { isSuccess: true, txHash: transactionHash } as ResponseType
+    return { isSuccess: true, txHash: transactionHash } as ResponseType;
   } catch (err: any) {
-    return { isSuccess: false, errorMessage: err.message } as ResponseType
+    return { isSuccess: false, errorMessage: err.message } as ResponseType;
   }
 }
+
+
 
 /* Function to transform poolId from bytes32 to address
  * The solidity contract expects the poolId to be an address, but the graph for balancer returns it as a bytes32
