@@ -1,7 +1,7 @@
 # 💡 RateX - A Decentralized DEX Aggregator
 
 <div style='flex: 0.2; align="center"'>
-<img src="./images/decenter_logo.png"
+<img src="./docs/images/decenter_logo.png"
         alt="decenter"
         style="max-width: 100%;" />
 </div>
@@ -9,6 +9,8 @@
 ## 🌟 Introduction
 
 RateX is a decentralized DEX aggregator designed to integrate seamlessly into existing applications, enabling users to leverage the best trade routes across multiple decentralized exchanges without taking positive slippage or fees. This project focuses on offering a competitive alternative to current DEX aggregators, which are mostly closed source and may take positive slippage. RateX runs directly on the user's machine or in their browser, ensuring transparency and control over the routing process.
+
+If you want to learn more about the RateX architecture and how it all works behind the scenes, please read the [Architecture documentation](./docs/architecture.md).
 
 ## Why are we making this?
 
@@ -69,7 +71,7 @@ npm run start
 This will launch the frontend, where you can interact with the default RateX contracts or deploy and interact with your custom contracts if desired. If everything is set up correctly, you should see the following interface:
 
 <div style='flex: 0.2; align="center"'>
-<img src="./images/ui.png"
+<img src="./docs/images/ui.png"
         alt="decenter"
         style="max-width: 100%;" />
 </div>
