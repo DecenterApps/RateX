@@ -1,4 +1,4 @@
-import { Quote, ResponseType, SwapStep } from '../types'
+import { Quote, ResponseType, Route, SwapStep } from '../types'
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
@@ -21,6 +21,7 @@ async function executeSwap(
   const ethBalance: bigint = BigInt(await web3.eth.getBalance(signer))
 
   const WETH_ADDRESS = chainId === 1 ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
+  const TETHER_ADDRESS = chainId === 1 ? '0xdac17f958d2ee523a2206206994597c13d831ec7' : '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9'
 
   if (balance < amountIn) {
     if (tokenInContract.options.address?.toLowerCase() === WETH_ADDRESS.toLowerCase()) {
@@ -41,6 +42,17 @@ async function executeSwap(
 
   try {
     const RateXContract = CreateRateXContract(chainId)
+    // Check for allowance if tokenIn is Tether
+    if (checkIfRouteContainsToken(quote.routes, TETHER_ADDRESS)) {
+      const tetherContract = new web3.eth.Contract(ERC20_ABI, TETHER_ADDRESS)
+      // @ts-ignore
+      const tetherAllowance: bigint = await tetherContract.methods.allowance(signer, RateXContract.options.address).call()
+      if (tetherAllowance !== BigInt(0)) {
+        // @ts-ignore
+        await tetherContract.methods.approve(RateXContract.options.address, 0).send({ from: signer })
+      }
+    }
+
     // @ts-ignore
     await tokenInContract.methods.approve(RateXContract.options.address, amountIn).send({ from: signer })
     let transactionHash: string = ''
@@ -109,6 +121,17 @@ function encodeSwapData(swap: SwapStep) {
   }
   // For DEXes like Uniswap V2, Camelot, Sushiswap we include only tokenIn and tokenOut
   else return abiCoder.encode(['address', 'address'], [swap.tokenIn, swap.tokenOut])
+}
+
+function checkIfRouteContainsToken(routes: Route[], tokenAddress: string): boolean {
+  for (const route of routes) {
+    for (const swap of route.swaps) {
+      if (swap.tokenIn === tokenAddress) {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 export { executeSwap }
