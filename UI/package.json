@@ -23,7 +23,6 @@
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
     "sass": "^1.65.1",
-    "upgrade": "^1.1.0",
     "viem": "^2.17.5",
     "wagmi": "^2.11.2",
     "web-vitals": "^2.1.4",
