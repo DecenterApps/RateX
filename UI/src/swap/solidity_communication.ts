@@ -115,7 +115,7 @@ function hashStringToInt(dexName: string): number {
 function encodeSwapData(swap: SwapStep) {
   const abiCoder = new ethers.AbiCoder()
 
-  if (swap.dexId === 'BALANCER' || swap.dexId === 'CURVE' || swap.dexId === 'UNI_V3') {
+  if (swap.dexId === 'BALANCER_V2' || swap.dexId === 'CURVE' || swap.dexId === 'UNI_V3') {
     // For DEXes like Balancer, Curve, UniswapV3 => we include poolId, tokenIn, and tokenOut
     return abiCoder.encode(['address', 'address', 'address'], [swap.poolId, swap.tokenIn, swap.tokenOut])
   }
