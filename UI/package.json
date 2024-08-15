@@ -17,7 +17,7 @@
     "antd": "^5.7.3",
     "bignumber.js": "^9.1.1",
     "notyf": "^3.10.0",
-    "ratex-sdk": "^1.1.4",
+    "ratex-sdk": "^1.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
