@@ -14,8 +14,7 @@ import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
 import Web3 from 'web3'
 import React from 'react'
-import {Button} from 'antd'
-
+import { Button } from 'antd'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -72,6 +71,15 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     let val = e.target.value
     const numberRegex = /^\d*\.?\d*$/
     let isValid = numberRegex.test(val)
+    try {
+      const parsedValue = parseFloat(val)
+      if (parsedValue < 0) {
+        isValid = false
+      }
+      if (parsedValue > 1000000000000) isValid = false
+    } catch (e) {
+      console.log(e)
+    }
     if (isValid) {
       setTokenFromAmount(val)
     }
@@ -132,13 +140,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
           token.decimals = Number(decimals)
         })
 
-        let img = await fetchTokenImage(customToken);
-        token.img = img
-       
-      if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
+      let img = await fetchTokenImage(customToken)
+      token.img = img
 
+      if (token.name !== '' || token.ticker !== '' || token.decimals !== 0) {
         token.address[chainId] = customToken
-        
+
         await modifyToken(0, [token])
         return setIsOpenModal(false)
       }
@@ -151,7 +158,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       })
     }
   }
-  
 
   function openModal(token: number) {
     setLoadingCustomToken(false)
@@ -160,24 +166,22 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     setIsOpenModal(true)
   }
   const fetchTokenImage = async (address: string): Promise<string> => {
-    const baseUrl = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/';
-    const imageUrl = `${baseUrl}${address}/logo.png`;
-  
+    const baseUrl = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/'
+    const imageUrl = `${baseUrl}${address}/logo.png`
+
     try {
-      const response = await fetch(imageUrl);
+      const response = await fetch(imageUrl)
       if (response.ok) {
-        return imageUrl;
+        return imageUrl
       }
     } catch (error) {
-      console.log('Image not found in Trust Wallet repository.');
+      console.log('Image not found in Trust Wallet repository.')
     }
-    return 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png'; // Placeholder image
-  };
-  
+    return 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png' // Placeholder image
+  }
+
   async function modifyToken(index: number, tokenList: Token[]) {
     if (changeToken === 1) {
-    
-     
       setTokenFrom(tokenList[index])
       const _tokenFromPrice = await getTokenPrice(tokenList[index].ticker, chainId)
       console.log('Fetched price', _tokenFromPrice, 'for', tokenList[index].ticker)
@@ -186,7 +190,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       const tokenToAmount = (Number(tokenFromAmount) * _tokenFromPrice) / tokenToPrice
       setTokenToAmount(tokenToAmount)
     } else {
-     
       setTokenTo(tokenList[index])
       const _tokenToPrice = await getTokenPrice(tokenList[index].ticker, chainId)
       console.log('Fetched price', _tokenToPrice, 'for', tokenList[index].ticker)
@@ -216,7 +219,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     return '#cc3300'
   }
 
-  function getQuote(fromAddress: string, toAddress: string, ) {
+  function getQuote(fromAddress: string, toAddress: string) {
     let callTime = Date.now()
     if (lastCallTime.current < callTime) {
       lastCallTime.current = callTime
@@ -258,8 +261,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       .then((res) => {
         res.isSuccess
           ? notification.success({
-            message: `<a href="https://etherscan.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`
-          })
+              message: `<a href="https://etherscan.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+            })
           : notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
       })
@@ -285,45 +288,48 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   return (
     <Fragment>
-<Modal
-style={{top:'5vh'}}
-  open={isOpenModal}
-  footer={
-    <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%"}}>
-   
-    </div>
-  }
-  onCancel={()=>setIsOpenModal(false)}
-  title="Select a token"
->
-<div className="modalContent">
-  {tokenList.map((token, index) => {
-    return (
-      <div className="tokenChoice" key={index} onClick={() => modifyToken(index, tokenList)}>
-        <img src={token.img} alt={token.ticker} className="tokenLogo" />
-        <div className="tokenChoiceNames">
-          <div className="tokenName"> {token.name} </div>
-          <div className="tokenTicker"> {token.ticker} </div>
+      <Modal
+        style={{ top: '5vh' }}
+        open={isOpenModal}
+        footer={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}></div>}
+        onCancel={() => setIsOpenModal(false)}
+        title="Select a token"
+      >
+        <div className="modalContent">
+          {tokenList.map((token, index) => {
+            return (
+              <div className="tokenChoice" key={index} onClick={() => modifyToken(index, tokenList)}>
+                <img src={token.img} alt={token.ticker} className="tokenLogo" />
+                <div className="tokenChoiceNames">
+                  <div className="tokenName"> {token.name} </div>
+                  <div className="tokenTicker"> {token.ticker} </div>
+                </div>
+              </div>
+            )
+          })}
         </div>
-      </div>
-    );
-  })}
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', flexDirection: 'column' }}>
+          <Input className="tokenAddress" placeholder="Or enter token address" onChange={changeTempToken} />
 
-</div>
-  <div style={{display:"flex", justifyContent:"center", alignItems:"center", width:"100%", flexDirection:'column'}}>
-  <Input className="tokenAddress" placeholder="Or enter token address" onChange={changeTempToken} />
-
-{loadingCustomToken? <div className="lds-ellipsis">
+          {loadingCustomToken ? (
+            <div className="lds-ellipsis">
               <div></div>
               <div></div>
               <div></div>
               <div></div>
-            </div> :  <Button type="primary" className="swapButton" style={{fontSize:'1em', width:'90%', marginTop:5, height:'40px'}} onClick={checkCustomAddedToken}>
-      Add Custom Token
-    </Button>}
-   
-    </div>
-</Modal>
+            </div>
+          ) : (
+            <Button
+              type="primary"
+              className="swapButton"
+              style={{ fontSize: '1em', width: '90%', marginTop: 5, height: '40px' }}
+              onClick={checkCustomAddedToken}
+            >
+              Add Custom Token
+            </Button>
+          )}
+        </div>
+      </Modal>
 
       <div className="tradeBox">
         <div className="tradeBoxHeader">
@@ -335,9 +341,11 @@ style={{top:'5vh'}}
         </div>
         <div className="input">
           <Input placeholder="0" value={tokenFromAmount === -1 ? '' : tokenFromAmount} onChange={changeAmount} />
-          <div className="tokenFromAmountUSD">{`${tokenFromPrice>-1? '$'+Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4):"No price data available"}`}</div>
+          <div className="tokenFromAmountUSD">{`${
+            tokenFromPrice > -1 ? '$' + Math.max(tokenFromAmount * tokenFromPrice, 0).toFixed(4) : 'No price data available'
+          }`}</div>
           <div className="assetFrom" onClick={() => openModal(1)}>
-            <img src={tokenFrom.img} style={{borderRadius:'50px'}} alt="assetFromLogo" className="assetLogo" />
+            <img src={tokenFrom.img} style={{ borderRadius: '50px' }} alt="assetFromLogo" className="assetLogo" />
             {tokenFrom.ticker}
             <DownOutlined />
           </div>
@@ -357,18 +365,22 @@ style={{top:'5vh'}}
             <Fragment>
               <Input placeholder="0" value={tokenToAmount.toFixed(4)} disabled={true} />
               <div className="tokenToAmountUSD">
-                {`${tokenToPrice>0?'$'+(tokenToAmount * tokenToPrice).toFixed(4)+" ":"No price data available "}`}
-                <span style={{ color: priceImpactColor() }}>{(tokenFromPrice>-1 && tokenToPrice>-1) ?calculatePriceImpact().toFixed(2)+" %" : ""}</span>
+                {`${tokenToPrice > 0 ? '$' + (tokenToAmount * tokenToPrice).toFixed(4) + ' ' : 'No price data available '}`}
+                <span style={{ color: priceImpactColor() }}>
+                  {tokenFromPrice > -1 && tokenToPrice > -1 ? calculatePriceImpact().toFixed(2) + ' %' : ''}
+                </span>
               </div>
             </Fragment>
           )}
           <div className="assetTo" onClick={() => openModal(2)}>
-            <img src={tokenTo.img} style={{borderRadius:'50px'}} alt="assetFromLogo" className="assetLogo" />
+            <img src={tokenTo.img} style={{ borderRadius: '50px' }} alt="assetFromLogo" className="assetLogo" />
             {tokenTo.ticker}
             <DownOutlined />
           </div>
         </div>
-        <Fragment>{!loadingQuote && <RoutingDiagram quote={quote} chainId={chainId} tokenFrom={tokenFrom} tokenTo ={tokenTo} ></RoutingDiagram>}</Fragment>
+        <Fragment>
+          {!loadingQuote && <RoutingDiagram quote={quote} chainId={chainId} tokenFrom={tokenFrom} tokenTo={tokenTo}></RoutingDiagram>}
+        </Fragment>
         <Fragment>
           {loadingSwap ? (
             <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
