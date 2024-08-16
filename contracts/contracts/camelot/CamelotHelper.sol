@@ -4,6 +4,8 @@ pragma solidity 0.8.24;
 import {ICamelotPair} from './interfaces/ICamelotPair.sol';
 import {IHelperState} from '../rateX/interfaces/IHelperState.sol';
 
+/// @title CamelotHelper - A helper contract for fetching Camelot pools data
+/// @notice This contract provides utility functions to retrieve information from Camelot pools
 contract CamelotHelper is IHelperState {
   struct CamelotPool {
     address poolId;
@@ -14,6 +16,9 @@ contract CamelotHelper is IHelperState {
     bool stableSwap;
   }
 
+  /// @notice Retrieves data for multiple Camelot pools
+  /// @param poolsInfo An array of PoolInfo containing information about each pool
+  /// @return pools An array of CamelotPool structures containing the data for each pool
   function getPoolsData(PoolInfo[] memory poolsInfo) external view returns (CamelotPool[] memory pools) {
     pools = new CamelotPool[](poolsInfo.length);
 

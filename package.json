@@ -1,17 +1,8 @@
 {
+  "name": "ratex",
   "scripts": {
-    "postinstall": "(cd UI && npm install); (cd UI/src/sdk && npm install); (cd contracts && npm install)",
+    "postinstall": "(cd UI && npm install); (cd contracts && npm install)",
     "start": "npm run --prefix ./UI start",
     "test": "npm run --prefix ./tests test"
-  },
-  "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.1.3",
-    "@tanstack/react-query": "^5.51.9",
-    "crypto": "^1.0.1",
-    "ethers": "^6.13.1",
-    "prettier": "^3.0.1",
-    "viem": "^2.17.5",
-    "wagmi": "^2.11.2",
-    "web3": "^4.9.0"
   }
 }
