@@ -19,7 +19,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   const { address, isConnecting, isDisconnected } = useAccount()
 
   useEffect(() => {
-    const web3: Web3 = initRPCProvider(chainId)
+    const web3: Web3 = initRPCProvider()
 
     async function checkWalletConnection() {
       const accountsRes = await window.ethereum.request({ method: 'eth_accounts' })
@@ -39,7 +39,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   async function modifyChainButton(index: number) {
     const newChainId = chainList[index].chainId
 
-    await switchMetamaskChain(initRPCProvider(newChainId), newChainId)
+    await switchMetamaskChain(initRPCProvider(), newChainId)
     setChainId(newChainId)
     setIsOpenModal(false)
   }

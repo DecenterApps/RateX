@@ -1,6 +1,26 @@
 import Web3 from 'web3';
 import QuoterABI from './QuoterABI.json'
-import initRPCProvider from '../../UI/src/providers/RPCProvider';
+
+function initMainnetProvider(): Web3 {
+    const MAINNET_URL = process.env.REACT_APP_MAINNET_URL
+    const userProvidedMainnetEndpoint = `${MAINNET_URL}`
+    return new Web3(new Web3.providers.HttpProvider(userProvidedMainnetEndpoint))
+}
+
+function initArbitrumProvider(): Web3 {
+    const ARBITRUM_URL = process.env.REACT_APP_ARBITRUM_URL
+    const userProvidedArbitrumEndpoint = `${ARBITRUM_URL}`
+    return new Web3(new Web3.providers.HttpProvider(userProvidedArbitrumEndpoint))
+}
+
+function initRPCProvider(chainId: 42161 | 1): Web3 {
+    if (chainId === 42161) {
+        return initArbitrumProvider()
+    } else if (chainId === 1) {
+        return initMainnetProvider()
+    }
+    throw new Error("Invalid chain id")
+}
 
 const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6';
 

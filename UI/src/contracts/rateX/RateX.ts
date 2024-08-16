@@ -2,15 +2,10 @@ import { RateXAbi } from '../abi/RateXAbi'
 import Web3 from 'web3'
 
 import initRPCProvider from '../../providers/RPCProvider'
-import { RATE_X_ADDRESS as RATE_X_ADDRESS_MAINNET } from '../addresses-mainnet'
-import { RATE_X_ADDRESS as RATE_X_ADDRESS_ARBITRUM } from '../addresses-arbitrum'
 
 export function CreateRateXContract(chainId: number) {
-    const web3: Web3 = initRPCProvider(chainId)
+  const web3: Web3 = initRPCProvider()
+  const RATE_X_ADDRESS = chainId === 1 ? '0xb9E24094d0899Ca4BF6FC210bD4Ee7DE7bee81CB' : '0x9DdA81Aa5FeB4a4972b62265C43dee305B360372'
 
-    if (chainId === 1) {
-        return new web3.eth.Contract(RateXAbi, RATE_X_ADDRESS_MAINNET)
-    } else {
-        return new web3.eth.Contract(RateXAbi, RATE_X_ADDRESS_ARBITRUM)
-    }
+  return new web3.eth.Contract(RateXAbi, RATE_X_ADDRESS)
 }

@@ -14,12 +14,18 @@ import {SafeCast} from './libraries/SafeCast.sol';
 import {IUniswapHelper} from './interfaces/IUniswapHelper.sol';
 import {UniViewQuoter} from './UniViewQuoter.sol';
 
+/// @title UniswapHelper - A helper contract for fetching data from Uniswap V3 pools
+/// @notice This contract provides utility functions to retrieve detailed information from Uniswap V3 pools
 contract UniswapHelper is UniViewQuoter, IUniswapHelper {
   using LowGasSafeMath for uint256;
   using LowGasSafeMath for int256;
   using SafeCast for uint256;
   using SafeCast for int256;
 
+  /// @notice Fetches data for multiple Uniswap V3 pools
+  /// @param _pools An array of pool addresses to fetch data from
+  /// @param _numOfTicks The number of ticks to retrieve data for
+  /// @return poolData An array of PoolData structures containing the data for each pool
   function fetchData(address[] calldata _pools, uint256 _numOfTicks) external view override returns (PoolData[] memory poolData) {
     poolData = new PoolData[](_pools.length);
     for (uint256 i = 0; i < _pools.length; i++) {
@@ -27,6 +33,10 @@ contract UniswapHelper is UniViewQuoter, IUniswapHelper {
     }
   }
 
+  /// @notice Fetches data for a single Uniswap V3 pool
+  /// @param _pool The address of the pool to fetch data from
+  /// @param _numOfTicks The number of ticks to retrieve data for
+  /// @return The PoolData structure containing the data for the specified pool
   function fetchPoolData(address _pool, uint256 _numOfTicks) external view override returns (PoolData memory) {
     return _fetchPoolData(_pool, _numOfTicks);
   }
