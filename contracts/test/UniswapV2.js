@@ -23,13 +23,14 @@ describe("Tests for swapping on uniswapV2", async function () {
         const {uniswapV2, addr1} = await deployUniswapV2Dex();
         
         const uniswapAddress = await uniswapV2.getAddress();
-        const amountIn = hre.ethers.parseEther("100");
+        const amountIn = hre.ethers.parseEther("50");
         const deadline = await time.latest() + 10;
        
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
         const DAI = await hre.ethers.getContractAt("IERC20", addresses.tokens.DAI);
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, uniswapAddress, amountIn);
 
+        const daiBalanceBefore = await DAI.balanceOf(addr1);
         const wethBalanceBefore = await WETH.balanceOf(uniswapAddress);
 
         const abiCoder = new hre.ethers.AbiCoder();
@@ -58,7 +59,7 @@ describe("Tests for swapping on uniswapV2", async function () {
         const wethBalanceAfter = await WETH.balanceOf(uniswapAddress);
         const daiBalanceAfter = await DAI.balanceOf(addr1);
 
-        expect(daiBalanceAfter).to.be.equal(amountOut);
+        expect(daiBalanceAfter).to.be.equal(daiBalanceBefore + amountOut);
         expect(BigInt(wethBalanceAfter)).to.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 });

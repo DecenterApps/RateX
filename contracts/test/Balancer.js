@@ -43,7 +43,8 @@ describe("Tests for Balancer", async function () {
         const amountIn = hre.ethers.parseEther("1");
         const deadline = await time.latest() + 10;
         await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, balancerAddress, amountIn);
-
+        
+        const rdntBalanceBefore = await RDNT.balanceOf(addr1);
         const wethBalanceBefore = await WETH.balanceOf(balancerAddress);
 
         const abiCoder = new hre.ethers.AbiCoder();
@@ -72,7 +73,7 @@ describe("Tests for Balancer", async function () {
         const wethBalanceAfter = await WETH.balanceOf(balancerAddress);
         const rdntBalanceAfter = await RDNT.balanceOf(addr1);
 
-        expect(rdntBalanceAfter).to.be.equal(amountOut);
+        expect(rdntBalanceAfter).to.be.equal(rdntBalanceBefore + amountOut);
         expect(BigInt(wethBalanceAfter)).to.be.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 
