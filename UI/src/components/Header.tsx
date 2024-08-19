@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { ethers } from 'ethers'
+
 import chainList from '../constants/chainList.json'
 import initRPCProvider from '../providers/RPCProvider'
-import Web3 from 'web3'
-import { useAccount } from 'wagmi'
 
 interface HeaderProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -16,15 +15,14 @@ function Header({ chainIdState, walletState }: HeaderProps) {
   const [chainId, setChainId] = chainIdState
   const [wallet, setWallet] = walletState
   const [isOpenModal, setIsOpenModal] = useState(false)
-  const { address, isConnecting, isDisconnected } = useAccount()
 
   useEffect(() => {
-    const web3: Web3 = initRPCProvider()
+    const ethersProvider: ethers.BrowserProvider = initRPCProvider()
 
     async function checkWalletConnection() {
       const accountsRes = await window.ethereum.request({ method: 'eth_accounts' })
 
-      await switchMetamaskChain(web3, chainId)
+      await switchMetamaskChain(ethersProvider, chainId)
       if (accountsRes.length) {
         setWallet(accountsRes[0])
       }
@@ -51,14 +49,14 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     }
   }
 
-  async function addMetamaskChain(web3: Web3, chainId: number) {
+  async function addMetamaskChain(ethersProvider: ethers.BrowserProvider, chainId: number) {
     const chainInfo: any = chainList.find((chain) => chain.chainId === chainId)
     await window.ethereum.request({
       method: 'wallet_addEthereumChain',
       params: [
         {
           chainName: chainInfo.name,
-          chainId: web3.utils.toHex(chainId),
+          chainId: ethers.toBeHex(chainId),
           nativeCurrency: { name: chainInfo.Token.name, decimals: chainInfo.Token.decimals, symbol: chainInfo.Token.symbol },
           rpcUrls: [chainInfo.RPC],
         },
@@ -66,17 +64,17 @@ function Header({ chainIdState, walletState }: HeaderProps) {
     })
   }
 
-  async function switchMetamaskChain(web3: Web3, chainId: number) {
+  async function switchMetamaskChain(ethersProvider: ethers.BrowserProvider, chainId: number) {
     try {
       if (window.ethereum.networkVersion !== chainId) {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: web3.utils.toHex(chainId) }],
+          params: [{ chainId: ethers.toBeHex(chainId) }],
         })
       }
     } catch (err: any) {
       if (err.code === 4902) {
-        await addMetamaskChain(web3, chainId)
+        await addMetamaskChain(ethersProvider, chainId)
       }
     }
   }

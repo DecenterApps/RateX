@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, Fragment } from 'react'
-import { Input, Modal, Popover, Radio } from 'antd'
+import React, { useEffect, useRef, useState, Fragment } from 'react'
+import { Input, Modal, Popover, Radio, Button } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
+import { ethers } from 'ethers'
+
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
@@ -12,9 +14,6 @@ import { swap, findQuote } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
-import Web3 from 'web3'
-import React from 'react'
-import { Button } from 'antd'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -42,7 +41,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
 
-  const web3: Web3 = initRPCProvider()
+  const ethersProvider: ethers.BrowserProvider = initRPCProvider()
 
   useEffect(() => {
     async function getPrices() {
@@ -107,7 +106,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     if (customToken === '') return setIsOpenModal(false)
     setLoadingCustomToken(true)
     try {
-      const contract = new web3.eth.Contract(ERC20_ABI, customToken)
+      const signer = await ethersProvider.getSigner(wallet)
+      const tokenContract = new ethers.Contract(customToken, ERC20_ABI, signer)
+
       const token: Token = {
         ticker: '',
         img: 'https://images.freeimages.com/fic/images/icons/2297/super_mario/256/question_coin.png',
@@ -118,27 +119,15 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         },
         decimals: 18,
       }
-      await contract.methods
-        .name()
-        .call()
-        .then((name: any) => {
-          console.log()
-          token.name = name
-        })
 
-      await contract.methods
-        .symbol()
-        .call()
-        .then((symbol: any) => {
-          token.ticker = symbol
-        })
+      const name = await tokenContract.name()
+      token.name = name
 
-      await contract.methods
-        .decimals()
-        .call()
-        .then((decimals: any) => {
-          token.decimals = Number(decimals)
-        })
+      const symbol = await tokenContract.symbol()
+      token.ticker = symbol
+
+      const decimals = await tokenContract.decimals()
+      token.decimals = Number(decimals)
 
       let img = await fetchTokenImage(customToken)
       token.img = img
@@ -232,7 +221,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
       return
     }
 
-    const amount = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** tokenFrom.decimals)
+    const amount = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
     setLoadingQuote(true)
     findQuote(fromAddress, toAddress, amount, chainId)
@@ -255,13 +244,15 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     setLoadingSwap(true)
 
-    const amountIn = web3.utils.toBigInt(Number(tokenFromAmount) * 10 ** Number(tokenFrom.decimals))
+    const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
     swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
       .then((res) => {
         res.isSuccess
           ? notification.success({
-              message: `<a href="https://etherscan.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${res.txHash}</a>`,
+              message: `<a href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${
+                res.txHash
+              }</a>`,
             })
           : notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
