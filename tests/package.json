@@ -11,9 +11,9 @@
   "description": "",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "ratex-sdk": "^1.1.3",
+    "ethers": "^6.13.2",
+    "ratex-sdk": "^1.2.6",
     "tsx": "^4.16.5",
-    "typescript": "^5.5.4",
-    "web3": "^4.11.1"
+    "typescript": "^5.5.4"
   }
 }
