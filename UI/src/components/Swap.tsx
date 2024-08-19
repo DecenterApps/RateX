@@ -55,7 +55,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
   useDebouncedEffect(
     () => {
-      console.log(tokenFrom)
       getQuote(tokenFrom.address[chainId], tokenTo.address[chainId])
     },
     500,
@@ -173,7 +172,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     if (changeToken === 1) {
       setTokenFrom(tokenList[index])
       const _tokenFromPrice = await getTokenPrice(tokenList[index].ticker, chainId)
-      console.log('Fetched price', _tokenFromPrice, 'for', tokenList[index].ticker)
       setTokenFromPrice(_tokenFromPrice === -1 ? 0 : _tokenFromPrice)
 
       const tokenToAmount = (Number(tokenFromAmount) * _tokenFromPrice) / tokenToPrice
@@ -181,7 +179,6 @@ function Swap({ chainIdState, walletState }: SwapProps) {
     } else {
       setTokenTo(tokenList[index])
       const _tokenToPrice = await getTokenPrice(tokenList[index].ticker, chainId)
-      console.log('Fetched price', _tokenToPrice, 'for', tokenList[index].ticker)
       setTokenToPrice(_tokenToPrice === -1 ? 0 : _tokenToPrice)
 
       const tokenToAmount = (Number(tokenFromAmount) * tokenFromPrice) / _tokenToPrice
