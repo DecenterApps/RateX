@@ -5,7 +5,7 @@
         "name": "USD Coin",
         "address": {
             "1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-            "42161": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+            "42161": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
         },
         "decimals": 6
     },

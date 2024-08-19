@@ -1,25 +1,23 @@
-import Web3 from 'web3';
-import QuoterABI from './QuoterABI.json'
+import { ethers } from 'ethers';
+import QuoterABI from './QuoterABI.json';
 
-function initMainnetProvider(): Web3 {
-    const MAINNET_URL = process.env.REACT_APP_MAINNET_URL
-    const userProvidedMainnetEndpoint = `${MAINNET_URL}`
-    return new Web3(new Web3.providers.HttpProvider(userProvidedMainnetEndpoint))
+function initMainnetProvider(): ethers.JsonRpcProvider {
+    const MAINNET_URL = process.env.REACT_APP_MAINNET_URL;
+    return new ethers.JsonRpcProvider(MAINNET_URL);
 }
 
-function initArbitrumProvider(): Web3 {
-    const ARBITRUM_URL = process.env.REACT_APP_ARBITRUM_URL
-    const userProvidedArbitrumEndpoint = `${ARBITRUM_URL}`
-    return new Web3(new Web3.providers.HttpProvider(userProvidedArbitrumEndpoint))
+function initArbitrumProvider(): ethers.JsonRpcProvider {
+    const ARBITRUM_URL = process.env.REACT_APP_ARBITRUM_URL;
+    return new ethers.JsonRpcProvider(ARBITRUM_URL);
 }
 
-function initRPCProvider(chainId: 42161 | 1): Web3 {
+function initRPCProvider(chainId: 42161 | 1): ethers.JsonRpcProvider {
     if (chainId === 42161) {
-        return initArbitrumProvider()
+        return initArbitrumProvider();
     } else if (chainId === 1) {
-        return initMainnetProvider()
+        return initMainnetProvider();
     }
-    throw new Error("Invalid chain id")
+    throw new Error("Invalid chain id");
 }
 
 const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6';
@@ -30,25 +28,24 @@ export const getUniswapOutputAmount = async (
     inputAmount: BigInt,
     chainId: 1 | 42161
 ): Promise<string> => {
-    const web3 = initRPCProvider(chainId)
-    const quoterContract = new web3.eth.Contract(QuoterABI, QUOTER_ADDRESS);
-    const fees = [3000, 10000, 100, 500]
+    const provider = initRPCProvider(chainId);
+    const quoterContract = new ethers.Contract(QUOTER_ADDRESS, QuoterABI, provider);
+    const fees = [3000, 10000, 100, 500];
     let maxOut = BigInt(0);
     for (const fee of fees) {
         try {
-            const quotedAmountOut = await quoterContract.methods.quoteExactInputSingle(
+            const quotedAmountOut = await quoterContract.quoteExactInputSingle.staticCall(
                 inputTokenAddress,
                 outputTokenAddress,
-                fee, // Fee tier 0.3%
+                fee,
                 inputAmount,
                 0
-            ).call();
-            // @ts-ignore
-            if (quotedAmountOut > maxOut)
-                // @ts-ignore
-                maxOut = quotedAmountOut
+            );
+            if (BigInt(quotedAmountOut) > maxOut) {
+                maxOut = BigInt(quotedAmountOut);
+            }
         } catch (error) {
-
+            //console.error(`Error quoting fee tier ${fee}:`, error);
         }
     }
     return maxOut.toString();
