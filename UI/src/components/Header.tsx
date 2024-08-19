@@ -97,9 +97,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
       </Modal>
       <header>
         <div className="leftHeader">
-          <Link to="/" className="link">
-            <div className="headerItem"> RateX </div>
-          </Link>
+          <img src="/rateX-white.svg" alt="" />
         </div>
         <div className="rightHeader">
           <ConnectButton />
