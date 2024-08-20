@@ -29,14 +29,6 @@ async function deployUniswapDex() {
   return { uniswap, addr1, addr2, addr3 }
 }
 
-async function deployCurveDex() {
-  const [addr1, addr2, addr3] = await hre.ethers.getSigners();
-  const Curve = await hre.ethers.getContractFactory("CurveDex");
-  const curve = await Curve.deploy(addresses.curve.poolRegistry, addresses.curve.poolRegistryFactory, addresses.curve.poolRegistryFactoryNonStable);
-  await curve.waitForDeployment();
-  return { curve, addr1, addr2, addr3 };
-}
-
 async function deployBalancerDex() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const Balancer = await hre.ethers.getContractFactory('BalancerDex')
@@ -59,14 +51,12 @@ async function deployRateX() {
   const { sushiSwap } = await deploySushiDex()
   const { uniswap } = await deployUniswapDex()
   const { balancer } = await deployBalancerDex()
-  const { curve } = await deployCurveDex()
   const { camelot } = await deployCamelotDex()
   const { uniswapV2 } = await deployUniswapV2Dex()
 
   const sushiSwapAddress = await sushiSwap.getAddress()
   const uniswapAddress = await uniswap.getAddress()
   const balancerAddress = await balancer.getAddress()
-  const curveAddress = await curve.getAddress()
   const camelotAddress = await camelot.getAddress()
   const uniswapV2Address = await uniswapV2.getAddress()
 
@@ -78,10 +68,6 @@ async function deployRateX() {
     {
       dexId: stringToUint32('UNI_V3'),
       dexAddress: uniswapAddress,
-    },
-    {
-      dexId: stringToUint32('CURVE'),
-      dexAddress: curveAddress,
     },
     {
       dexId: stringToUint32('BALANCER_V2'),
@@ -137,14 +123,6 @@ async function deployUniswapHelper() {
   return { uniswapHelper, addr1, addr2, addr3 }
 }
 
-async function deployCurveHelper() {
-  const [addr1, addr2, addr3] = await hre.ethers.getSigners()
-  const CurveHelper = await hre.ethers.getContractFactory('CurveHelper')
-  const curveHelper = await CurveHelper.deploy()
-  await curveHelper.waitForDeployment()
-  return { curveHelper, addr1, addr2, addr3 }
-}
-
 async function deployUniswapV2Helper() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
   const UniswapV2Helper = await hre.ethers.getContractFactory('UniswapV2Helper')
@@ -157,8 +135,6 @@ module.exports = {
   deployRateX,
   deploySushiDex,
   deploySushiSwapHelper,
-  deployCurveDex,
-  deployCurveHelper,
   deployUniswapDex,
   deployUniswapV2Dex,
   deployUniswapHelper,
