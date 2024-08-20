@@ -20,7 +20,6 @@ function saveAddresses(
     rateXAddress,
     uniswapHelperAddress,
     sushiSwapHelperAddress,
-    curveHelperAddress,
     camelotHelperAddress,
     balancerHelperAddress,
     uniswapV2HelperAddress
@@ -30,7 +29,6 @@ function saveAddresses(
 export const RATE_X_ADDRESS = "${rateXAddress}"
 export const UNISWAP_HELPER_ADDRESS = "${uniswapHelperAddress}"
 export const SUSHISWAP_HELPER_ADDRESS = "${sushiSwapHelperAddress}"
-export const CURVE_HELPER_ADDRESS = "${curveHelperAddress}"
 export const CAMELOT_HELPER_ADDRESS = "${camelotHelperAddress}"
 export const BALANCER_HELPER_ADDRESS = "${balancerHelperAddress}"
 export const UNISWAP_V2_HELPER_ADDRESS = "${uniswapV2HelperAddress}"`
