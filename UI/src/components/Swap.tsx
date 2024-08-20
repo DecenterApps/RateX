@@ -40,8 +40,13 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingSwap, setLoadingSwap] = useState(false)
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
+  const [isFallbackProvider, setIsFallbackProvider] = useState(false)
 
-  const ethersProvider: ethers.BrowserProvider = initRPCProvider()
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
+
+  useEffect(() => {
+    setIsFallbackProvider(isFallback)
+  }, [isFallback])
 
   useEffect(() => {
     async function getPrices() {
@@ -379,8 +384,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
-              Swap
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0 || isFallbackProvider}>
+              {isFallbackProvider ? "Connect Wallet to Swap" : "Swap"}
             </button>
           )}
         </Fragment>
