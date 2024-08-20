@@ -14,7 +14,7 @@ async function executeSwap(
   signerAddress: string,
   chainId: number
 ): Promise<ResponseType> {
-  const ethersProvider: ethers.BrowserProvider = initRPCProvider()
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
   const signer = await ethersProvider.getSigner(signerAddress)
   const tokenInContract = new ethers.Contract(tokenIn, ERC20_ABI, signer)
   const tokenInContractAddress = await tokenInContract.getAddress()
