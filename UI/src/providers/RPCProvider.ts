@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
 function initRPCProvider(): { provider: ethers.BrowserProvider | ethers.JsonRpcProvider; isFallback: boolean } {
-  if (typeof window !== 'undefined' && window.ethereum && window.ethereum.isMetaMask) {
+  if (typeof window !== 'undefined' && window.ethereum) {
     return { provider: new ethers.BrowserProvider(window.ethereum), isFallback: false }
   } else {
     const fallbackRpcUrl = 'https://eth-mainnet.g.alchemy.com/v2/demo'
