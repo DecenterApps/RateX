@@ -48,16 +48,19 @@ async function deployUniswapV2Dex() {
 async function deployRateX() {
   const [addr1, addr2, addr3] = await hre.ethers.getSigners()
 
+  let camelot, camelotAddress
   const { sushiSwap } = await deploySushiDex()
   const { uniswap } = await deployUniswapDex()
   const { balancer } = await deployBalancerDex()
-  const { camelot } = await deployCamelotDex()
   const { uniswapV2 } = await deployUniswapV2Dex()
+  if (hre.network.config.chainId === 42161) {
+    camelot = await deployCamelotDex()
+    camelotAddress = await camelot.getAddress()
+  }
 
   const sushiSwapAddress = await sushiSwap.getAddress()
   const uniswapAddress = await uniswap.getAddress()
   const balancerAddress = await balancer.getAddress()
-  const camelotAddress = await camelot.getAddress()
   const uniswapV2Address = await uniswapV2.getAddress()
 
   const initialDexes = [
@@ -74,14 +77,17 @@ async function deployRateX() {
       dexAddress: balancerAddress,
     },
     {
-      dexId: stringToUint32('CAMELOT'),
-      dexAddress: camelotAddress,
-    },
-    {
       dexId: stringToUint32('UNI_V2'),
       dexAddress: uniswapV2Address,
     },
   ]
+
+  if (camelotAddress && hre.network.config.chainId === 42161) {
+    initialDexes.push({
+      dexId: stringToUint32('CAMELOT'),
+      dexAddress: camelotAddress,
+    },)
+  }
 
   const RateX = await hre.ethers.getContractFactory('RateX')
   const rateX = await RateX.deploy(initialDexes)

@@ -11,13 +11,20 @@ const {
 const {saveAbiToFile, saveAddresses} = require('./utils/saveABIAndAddresses');
 
 async function main() {
+    let camelotHelper, camelotHelperAddress
     console.log('Deploying contracts...')
     const {rateX} = await deployRateX()
     const {uniswapHelper} = await deployUniswapHelper()
     const {balancerHelper} = await deployBalancerHelper()
     const {sushiHelper} = await deploySushiSwapHelper()
-    const {camelotHelper} = await deployCamelotHelper()
     const {uniswapV2Helper} = await deployUniswapV2Helper()
+    if (hre.network.config.chainId === 42161) {
+        camelotHelper = await deployCamelotHelper()
+        camelotHelperAddress = await camelotHelper.getAddress();
+        console.log("CamelotHelper address: " + camelotHelperAddress);
+    } else {
+        camelotHelperAddress = 'Does not exist on mainnet';
+    }
 
     const rateXAddress = await rateX.getAddress();
     console.log('RateX address: ' + rateXAddress);
@@ -27,9 +34,6 @@ async function main() {
 
     const sushiSwapHelperAddress = await sushiHelper.getAddress();
     console.log("SushiSwapHelper address: " + sushiSwapHelperAddress);
-
-    const camelotHelperAddress = await camelotHelper.getAddress();
-    console.log("CamelotHelper address: " + camelotHelperAddress);
 
     const balancerHelperAddress = await balancerHelper.getAddress();
     console.log("BalancerHelper address: " + balancerHelperAddress);
