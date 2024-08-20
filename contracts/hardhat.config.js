@@ -27,6 +27,11 @@ module.exports = {
   },
   defaultNetwork: 'hardhat',
   networks: {
+    mainnet: {
+      chainId: 1,
+      url: process.env.MAINNET_URL,
+      accounts: [process.env.SECRET_KEY || ''],
+    },
     arbitrum: {
       chainId: 42161,
       url: process.env.ARBITRUM_URL,
