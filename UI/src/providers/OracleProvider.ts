@@ -23,7 +23,7 @@ async function contractFactory(tokenTicker: string, chainId: number) {
   }
 
   const contractAddress = oracleData.address[chainId]
-  const ethersProvider = initRPCProvider()
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
   const signer = await ethersProvider.getSigner()
 
   return new ethers.Contract(contractAddress, ABI, signer)
