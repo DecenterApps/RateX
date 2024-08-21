@@ -74,11 +74,7 @@ async function executeSwap(
 
     const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
 
-    console.log('usao u swap')
-
     const txReceipt = await RateXContract.swap(routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signerAddress, deadline)
-
-    console.log(txReceipt)
 
     return { isSuccess: true, txHash: txReceipt.hash } as ResponseType
   } catch (err: any) {
