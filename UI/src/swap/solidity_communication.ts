@@ -33,7 +33,8 @@ async function executeSwap(
         return { isSuccess: false, errorMessage: 'Insufficient balance' } as ResponseType
       }
       try {
-        await tokenInContract.deposit({ value: amountToWrap.toString() })
+        const depositTx = await tokenInContract.deposit({ value: amountToWrap.toString() })
+        await depositTx.wait()
       } catch (err: any) {
         return { isSuccess: false, errorMessage: 'Failed to wrap ETH' } as ResponseType
       }
@@ -52,11 +53,13 @@ async function executeSwap(
 
       const tetherAllowance: bigint = await tetherContract.allowance(signerAddress, rateXContractAddress)
       if (tetherAllowance !== BigInt(0)) {
-        await tetherContract.approve(rateXContractAddress, 0)
+        const tetherApproveTx = await tetherContract.approve(rateXContractAddress, 0)
+        await tetherApproveTx.wait()
       }
     }
 
-    await tokenInContract.approve(rateXContractAddress, amountIn)
+    const approveTx = await tokenInContract.approve(rateXContractAddress, amountIn)
+    await approveTx.wait()
 
     quote = transferQuoteWithBalancerPoolIdToAddress(quote)
 
