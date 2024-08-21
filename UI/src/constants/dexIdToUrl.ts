@@ -1,9 +1,18 @@
-import {dexIds} from "../sdk/dexes/dexIdsList";
-
-export const dexIdToUrl: { [dexId: string]: string } = {
-    'CURVE' : 'https://curve.fi/#/arbitrum/pools?search=ADDRESS',
-    'SUSHI_V2' : 'https://www.sushi.com/pool/42161:ADDRESS',
-    'UNI_V3' : 'https://info.uniswap.org/#/arbitrum/pools/ADDRESS',
-    'CAMELOT' : 'https://info.camelot.exchange/pair/v2/ADDRESS',
-    'BALANCER_V2' : 'https://app.balancer.fi/#/arbitrum/pool/ADDRESS',
+export function dexIdToUrl(dexId: string, chainId: Number): string {
+  const networkName = chainId === 1 ? 'ethereum' : 'arbitrum'
+  switch (dexId) {
+    case 'CURVE':
+      return `https://curve.fi/#/${networkName}/pools?search=ADDRESS`
+    case 'SUSHI_V2':
+      return `https://www.sushi.com/pool/${chainId}:ADDRESS`
+    case 'UNI_V3':
+      return `https://app.uniswap.org/explore/pools/${networkName}/ADDRESS`
+    case 'CAMELOT':
+      return `https://info.camelot.exchange/pair/v2/ADDRESS`
+    case 'BALANCER_V2':
+      return `https://app.balancer.fi/#/${networkName}/pool/ADDRESS`
+    case 'UNI_V2':
+      return `https://app.uniswap.org/explore/pools/${networkName}/ADDRESS`
+  }
+  return ''
 }

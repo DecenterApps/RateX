@@ -3,6 +3,7 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
 # testing
 /coverage
 # production
@@ -21,3 +22,9 @@ yarn-error.log*
 
 # Algo testing
 bane.ts
+.env
+
+# Aleksin Zahtev
+/UI/src/contracts/addresses-arbitrum.ts
+/UI/src/contracts/addresses-mainnet.ts
+node_modules

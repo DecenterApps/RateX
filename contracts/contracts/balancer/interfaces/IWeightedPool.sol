@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.24;
 
 // EXAMPLE POOL (RDNT - WETH)
 // https://arbiscan.io/address/0x32dF62dc3aEd2cD6224193052Ce665DC18165841

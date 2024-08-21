@@ -1,10 +1,8 @@
 {
+  "name": "ratex",
   "scripts": {
-    "postinstall": "(cd UI && npm install); (cd UI/src/sdk && npm install); (cd contracts && npm install)",
-    "start": "npm run --prefix ./UI start"
-  },
-  "dependencies": {
-    "crypto": "^1.0.1",
-    "prettier": "^3.0.1"
+    "postinstall": "(cd UI && npm install); (cd contracts && npm install)",
+    "start": "npm run --prefix ./UI start",
+    "test": "npm run --prefix ./tests test"
   }
 }

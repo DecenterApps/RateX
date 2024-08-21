@@ -1,8 +1,9 @@
 hre = require("hardhat");
+const {time} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai")
 const {config} = require("../addresses.config");
 const {deployCamelotDex} = require("../scripts/utils/deployment");
-const {approveToContract, sendWethTokensToUser} = require("../scripts/utils/contract");
+const {sendERCTokensToUser} = require("../scripts/utils/contract");
 
 describe("Tests for Camelot V2", async function () {
 
@@ -20,32 +21,45 @@ describe("Tests for Camelot V2", async function () {
 
     it("Should swap weth to usdt", async function() {
         const {camelot, addr1} = await deployCamelotDex();
+
+        const camelotAddress = await camelot.getAddress();
         const WETH = await hre.ethers.getContractAt("IWeth", addresses.tokens.WETH);
         const USDT = await hre.ethers.getContractAt("IERC20", addresses.tokens.USDT);
 
-        const amountIn = hre.ethers.parseEther("100");
-        await sendWethTokensToUser(addr1, amountIn);
-        await approveToContract(addr1, await camelot.getAddress(), addresses.tokens.WETH, amountIn);
+        const amountIn = hre.ethers.parseEther("50");
+        const deadline = await time.latest() + 10;
+        await sendERCTokensToUser(addresses.impersonate.WETH, addresses.tokens.WETH, camelotAddress, amountIn);
 
-        const wethBalanceBefore = await WETH.balanceOf(addr1);
+        const usdtBalanceBefore = await USDT.balanceOf(addr1);
+        const wethBalanceBefore = await WETH.balanceOf(camelotAddress);
 
-        const tx = await camelot.swap(
-            "0x0000000000000000000000000000000000000000", // not used in function because we can get pool address from pair
-            addresses.tokens.WETH,
-            addresses.tokens.USDT,
+        const abiCoder = new hre.ethers.AbiCoder();
+        const data = abiCoder.encode(
+            ['address', 'address'],
+            [addresses.tokens.WETH, addresses.tokens.USDT]
+        );
+
+        const amountOut = await camelot.swap.staticCall(
+            data,
             amountIn,
             0n,
-            addr1
+            addr1,
+            deadline
+        );
+
+        const tx = await camelot.swap(
+            data,
+            amountIn,
+            0n,
+            addr1,
+            deadline
         );
         const txReceipt = await tx.wait();
 
-        const event = txReceipt.logs[txReceipt.logs.length - 1];
-        const amountOut = event.args[0];
-
-        const wethBalanceAfter = await WETH.balanceOf(addr1);
+        const wethBalanceAfter = await WETH.balanceOf(camelotAddress);
         const usdtBalanceAfter = await USDT.balanceOf(addr1);
 
-        expect(usdtBalanceAfter).to.be.equal(amountOut);
+        expect(usdtBalanceAfter).to.be.equal(usdtBalanceBefore + amountOut);
         expect(BigInt(wethBalanceAfter)).to.be.equal(BigInt(wethBalanceBefore) - BigInt(amountIn));
     });
 });

@@ -22,8 +22,15 @@ async function sendERCTokensToUser(impersonatedAddress, tokenAddress, toAddress,
     await txTransfer.wait();
 }
 
+function stringToUint32(dexId) {
+    const hash = hre.ethers.keccak256(hre.ethers.toUtf8Bytes(dexId));
+    // Take the first 4 bytes (8 hex characters) and convert to uint32
+    return parseInt(hash.slice(2, 10), 16);
+}
+
 module.exports = {
     sendWethTokensToUser,
     approveToContract,
-    sendERCTokensToUser
+    sendERCTokensToUser,
+    stringToUint32
 }

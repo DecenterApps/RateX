@@ -1,4 +1,6 @@
 import Decimal from 'decimal.js'
+import { ethers } from 'ethers'
+
 import { OracleData } from '../constants/Interfaces'
 import oracleToUSDList from '../constants/oracleToUSDList.json'
 import initRPCProvider from './RPCProvider'
@@ -14,27 +16,28 @@ const ABI = [
   },
 ]
 
-function contractFactory(tokenTicker: string, chainId: number) {
+async function contractFactory(tokenTicker: string, chainId: number) {
   const oracleData = oracleToUSDListData.oracles.find((token) => token.ticker === tokenTicker)
   if (!oracleData) {
     throw new Error(`Token "${tokenTicker}" not found in the JSON data.`)
   }
 
   const contractAddress = oracleData.address[chainId]
-  const web3 = initRPCProvider(chainId)
-  // @ts-ignore
-  return new web3.eth.Contract(ABI, contractAddress)
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
+  const signer = await ethersProvider.getSigner()
+
+  return new ethers.Contract(contractAddress, ABI, signer)
 }
 
 async function getTokenPrice(tokenTicker: string, chainId: number): Promise<number> {
   try {
-    const oracleContract = contractFactory(tokenTicker, chainId)
-    let value = await oracleContract.methods.latestAnswer().call()
-    // @ts-ignore
+    const oracleContract = await contractFactory(tokenTicker, chainId)
+    let value = await oracleContract.latestAnswer()
+
     let convertedValue = new Decimal(value.toString()).div(10 ** 8)
     return convertedValue.toNumber()
   } catch (error) {
-    console.error('Error fetching token price')
+    console.log('No price data available')
     return -1
   }
 }

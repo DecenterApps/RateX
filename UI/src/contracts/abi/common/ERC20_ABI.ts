@@ -52,6 +52,15 @@ export const ERC20_ABI = [
     },
     {
         "constant": false,
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "constant": false,
         "inputs": [
             {
                 "name": "_from",
