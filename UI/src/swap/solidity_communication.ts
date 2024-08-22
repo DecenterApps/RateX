@@ -4,6 +4,8 @@ import { Quote, ResponseType, Route, SwapStep } from '../types'
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../providers/RPCProvider'
 import { CreateRateXContract } from '../contracts/rateX/RateX'
+import { arbitrum } from 'viem/chains'
+import { RateXAbi } from '../contracts/abi/RateXAbi'
 
 async function executeSwap(
   tokenIn: string,
@@ -12,9 +14,10 @@ async function executeSwap(
   amountIn: bigint,
   minAmountOut: bigint,
   signerAddress: string,
-  chainId: number
+  chainId: number,
+  writeContractAsync: Function
 ): Promise<ResponseType> {
-  const ethersProvider: ethers.BrowserProvider = initRPCProvider()
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
   const signer = await ethersProvider.getSigner(signerAddress)
   const tokenInContract = new ethers.Contract(tokenIn, ERC20_ABI, signer)
   const tokenInContractAddress = await tokenInContract.getAddress()
@@ -56,31 +59,18 @@ async function executeSwap(
       }
     }
 
-    await tokenInContract.approve(rateXContractAddress, amountIn)
+    const data1 = await writeContractAsync({
+      chainId: arbitrum.id, // Replace with the correct chain ID
+      address: tokenInContractAddress, // Address of the ERC-20 token
+      functionName: 'approve',
+      abi: ERC20_ABI, // Use the ERC-20 ABI to access the `approve` function
+      args: [rateXContractAddress, amountIn], // The spender's address and the amount to approve
+    });
+    console.log(data1)
+    //await sleep(10000)
 
-    quote = transferQuoteWithBalancerPoolIdToAddress(quote)
-
-    const routesAdjusted = quote.routes.map((route) => {
-      const adjustedSwaps = route.swaps.map((swap) => {
-        // Encode the swap data based on the dexId
-        const encodedData = encodeSwapData(swap)
-        // Convert dexId to uint32
-        const dexIdUint32 = hashStringToInt(swap.dexId)
-
-        return { data: encodedData, dexId: dexIdUint32 }
-      })
-      return { ...route, swaps: adjustedSwaps }
-    })
-
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
-
-    console.log('usao u swap')
-
-    const txReceipt = await RateXContract.swap(routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signerAddress, deadline)
-
-    console.log(txReceipt)
-
-    return { isSuccess: true, txHash: txReceipt.hash } as ResponseType
+   
+    return { isSuccess: true } as ResponseType
   } catch (err: any) {
     return { isSuccess: false, errorMessage: err.message } as ResponseType
   }
@@ -133,5 +123,6 @@ function checkIfRouteContainsToken(routes: Route[], tokenAddress: string): boole
   }
   return false
 }
+const sleep = (delay : any) => new Promise((resolve) => setTimeout(resolve, delay))
 
 export { executeSwap }

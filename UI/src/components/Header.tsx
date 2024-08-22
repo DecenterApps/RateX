@@ -10,28 +10,27 @@ interface HeaderProps {
 
 function Header({ chainIdState, walletState }: HeaderProps) {
   const [wallet, setWallet] = walletState
-  const { address} = useAccount()
+  const { address } = useAccount()
 
   useEffect(() => {
-
     async function checkWalletConnection() {
       if (address) {
-        setWallet(address);  // Set the wallet only if the address is defined
+        setWallet(address) // Set the wallet only if the address is defined
       } else {
-        setWallet('');  // Or set to an empty string or handle the undefined case as needed
+        setWallet('') // Or set to an empty string or handle the undefined case as needed
       }
 
     }
 
-    checkWalletConnection();
-  }, [address, setWallet]);
+    checkWalletConnection()
+  }, [address, setWallet])
 
   return (
     <>
       <header>
         <div className="leftHeader">
           <Link to="/" className="link">
-            <div className="headerItem"> RateX </div>
+            <img src="/rateX-white.svg" alt="RateX Logo" />
           </Link>
         </div>
         <div className="rightHeader">

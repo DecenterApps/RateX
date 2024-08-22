@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, Fragment } from 'react'
 import { Input, Modal, Popover, Radio, Button } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
-import { ethers } from 'ethers'
-
+import {ethers, keccak256, toUtf8Bytes } from 'ethers'
+import { SwapStep } from '../types'
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
@@ -14,6 +14,11 @@ import { swap, findQuote } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
+import { useConnect, useAccount, useWriteContract, useWaitForTransactionReceipt  } from 'wagmi'
+import { write } from 'fs'
+import { arbitrum } from 'viem/chains'
+import { CreateRateXContract } from '../contracts/rateX/RateX'
+import { RateXAbi } from '../contracts/abi/RateXAbi'
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -24,12 +29,19 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [chainId] = chainIdState
   const [wallet] = walletState
 
+  const {data: approveHash, writeContractAsync : callApproveAsync}= useWriteContract()
+  const {data: swapHash, writeContractAsync: callSwapAsync}= useWriteContract()
+
+  const { data: approveConfirmed } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+
   const [slippage, setSlippage] = useState(0.5)
   const [tokenFromAmount, setTokenFromAmount] = useState<number>(-1)
   const [tokenFromPrice, setTokenFromPrice] = useState(0)
   const [tokenToAmount, setTokenToAmount] = useState(0)
   const [tokenToPrice, setTokenToPrice] = useState(0)
-  const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
+  const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[0])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
   const [customToken, setCustomToken] = useState('')
@@ -40,9 +52,107 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingSwap, setLoadingSwap] = useState(false)
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
+  const [isFallbackProvider, setIsFallbackProvider] = useState(false)
+  
 
-  const ethersProvider: ethers.BrowserProvider = initRPCProvider()
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
 
+
+  useEffect(() => {
+    setIsFallbackProvider(isFallback)
+  }, [isFallback])
+
+  useEffect(() => {
+    if(swapHash)
+    notification.success({
+      message: `<a target="_blank" href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${swapHash}" style="color:#ffffff;">Tx hash: ${
+        swapHash
+      }</a>`,
+    })  }, [swapHash])
+ 
+  useEffect(() => {
+    function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
+      quote.routes.forEach((route) =>
+        route.swaps.map((swap) => {
+          if (swap.poolId.length === 66) {
+            swap.poolId = swap.poolId.slice(0, 42) // convert to address
+          }
+          return swap
+        })
+      )
+    
+      return quote
+    }
+    // RateX contract expects dexId to be a uint32 that represents first 4 bytes of keccak256 hash of dexId, not a string
+function hashStringToInt(dexName: string): number {
+  const hash = keccak256(toUtf8Bytes(dexName))
+  // Take the first 4 bytes (8 hex characters) and convert to uint32
+  return parseInt(hash.slice(2, 10), 16)
+}
+
+// Encode swap data for RateX contract
+function encodeSwapData(swap: SwapStep) {
+  const abiCoder = new ethers.AbiCoder()
+
+  if (swap.dexId === 'BALANCER_V2' || swap.dexId === 'CURVE' || swap.dexId === 'UNI_V3') {
+    // For DEXes like Balancer, Curve, UniswapV3 => we include poolId, tokenIn, and tokenOut
+    return abiCoder.encode(['address', 'address', 'address'], [swap.poolId, swap.tokenIn, swap.tokenOut])
+  }
+  // For DEXes like Uniswap V2, Camelot, Sushiswap we include only tokenIn and tokenOut
+  else return abiCoder.encode(['address', 'address'], [swap.tokenIn, swap.tokenOut])
+}
+
+    async function callRatexSwap(){
+      if(!approveHash)
+      {return}
+      try{
+      console.log("Ovo je hash" + approveHash)
+      console.log("Transakcija approve je gotova")
+      const signer = await ethersProvider.getSigner(wallet)
+      const RateXContract = CreateRateXContract(chainId, signer)
+      if(!quote)
+      {return}
+      const quoteParsed = transferQuoteWithBalancerPoolIdToAddress(quote)
+
+      const routesAdjusted = quoteParsed.routes.map((route) => {
+        const adjustedSwaps = route.swaps.map((swap) => {
+          // Encode the swap data based on the dexId
+          const encodedData = encodeSwapData(swap)
+          // Convert dexId to uint32
+          const dexIdUint32 = hashStringToInt(swap.dexId)
+  
+          return { data: encodedData, dexId: dexIdUint32 }
+        })
+        return { ...route, swaps: adjustedSwaps }
+      })
+  
+      const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
+      const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
+      const amountOut = quote.quote
+      const slippageBigInt = BigInt(slippage * 100)
+      const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100)
+
+      const data = await callSwapAsync({
+        chainId:arbitrum.id,
+        address: '0x08A3985280560cc8b5f476a36178c2a3d3D866C6',
+        functionName: 'swap',
+        abi: RateXAbi,
+        args: [routesAdjusted, tokenFrom.address[chainId], tokenTo.address[chainId], amountIn, minAmountOut, wallet, deadline]
+      })
+      //    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, writeContractAsync)
+
+      console.log("Ovo je data buraz" + data)
+      
+    }
+    catch (err: any) {
+      notification.error({
+        message: err.message,
+      })
+    }
+}
+callRatexSwap()
+  }, [approveConfirmed])
+  
   useEffect(() => {
     async function getPrices() {
       const tokenFromPrice = await getTokenPrice(tokenFrom.ticker, chainId)
@@ -243,15 +353,9 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, callApproveAsync)
       .then((res) => {
-        res.isSuccess
-          ? notification.success({
-              message: `<a href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${
-                res.txHash
-              }</a>`,
-            })
-          : notification.error({ message: res.errorMessage })
+        !res.isSuccess && notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
       })
       .catch((error: string) => {
@@ -379,8 +483,8 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
-              Swap
+            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0 || isFallbackProvider}>
+              {isFallbackProvider ? "Connect Wallet to Swap" : "Swap"}
             </button>
           )}
         </Fragment>
