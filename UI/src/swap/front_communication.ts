@@ -1,5 +1,5 @@
 import { Quote, ResponseType } from '../types'
-import { executeSwap } from './solidity_communication'
+import { executeApprove, executeSwap } from './solidity_communication'
 import { RateX, Dexes } from 'ratex-sdk'
 
 async function findQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
@@ -10,6 +10,18 @@ async function findQuote(tokenIn: string, tokenOut: string, amountIn: bigint, ch
   const res = await rateX.getQuote(tokenIn, tokenOut, amountIn)
 
   return res
+}
+
+async function approve(
+  token1: string,
+  quote: Quote,
+  amountIn: bigint,
+  signer: string,
+  chainId: number,
+  writeContractAsync: Function
+): Promise<ResponseType> {
+
+  return executeApprove(token1, quote, amountIn, signer, chainId, writeContractAsync)
 }
 
 async function swap(
@@ -30,5 +42,4 @@ async function swap(
 }
 
 
-
-export { findQuote, swap }
+export { findQuote, approve, swap }

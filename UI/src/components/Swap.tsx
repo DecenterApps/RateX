@@ -10,15 +10,12 @@ import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import { Quote } from '../types'
 import './Swap.scss'
-import { swap, findQuote } from '../swap/front_communication'
+import { approve, findQuote, swap } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
-import { useConnect, useAccount, useWriteContract, useWaitForTransactionReceipt  } from 'wagmi'
-import { write } from 'fs'
-import { arbitrum } from 'viem/chains'
-import { CreateRateXContract } from '../contracts/rateX/RateX'
-import { RateXAbi } from '../contracts/abi/RateXAbi'
+import { useWriteContract, useWaitForTransactionReceipt  } from 'wagmi'
+
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -63,85 +60,40 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   }, [isFallback])
 
   useEffect(() => {
-    if(swapHash)
+    if(swapHash && loadingSwap)
+    {
     notification.success({
       message: `<a target="_blank" href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${swapHash}" style="color:#ffffff;">Tx hash: ${
         swapHash
       }</a>`,
-    })  }, [swapHash])
+    }) 
+    setLoadingSwap(false)
+    }
+    }, [swapHash])
  
   useEffect(() => {
-    function transferQuoteWithBalancerPoolIdToAddress(quote: Quote): Quote {
-      quote.routes.forEach((route) =>
-        route.swaps.map((swap) => {
-          if (swap.poolId.length === 66) {
-            swap.poolId = swap.poolId.slice(0, 42) // convert to address
-          }
-          return swap
-        })
-      )
-    
-      return quote
-    }
-    // RateX contract expects dexId to be a uint32 that represents first 4 bytes of keccak256 hash of dexId, not a string
-function hashStringToInt(dexName: string): number {
-  const hash = keccak256(toUtf8Bytes(dexName))
-  // Take the first 4 bytes (8 hex characters) and convert to uint32
-  return parseInt(hash.slice(2, 10), 16)
-}
-
-// Encode swap data for RateX contract
-function encodeSwapData(swap: SwapStep) {
-  const abiCoder = new ethers.AbiCoder()
-
-  if (swap.dexId === 'BALANCER_V2' || swap.dexId === 'CURVE' || swap.dexId === 'UNI_V3') {
-    // For DEXes like Balancer, Curve, UniswapV3 => we include poolId, tokenIn, and tokenOut
-    return abiCoder.encode(['address', 'address', 'address'], [swap.poolId, swap.tokenIn, swap.tokenOut])
-  }
-  // For DEXes like Uniswap V2, Camelot, Sushiswap we include only tokenIn and tokenOut
-  else return abiCoder.encode(['address', 'address'], [swap.tokenIn, swap.tokenOut])
-}
+  
 
     async function callRatexSwap(){
-      if(!approveHash)
+      if(!approveHash || !quote )
       {return}
       try{
-      console.log("Ovo je hash" + approveHash)
-      console.log("Transakcija approve je gotova")
-      const signer = await ethersProvider.getSigner(wallet)
-      const RateXContract = CreateRateXContract(chainId, signer)
-      if(!quote)
-      {return}
-      const quoteParsed = transferQuoteWithBalancerPoolIdToAddress(quote)
+        const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
-      const routesAdjusted = quoteParsed.routes.map((route) => {
-        const adjustedSwaps = route.swaps.map((swap) => {
-          // Encode the swap data based on the dexId
-          const encodedData = encodeSwapData(swap)
-          // Convert dexId to uint32
-          const dexIdUint32 = hashStringToInt(swap.dexId)
-  
-          return { data: encodedData, dexId: dexIdUint32 }
+        swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, callSwapAsync)
+        .then((res) => {
+          if(!res.isSuccess){ 
+          notification.error({ message: res.errorMessage })
+          setLoadingSwap(false)
+          }
+        
         })
-        return { ...route, swaps: adjustedSwaps }
-      })
-  
-      const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
-      const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
-      const amountOut = quote.quote
-      const slippageBigInt = BigInt(slippage * 100)
-      const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100)
+        .catch((error: string) => {
+          console.log('Error on swap: ', error)
+          setLoadingSwap(false)
+          notification.open({ message: error })
+        })
 
-      const data = await callSwapAsync({
-        chainId:arbitrum.id,
-        address: '0x08A3985280560cc8b5f476a36178c2a3d3D866C6',
-        functionName: 'swap',
-        abi: RateXAbi,
-        args: [routesAdjusted, tokenFrom.address[chainId], tokenTo.address[chainId], amountIn, minAmountOut, wallet, deadline]
-      })
-      //    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, writeContractAsync)
-
-      console.log("Ovo je data buraz" + data)
       
     }
     catch (err: any) {
@@ -353,10 +305,12 @@ callRatexSwap()
 
     const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, callApproveAsync)
+    approve(tokenFrom.address[chainId], quote, amountIn, wallet, chainId, callApproveAsync)
       .then((res) => {
-        !res.isSuccess && notification.error({ message: res.errorMessage })
+        if(!res.isSuccess){ 
+        notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
+        }
       })
       .catch((error: string) => {
         console.log('Error on swap: ', error)

@@ -4,15 +4,13 @@ import { Quote, ResponseType, Route, SwapStep } from '../types'
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import initRPCProvider from '../providers/RPCProvider'
 import { CreateRateXContract } from '../contracts/rateX/RateX'
-import { arbitrum } from 'viem/chains'
+import { arbitrum, mainnet } from 'viem/chains'
 import { RateXAbi } from '../contracts/abi/RateXAbi'
 
-async function executeSwap(
+async function executeApprove(
   tokenIn: string,
-  tokenOut: string,
   quote: Quote,
   amountIn: bigint,
-  minAmountOut: bigint,
   signerAddress: string,
   chainId: number,
   writeContractAsync: Function
@@ -59,15 +57,13 @@ async function executeSwap(
       }
     }
 
-    const data1 = await writeContractAsync({
-      chainId: arbitrum.id, // Replace with the correct chain ID
+    const data = await writeContractAsync({
+      chainId:chainId === 1 ? mainnet.id : arbitrum.id, 
       address: tokenInContractAddress, // Address of the ERC-20 token
       functionName: 'approve',
       abi: ERC20_ABI, // Use the ERC-20 ABI to access the `approve` function
       args: [rateXContractAddress, amountIn], // The spender's address and the amount to approve
     });
-    console.log(data1)
-    //await sleep(10000)
 
    
     return { isSuccess: true } as ResponseType
@@ -75,6 +71,52 @@ async function executeSwap(
     return { isSuccess: false, errorMessage: err.message } as ResponseType
   }
 }
+
+async function executeSwap(
+  tokenIn: string,
+  tokenOut: string,
+  quote: Quote,
+  amountIn: bigint,
+  minAmountOut: bigint,
+  signerAddress: string,
+  chainId: number,
+  writeContractAsync: Function
+): Promise<ResponseType> {
+  const { provider: ethersProvider, isFallback } = initRPCProvider()
+  const signer = await ethersProvider.getSigner(signerAddress) 
+  try {
+    const RateXContract = CreateRateXContract(chainId, signer)
+
+    const rateXContractAddress = await RateXContract.getAddress()
+    const quoteParsed = transferQuoteWithBalancerPoolIdToAddress(quote)
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 30 // 30 minutes
+
+    const routesAdjusted = quoteParsed.routes.map((route) => {
+      const adjustedSwaps = route.swaps.map((swap) => {
+        // Encode the swap data based on the dexId
+        const encodedData = encodeSwapData(swap)
+        // Convert dexId to uint32
+        const dexIdUint32 = hashStringToInt(swap.dexId)
+
+        return { data: encodedData, dexId: dexIdUint32 }
+      })
+      return { ...route, swaps: adjustedSwaps }
+    })
+    const data = await writeContractAsync({
+      chainId:chainId === 1 ? mainnet.id : arbitrum.id, 
+      address: rateXContractAddress,
+      functionName: 'swap',
+      abi: RateXAbi,
+      args: [routesAdjusted, tokenIn, tokenOut, amountIn, minAmountOut, signerAddress, deadline]
+    })
+
+   
+    return { isSuccess: true, txHash:data } as ResponseType
+  } catch (err: any) {
+    return { isSuccess: false, errorMessage: err.message } as ResponseType
+  }
+}
+
 
 /* Function to transform poolId from bytes32 to address
  * The solidity contract expects the poolId to be an address, but the graph for balancer returns it as a bytes32
@@ -125,4 +167,4 @@ function checkIfRouteContainsToken(routes: Route[], tokenAddress: string): boole
 }
 const sleep = (delay : any) => new Promise((resolve) => setTimeout(resolve, delay))
 
-export { executeSwap }
+export { executeApprove, executeSwap }
