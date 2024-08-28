@@ -1,5 +1,5 @@
 import { Quote, ResponseType } from '../types'
-import { executeSwap } from './solidity_communication'
+import { executeApprove, executeSwap } from './solidity_communication'
 import { RateX, Dexes } from 'ratex-sdk'
 
 async function findQuote(tokenIn: string, tokenOut: string, amountIn: bigint, chainId: number): Promise<Quote> {
@@ -12,6 +12,18 @@ async function findQuote(tokenIn: string, tokenOut: string, amountIn: bigint, ch
   return res
 }
 
+async function approve(
+  token1: string,
+  quote: Quote,
+  amountIn: bigint,
+  signer: string,
+  chainId: number,
+  writeContractAsync: Function
+): Promise<ResponseType> {
+
+  return executeApprove(token1, quote, amountIn, signer, chainId, writeContractAsync)
+}
+
 async function swap(
   token1: string,
   token2: string,
@@ -19,13 +31,15 @@ async function swap(
   amountIn: bigint,
   slippagePercentage: number,
   signer: string,
-  chainId: number
+  chainId: number,
+  writeContractAsync: Function
 ): Promise<ResponseType> {
   const amountOut = quote.quote
   const slippageBigInt = BigInt(slippagePercentage * 100)
   const minAmountOut = (amountOut * (BigInt(100) - slippageBigInt)) / BigInt(100)
 
-  return executeSwap(token1, token2, quote, amountIn, minAmountOut, signer, chainId)
+  return executeSwap(token1, token2, quote, amountIn, minAmountOut, signer, chainId, writeContractAsync)
 }
 
-export { findQuote, swap }
+
+export { findQuote, approve, swap }

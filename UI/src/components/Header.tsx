@@ -19,6 +19,7 @@ function Header({ chainIdState, walletState }: HeaderProps) {
       } else {
         setWallet('') // Or set to an empty string or handle the undefined case as needed
       }
+
     }
 
     checkWalletConnection()

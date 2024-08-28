@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, Fragment } from 'react'
 import { Input, Modal, Popover, Radio, Button } from 'antd'
 import { ArrowDownOutlined, DownOutlined, SettingOutlined } from '@ant-design/icons'
-import { ethers } from 'ethers'
-
+import {ethers, keccak256, toUtf8Bytes } from 'ethers'
+import { SwapStep } from '../types'
 import { ERC20_ABI } from '../contracts/abi/common/ERC20_ABI'
 import tokenList from '../constants/tokenList.json'
 import { Token } from '../constants/Interfaces'
@@ -10,10 +10,12 @@ import { notification } from './notifications'
 import { useDebouncedEffect } from '../utils/useDebouncedEffect'
 import { Quote } from '../types'
 import './Swap.scss'
-import { swap, findQuote } from '../swap/front_communication'
+import { approve, findQuote, swap } from '../swap/front_communication'
 import RoutingDiagram from './RoutingDiagram'
 import { getTokenPrice } from '../providers/OracleProvider'
 import initRPCProvider from '../providers/RPCProvider'
+import { useWriteContract, useWaitForTransactionReceipt  } from 'wagmi'
+
 
 interface SwapProps {
   chainIdState: [number, React.Dispatch<React.SetStateAction<number>>]
@@ -24,12 +26,19 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [chainId] = chainIdState
   const [wallet] = walletState
 
+  const {data: approveHash, writeContractAsync : callApproveAsync}= useWriteContract()
+  const {data: swapHash, writeContractAsync: callSwapAsync}= useWriteContract()
+
+  const { data: approveConfirmed } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  });
+
   const [slippage, setSlippage] = useState(0.5)
   const [tokenFromAmount, setTokenFromAmount] = useState<number>(-1)
   const [tokenFromPrice, setTokenFromPrice] = useState(0)
   const [tokenToAmount, setTokenToAmount] = useState(0)
   const [tokenToPrice, setTokenToPrice] = useState(0)
-  const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[3])
+  const [tokenFrom, setTokenFrom] = useState<Token>(tokenList[0])
   const [tokenTo, setTokenTo] = useState<Token>(tokenList[4])
   const [quote, setQuote] = useState<Quote>()
   const [customToken, setCustomToken] = useState('')
@@ -41,22 +50,72 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
   const [isFallbackProvider, setIsFallbackProvider] = useState(false)
+  const [prevApproveHash, setPrevApproveHash] = useState("")
 
   const { provider: ethersProvider, isFallback } = initRPCProvider()
+
 
   useEffect(() => {
     setIsFallbackProvider(isFallback)
   }, [isFallback])
 
   useEffect(() => {
+    if(swapHash && loadingSwap)
+    {
+    notification.success({
+      message: `<a target="_blank" href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${swapHash}" style="color:#ffffff;">Tx hash: ${
+        swapHash
+      }</a>`,
+    }) 
+    setLoadingSwap(false)
+    }
+    }, [swapHash])
+ 
+  useEffect(() => {
+  
+
+    async function callRatexSwap() {
+      if (!approveHash || !quote || approveHash == prevApproveHash) { return }
+      setPrevApproveHash(approveHash)
+      try {
+        const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
+
+        swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, callSwapAsync)
+        .then((res) => {
+          if(!res.isSuccess){ 
+          notification.error({ message: res.errorMessage })
+          setLoadingSwap(false)
+          }
+        
+        })
+        .catch((error: string) => {
+          console.log('Error on swap: ', error)
+          setLoadingSwap(false)
+          notification.open({ message: error })
+        })
+
+      
+    }
+    catch (err: any) {
+      notification.error({
+        message: err.message,
+      })
+    }
+}
+callRatexSwap()
+  }, [approveConfirmed])
+  
+  useEffect(() => {
     async function getPrices() {
+      if (wallet == "0x0000000000000000000000000000000000000000" || !wallet)
+        return;
       const tokenFromPrice = await getTokenPrice(tokenFrom.ticker, chainId)
       tokenFromPrice === -1 ? setTokenFromPrice(-1) : setTokenFromPrice(tokenFromPrice)
       const tokenToPrice = await getTokenPrice(tokenTo.ticker, chainId)
       tokenToPrice === -1 ? setTokenFromPrice(-1) : setTokenToPrice(tokenToPrice)
     }
     getPrices()
-  }, [chainId, tokenFrom.ticker, tokenTo.ticker])
+  }, [chainId, tokenFrom.ticker, tokenTo.ticker, wallet])
 
   useDebouncedEffect(
     () => {
@@ -248,16 +307,12 @@ function Swap({ chainIdState, walletState }: SwapProps) {
 
     const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
-    swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId)
+    approve(tokenFrom.address[chainId], quote, amountIn, wallet, chainId, callApproveAsync)
       .then((res) => {
-        res.isSuccess
-          ? notification.success({
-              message: `<a href="https://${chainId === 1 ? 'etherscan' : 'arbiscan'}.io/tx/${res.txHash}" style="color:#ffffff;">Tx hash: ${
-                res.txHash
-              }</a>`,
-            })
-          : notification.error({ message: res.errorMessage })
+        if(!res.isSuccess){ 
+        notification.error({ message: res.errorMessage })
         setLoadingSwap(false)
+        }
       })
       .catch((error: string) => {
         console.log('Error on swap: ', error)
@@ -375,7 +430,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
         </Fragment>
         <Fragment>
           {loadingSwap ? (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
+            <button className="swapButton" onClick={() => commitSwap()} disabled={tokenToAmount === 0}>
               <div className="lds-ellipsis">
                 <div></div>
                 <div></div>
@@ -384,7 +439,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0 || isFallbackProvider}>
+            <button className="swapButton" onClick={() => commitSwap()} disabled={tokenToAmount === 0 || isFallbackProvider}>
               {isFallbackProvider ? "Connect Wallet to Swap" : "Swap"}
             </button>
           )}
