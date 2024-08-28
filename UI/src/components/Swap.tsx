@@ -50,7 +50,7 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   const [loadingCustomToken, setLoadingCustomToken] = useState(false)
   const lastCallTime = useRef(0)
   const [isFallbackProvider, setIsFallbackProvider] = useState(false)
-  
+  const [prevApproveHash, setPrevApproveHash] = useState("")
 
   const { provider: ethersProvider, isFallback } = initRPCProvider()
 
@@ -74,10 +74,10 @@ function Swap({ chainIdState, walletState }: SwapProps) {
   useEffect(() => {
   
 
-    async function callRatexSwap(){
-      if(!approveHash || !quote )
-      {return}
-      try{
+    async function callRatexSwap() {
+      if (!approveHash || !quote || approveHash == prevApproveHash) { return }
+      setPrevApproveHash(approveHash)
+      try {
         const amountIn = ethers.parseUnits(tokenFromAmount.toString(), tokenFrom.decimals)
 
         swap(tokenFrom.address[chainId], tokenTo.address[chainId], quote, amountIn, slippage, wallet, chainId, callSwapAsync)
@@ -428,7 +428,7 @@ callRatexSwap()
         </Fragment>
         <Fragment>
           {loadingSwap ? (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0}>
+            <button className="swapButton" onClick={() => commitSwap()} disabled={tokenToAmount === 0}>
               <div className="lds-ellipsis">
                 <div></div>
                 <div></div>
@@ -437,7 +437,7 @@ callRatexSwap()
               </div>
             </button>
           ) : (
-            <button className="swapButton" onClick={commitSwap} disabled={tokenToAmount === 0 || isFallbackProvider}>
+            <button className="swapButton" onClick={() => commitSwap()} disabled={tokenToAmount === 0 || isFallbackProvider}>
               {isFallbackProvider ? "Connect Wallet to Swap" : "Swap"}
             </button>
           )}
