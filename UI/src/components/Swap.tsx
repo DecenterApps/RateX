@@ -107,13 +107,15 @@ callRatexSwap()
   
   useEffect(() => {
     async function getPrices() {
+      if (wallet == "0x0000000000000000000000000000000000000000" || !wallet)
+        return;
       const tokenFromPrice = await getTokenPrice(tokenFrom.ticker, chainId)
       tokenFromPrice === -1 ? setTokenFromPrice(-1) : setTokenFromPrice(tokenFromPrice)
       const tokenToPrice = await getTokenPrice(tokenTo.ticker, chainId)
       tokenToPrice === -1 ? setTokenFromPrice(-1) : setTokenToPrice(tokenToPrice)
     }
     getPrices()
-  }, [chainId, tokenFrom.ticker, tokenTo.ticker])
+  }, [chainId, tokenFrom.ticker, tokenTo.ticker, wallet])
 
   useDebouncedEffect(
     () => {
