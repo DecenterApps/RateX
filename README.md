@@ -30,9 +30,22 @@ Our idea was to create the **'competition'**. We would:
 - 🔓 **Open-Source**: Promotes community-driven development.
 - ⚡ **Support for Arbitrum and Ethereum networks**
 
+## 🌐 RateX Contracts
+
+| Contract Name     | Ethereum ⚫                                                                                                           | Arbitrum 🔵                                                                                                          |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| RateX             | [0xAC64cF5B37124e62Ad716e664faF711Bd0882056](https://etherscan.io/address/0xAC64cF5B37124e62Ad716e664faF711Bd0882056) | [0x1D3ac829f8b0056972491095342730710e956629](https://arbiscan.io/address/0x1D3ac829f8b0056972491095342730710e956629) |
+| Uniswap Helper    | [0xBFA0CAC4e1FC4958Ef24732F5b1e063637D20704](https://etherscan.io/address/0xBFA0CAC4e1FC4958Ef24732F5b1e063637D20704) | [0xBf70F85011047C4cF31696780BdB6db752527d7c](https://arbiscan.io/address/0xBf70F85011047C4cF31696780BdB6db752527d7c) |
+| Sushiswap Helper  | [0xAc62F8Ff99B1fEa563Cf8D47Ce1B9fE76F3AC5b8](https://etherscan.io/address/0xAc62F8Ff99B1fEa563Cf8D47Ce1B9fE76F3AC5b8) | [0x141fc598Ed85a23e78f2b58ABe95AC013d196249](https://arbiscan.io/address/0x141fc598Ed85a23e78f2b58ABe95AC013d196249) |
+| Balancer Helper   | [0xf77f3E6ed19DAFe90f90c3C1609207902C7414f9](https://etherscan.io/address/0xf77f3E6ed19DAFe90f90c3C1609207902C7414f9) | [0xd1dFeDe71160a0a1e869e2D3F428A47531726BfE](https://arbiscan.io/address/0xd1dFeDe71160a0a1e869e2D3F428A47531726BfE) |
+| Uniswap V2 Helper | [0x043EEB82faC75641146955Fea5509C824b2AD22A](https://etherscan.io/address/0x043EEB82faC75641146955Fea5509C824b2AD22A) | [0x24725a85903e83A4829F51287B8E0BD321121DbC](https://arbiscan.io/address/0x24725a85903e83A4829F51287B8E0BD321121DbC) |
+| Camelot Helper    | N/A                                                                                                                   | [0x91DE0353a4f93BD460dE3a373Feb50c53571c078](https://arbiscan.io/address/0x91DE0353a4f93BD460dE3a373Feb50c53571c078) |
+
+Note: Camelot Helper is not available on Ethereum mainnet.
+
 ## Getting Started
 
-This repository includes both a frontend and contracts that can be used with the existing RateX contracts to immediately start trading or, alternatively, provides users the option to deploy their own custom contracts to tailor the experience to their specific needs. 
+This repository includes both a frontend and contracts that can be used with the existing RateX contracts to immediately start trading or, alternatively, provides users the option to deploy their own custom contracts to tailor the experience to their specific needs.
 
 ## 🛠️ Requirements
 
